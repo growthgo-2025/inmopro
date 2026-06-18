@@ -269,3 +269,29 @@ Stage Summary:
 - Design: corporate slate-navy + blue palette per spec, Plus Jakarta Sans display font, Inter body, premium cards with hover-lift, framer-motion animations, custom scrollbar, fully responsive.
 - Lint: 0 errors, 0 warnings. Dev server: running clean on port 3000.
 - Next phase opportunities (for cron reviewer): more property images per type, real Excel parsing in import, @dnd-kit drag-between Kanban columns, property edit view in admin (currently "Próximamente"), saved searches, user auth with NextAuth, favorites persistence, agent public profile pages.
+
+---
+Task ID: GITHUB-PUSH
+Agent: main-orchestrator
+Task: Subir el proyecto completo a GitHub (repo growthgo-2025/inmopro, público)
+
+Work Log:
+- Verificado token PAT de GitHub del usuario growthgo-2025 (válido, usuario confirmado)
+- Verificado que el repo inmopro no existía previamente (HTTP 404)
+- Creado repositorio público vía API: POST /user/repos {name: inmopro, private: false} → 201 Created, https://github.com/growthgo-2025/inmopro
+- Detectado que .env estaba trackeado en commits previos del scaffold → git rm --cached .env (archivo local conservado, removido del tracking)
+- Creado README.md profesional (273 líneas: features, stack, paleta, estructura, setup, códigos, roadmap)
+- Creado .env.example con DATABASE_URL y placeholders de secrets
+- Commit "feat: plataforma inmobiliaria profesional InmoPro" con mensaje detallado (2 archivos cambiados: README added, .env removed; los 89 archivos de código ya estaban en commits previos)
+- Configurado remote origin con token embebido temporalmente
+- git push -u origin main exitoso (4 commits, 126 archivos subidos)
+- Limpieza de seguridad: git remote set-url para remover el token de la configuración local de git
+- Verificación vía API GitHub: 126 archivos en raíz, src/components/ con 6 subcarpetas (admin/home/layout/property/results/ui), README.md presente (HTTP 200), .env correctamente ausente (HTTP 404)
+
+Stage Summary:
+- Repositorio público creado: https://github.com/growthgo-2025/inmopro
+- 4 commits, 126 archivos (89 de código fuente + configs + db/custom.db + worklog.md + README.md)
+- .env excluido correctamente (solo contiene DATABASE_URL local, no hay secrets reales)
+- Token PAT del usuario sigue activo (lo usa en otros proyectos también); no fue revocado
+- Remote local configurado sin credenciales embebidas (URL limpia https://github.com/growthgo-2025/inmopro.git)
+- Para futuros push/pull desde esta máquina se necesitará re-autenticar (el token fue limpiado de la config de git por seguridad)
