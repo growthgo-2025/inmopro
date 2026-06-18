@@ -1,0 +1,1546 @@
+     1→"use client";
+     2→
+     3→/**
+     4→ * ResultsView — premium real-estate search results page
+     5→ * Layout: breadcrumb + sticky header row, [sidebar | results grid] main,
+     6→ * pagination, mobile filter Sheet. Inspired by mitula.com but original.
+     7→ */
+     8→
+     9→import { useEffect, useState, useMemo, useRef } from "react";
+    10→import { motion, AnimatePresence } from "framer-motion";
+    11→import {
+    12→  ChevronRight,
+    13→  Home as HomeIcon,
+    14→  X,
+    15→  SlidersHorizontal,
+    16→  Building2,
+    17→  RefreshCw,
+    18→  ArrowLeft,
+    19→  ArrowRight,
+    20→  RotateCcw,
+    21→  LayoutGrid,
+    22→  List,
+    23→  AlertCircle,
+    24→} from "lucide-react";
+    25→
+    26→import { useNav, type SearchFilters } from "@/lib/store";
+    27→import {
+    28→  formatPriceShort,
+    29→  formatNumber,
+    30→  PROPERTY_TYPE_LABELS,
+    31→  OPERATION_LABELS,
+    32→  SORT_OPTIONS,
+    33→} from "@/lib/format";
+    34→import {
+    35→  OPERATIONS,
+    36→  PROPERTY_TYPES,
+    37→  PRICE_RANGES_COP,
+    38→  RENT_RANGES_COP,
+    39→  AREA_RANGES,
+    40→  BEDROOM_OPTIONS,
+    41→  BATHROOM_OPTIONS,
+    42→  PARKING_OPTIONS,
+    43→  STRATUM_OPTIONS,
+    44→  AMENITY_CATEGORIES,
+    45→} from "@/lib/constants";
+    46→import { PropertyCard } from "@/components/property/property-card";
+    47→import { AmenityIcon, amenityLabel } from "@/components/property/amenity-icon";
+    48→import { Button } from "@/components/ui/button";
+    49→import { Input } from "@/components/ui/input";
+    50→import { Label } from "@/components/ui/label";
+    51→import { Badge } from "@/components/ui/badge";
+    52→import { Checkbox } from "@/components/ui/checkbox";
+    53→import { Switch } from "@/components/ui/switch";
+    54→import { Separator } from "@/components/ui/separator";
+    55→import { Skeleton } from "@/components/ui/skeleton";
+    56→import { Sheet, SheetContent, SheetTitle } from "@/components/ui/sheet";
+    57→import {
+    58→  Accordion,
+    59→  AccordionItem,
+    60→  AccordionTrigger,
+    61→  AccordionContent,
+    62→} from "@/components/ui/accordion";
+    63→import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+    64→import {
+    65→  Select,
+    66→  SelectTrigger,
+    67→  SelectValue,
+    68→  SelectContent,
+    69→  SelectItem,
+    70→} from "@/components/ui/select";
+    71→import type { PropertyListItem } from "@/lib/queries";
+    72→import { cn } from "@/lib/utils";
+    73→
+    74→/* ============================================================
+    75→   Types
+    76→   ============================================================ */
+    77→
+    78→interface CityItem {
+    79→  id: string;
+    80→  name: string;
+    81→  code: string;
+    82→  stateName: string;
+    83→  propertyCount: number;
+    84→}
+    85→interface NeighborhoodItem {
+    86→  id: string;
+    87→  name: string;
+    88→  zone: string;
+    89→  cityId: string;
+    90→  propertyCount: number;
+    91→}
+    92→interface AmenityItem {
+    93→  id: string;
+    94→  name: string;
+    95→  slug: string;
+    96→  icon: string;
+    97→  category: string;
+    98→}
+    99→
+   100→/* ============================================================
+   101→   Helpers
+   102→   ============================================================ */
+   103→
+   104→const PLURAL_TYPES: Record<string, string> = {
+   105→  CASA: "Casas",
+   106→  APARTAMENTO: "Apartamentos",
+   107→  APARTAESTUDIO: "Apartaestudios",
+   108→  OFICINA: "Oficinas",
+   109→  LOCAL: "Locales",
+   110→  BODEGA: "Bodegas",
+   111→  LOTE: "Lotes",
+   112→  FINCA: "Fincas",
+   113→  CAMPESTRE: "Casas campestres",
+   114→  PROYECTO: "Proyectos",
+   115→};
+   116→
+   117→function buildQuery(f: SearchFilters): string {
+   118→  const p = new URLSearchParams();
+   119→  if (f.q) p.set("q", f.q);
+   120→  if (f.operation) p.set("operation", f.operation);
+   121→  if (f.propertyType) p.set("propertyType", f.propertyType);
+   122→  if (f.cityId) p.set("cityId", f.cityId);
+   123→  if (f.neighborhoodId) p.set("neighborhoodId", f.neighborhoodId);
+   124→  if (f.priceMin != null) p.set("priceMin", String(f.priceMin));
+   125→  if (f.priceMax != null) p.set("priceMax", String(f.priceMax));
+   126→  if (f.areaMin != null) p.set("areaMin", String(f.areaMin));
+   127→  if (f.areaMax != null) p.set("areaMax", String(f.areaMax));
+   128→  if (f.bedrooms != null) p.set("bedrooms", String(f.bedrooms));
+   129→  if (f.bathrooms != null) p.set("bathrooms", String(f.bathrooms));
+   130→  if (f.parking != null) p.set("parking", String(f.parking));
+   131→  if (f.stratum != null) p.set("stratum", String(f.stratum));
+   132→  if (f.furnished) p.set("furnished", "1");
+   133→  if (f.petFriendly) p.set("petFriendly", "1");
+   134→  if (f.amenities?.length) p.set("amenities", f.amenities.join(","));
+   135→  if (f.sort) p.set("sort", f.sort);
+   136→  if (f.page) p.set("page", String(f.page));
+   137→  return p.toString();
+   138→}
+   139→
+   140→function buildTitle(f: SearchFilters, cityName?: string | null): string {
+   141→  let base = "Inmuebles";
+   142→  if (f.operation === "VENTA") {
+   143→    base = f.propertyType
+   144→      ? `${PLURAL_TYPES[f.propertyType] ?? "Inmuebles"} en venta`
+   145→      : "Inmuebles en venta";
+   146→  } else if (f.operation === "ARRIENDO") {
+   147→    base = f.propertyType
+   148→      ? `${PLURAL_TYPES[f.propertyType] ?? "Inmuebles"} en arriendo`
+   149→      : "Inmuebles en arriendo";
+   150→  } else if (f.operation === "TEMPORAL") {
+   151→    base = f.propertyType
+   152→      ? `${PLURAL_TYPES[f.propertyType] ?? "Inmuebles"} en arriendo temporal`
+   153→      : "Inmuebles en arriendo temporal";
+   154→  } else if (f.propertyType) {
+   155→    base = PLURAL_TYPES[f.propertyType] ?? "Inmuebles";
+   156→  }
+   157→  if (cityName) base += ` en ${cityName}`;
+   158→  if (f.q) base += ` — resultados para "${f.q}"`;
+   159→  return base;
+   160→}
+   161→
+   162→function countActiveFilters(f: SearchFilters): number {
+   163→  let n = 0;
+   164→  if (f.q) n++;
+   165→  if (f.operation) n++;
+   166→  if (f.propertyType) n++;
+   167→  if (f.cityId) n++;
+   168→  if (f.neighborhoodId) n++;
+   169→  if (f.priceMin != null || f.priceMax != null) n++;
+   170→  if (f.areaMin != null || f.areaMax != null) n++;
+   171→  if (f.bedrooms != null) n++;
+   172→  if (f.bathrooms != null) n++;
+   173→  if (f.parking != null) n++;
+   174→  if (f.stratum != null) n++;
+   175→  if (f.furnished) n++;
+   176→  if (f.petFriendly) n++;
+   177→  if (f.amenities?.length) n += f.amenities.length;
+   178→  return n;
+   179→}
+   180→
+   181→const isMaxUnbounded = (max?: number) =>
+   182→  max == null || max === 999_999_999_999 || max === 999_999_999 || max === 999999;
+   183→
+   184→const ACCORDION_DEFAULTS = [
+   185→  "location",
+   186→  "operation",
+   187→  "type",
+   188→  "price",
+   189→  "area",
+   190→  "rooms",
+   191→  "baths",
+   192→  "parking",
+   193→  "stratum",
+   194→  "features",
+   195→  "amenities",
+   196→];
+   197→
+   198→/* ============================================================
+   199→   Small UI primitives
+   200→   ============================================================ */
+   201→
+   202→function PillToggle({
+   203→  label,
+   204→  active,
+   205→  onClick,
+   206→  title,
+   207→}: {
+   208→  label: string;
+   209→  active: boolean;
+   210→  onClick: () => void;
+   211→  title?: string;
+   212→}) {
+   213→  return (
+   214→    <button
+   215→      type="button"
+   216→      onClick={onClick}
+   217→      title={title}
+   218→      className={cn(
+   219→        "h-9 min-w-[2.5rem] rounded-full border px-3 text-xs font-semibold transition-colors",
+   220→        active
+   221→          ? "border-blue-600 bg-blue-600 text-white shadow-sm"
+   222→          : "border-slate-200 bg-white text-slate-700 hover:border-blue-300 hover:bg-blue-50"
+   223→      )}
+   224→    >
+   225→      {label}
+   226→    </button>
+   227→  );
+   228→}
+   229→
+   230→function FilterSection({
+   231→  value,
+   232→  title,
+   233→  children,
+   234→}: {
+   235→  value: string;
+   236→  title: string;
+   237→  children: React.ReactNode;
+   238→}) {
+   239→  return (
+   240→    <AccordionItem value={value} className="border-slate-100">
+   241→      <AccordionTrigger className="py-3 text-sm font-semibold text-slate-800 hover:no-underline">
+   242→        {title}
+   243→      </AccordionTrigger>
+   244→      <AccordionContent>
+   245→        <div className="space-y-3 pb-1">{children}</div>
+   246→      </AccordionContent>
+   247→    </AccordionItem>
+   248→  );
+   249→}
+   250→
+   251→function FilterChip({
+   252→  label,
+   253→  onRemove,
+   254→}: {
+   255→  label: React.ReactNode;
+   256→  onRemove: () => void;
+   257→}) {
+   258→  return (
+   259→    <span className="inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-2.5 py-1 text-xs font-medium text-slate-700 shadow-sm">
+   260→      <span className="max-w-[200px] truncate">{label}</span>
+   261→      <button
+   262→        type="button"
+   263→        onClick={onRemove}
+   264→        className="-mr-0.5 ml-0.5 rounded-full p-0.5 text-slate-400 transition-colors hover:bg-slate-200 hover:text-slate-700"
+   265→        aria-label="Quitar filtro"
+   266→      >
+   267→        <X className="h-3 w-3" />
+   268→      </button>
+   269→    </span>
+   270→  );
+   271→}
+   272→
+   273→function SkeletonCard() {
+   274→  return (
+   275→    <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
+   276→      <Skeleton className="aspect-[4/3] w-full rounded-none" />
+   277→      <div className="space-y-3 p-4">
+   278→        <Skeleton className="h-5 w-24" />
+   279→        <Skeleton className="h-4 w-3/4" />
+   280→        <Skeleton className="h-3 w-1/2" />
+   281→        <div className="flex gap-1.5 pt-1">
+   282→          <Skeleton className="h-5 w-12 rounded-full" />
+   283→          <Skeleton className="h-5 w-12 rounded-full" />
+   284→        </div>
+   285→        <Skeleton className="h-px w-full" />
+   286→        <div className="flex justify-between">
+   287→          <Skeleton className="h-3 w-12" />
+   288→          <Skeleton className="h-3 w-16" />
+   289→        </div>
+   290→      </div>
+   291→    </div>
+   292→  );
+   293→}
+   294→
+   295→/**
+   296→ * useSyncedText — local text state that syncs from an external value
+   297→ * (without using setState synchronously in an effect) and debounces
+   298→ * commits back to a setter. Used for price (in millions) and area inputs.
+   299→ *
+   300→ * The external -> local sync happens during render using a ref guard,
+   301→ * which is the React-recommended pattern for "derived state from props".
+   302→ */
+   303→function useSyncedText(
+   304→  external: number | undefined,
+   305→  toText: (v: number | undefined) => string,
+   306→  commit: (v: number | undefined) => void,
+   307→  parse: (text: string) => number | undefined,
+   308→  debounceMs = 500
+   309→): [string, (t: string) => void] {
+   310→  const [text, setText] = useState(() => toText(external));
+   311→  const lastExternal = useRef(external);
+   312→
+   313→  // Sync from external during render (allowed pattern, no effect)
+   314→  if (external !== lastExternal.current) {
+   315→    lastExternal.current = external;
+   316→    setText(toText(external));
+   317→  }
+   318→
+   319→  // Debounced commit (setState only in setTimeout callback -> async)
+   320→  useEffect(() => {
+   321→    const t = setTimeout(() => {
+   322→      const parsed = parse(text);
+   323→      if (parsed !== lastExternal.current) {
+   324→        lastExternal.current = parsed;
+   325→        commit(parsed);
+   326→      }
+   327→    }, debounceMs);
+   328→    return () => clearTimeout(t);
+   329→  }, [text]);
+   330→
+   331→  return [text, setText];
+   332→}
+   333→
+   334→/* ============================================================
+   335→   Filter Sidebar (used in desktop sidebar + mobile Sheet)
+   336→   ============================================================ */
+   337→
+   338→interface FilterSidebarProps {
+   339→  cities: CityItem[];
+   340→  neighborhoods: NeighborhoodItem[];
+   341→  amenities: AmenityItem[];
+   342→  variant?: "desktop" | "mobile";
+   343→}
+   344→
+   345→function FilterSidebar({
+   346→  cities,
+   347→  neighborhoods,
+   348→  amenities,
+   349→  variant = "desktop",
+   350→}: FilterSidebarProps) {
+   351→  const { filters, setFilters, resetFilters, setFiltersOpen } = useNav();
+   352→
+   353→  // Local text state synced from external filters (price in millions COP, area in m²)
+   354→  const [priceMinText, setPriceMinText] = useSyncedText(
+   355→    filters.priceMin,
+   356→    (v) => (v ? String(v / 1_000_000) : ""),
+   357→    (v) => setFilters({ priceMin: v }),
+   358→    (text) => {
+   359→      if (text === "") return undefined;
+   360→      const num = parseFloat(text);
+   361→      return isNaN(num) ? undefined : num * 1_000_000;
+   362→    }
+   363→  );
+   364→  const [priceMaxText, setPriceMaxText] = useSyncedText(
+   365→    filters.priceMax,
+   366→    (v) => (v ? String(v / 1_000_000) : ""),
+   367→    (v) => setFilters({ priceMax: v }),
+   368→    (text) => {
+   369→      if (text === "") return undefined;
+   370→      const num = parseFloat(text);
+   371→      return isNaN(num) ? undefined : num * 1_000_000;
+   372→    }
+   373→  );
+   374→  const [areaMinText, setAreaMinText] = useSyncedText(
+   375→    filters.areaMin,
+   376→    (v) => (v ? String(v) : ""),
+   377→    (v) => setFilters({ areaMin: v }),
+   378→    (text) => {
+   379→      if (text === "") return undefined;
+   380→      const num = parseInt(text, 10);
+   381→      return isNaN(num) ? undefined : num;
+   382→    }
+   383→  );
+   384→  const [areaMaxText, setAreaMaxText] = useSyncedText(
+   385→    filters.areaMax,
+   386→    (v) => (v ? String(v) : ""),
+   387→    (v) => setFilters({ areaMax: v }),
+   388→    (text) => {
+   389→      if (text === "") return undefined;
+   390→      const num = parseInt(text, 10);
+   391→      return isNaN(num) ? undefined : num;
+   392→    }
+   393→  );
+   394→
+   395→  const isRent =
+   396→    filters.operation === "ARRIENDO" || filters.operation === "TEMPORAL";
+   397→  const priceRanges = isRent ? RENT_RANGES_COP : PRICE_RANGES_COP;
+   398→
+   399→  const selectedPriceRange = priceRanges.find(
+   400→    (r) =>
+   401→      r.min === filters.priceMin &&
+   402→      (isMaxUnbounded(filters.priceMax)
+   403→        ? isMaxUnbounded(r.max)
+   404→        : r.max === filters.priceMax)
+   405→  );
+   406→  const selectedAreaRange = AREA_RANGES.find(
+   407→    (r) =>
+   408→      r.min === filters.areaMin &&
+   409→      (r.max === 999999
+   410→        ? filters.areaMax == null || filters.areaMax === 999999
+   411→        : r.max === filters.areaMax)
+   412→  );
+   413→
+   414→  function togglePriceRange(r: (typeof priceRanges)[number]) {
+   415→    if (selectedPriceRange?.label === r.label) {
+   416→      setFilters({ priceMin: undefined, priceMax: undefined });
+   417→    } else {
+   418→      setFilters({
+   419→        priceMin: r.min > 0 ? r.min : undefined,
+   420→        priceMax: isMaxUnbounded(r.max) ? undefined : r.max,
+   421→      });
+   422→    }
+   423→  }
+   424→
+   425→  function toggleAreaRange(r: (typeof AREA_RANGES)[number]) {
+   426→    if (selectedAreaRange?.label === r.label) {
+   427→      setFilters({ areaMin: undefined, areaMax: undefined });
+   428→    } else {
+   429→      setFilters({
+   430→        areaMin: r.min > 0 ? r.min : undefined,
+   431→        areaMax: r.max === 999999 ? undefined : r.max,
+   432→      });
+   433→    }
+   434→  }
+   435→
+   436→  function togglePill(
+   437→    field: "bedrooms" | "bathrooms" | "parking" | "stratum",
+   438→    value: number
+   439→  ) {
+   440→    const current = filters[field] as number | undefined;
+   441→    if (current === value) {
+   442→      setFilters({ [field]: undefined } as Partial<SearchFilters>);
+   443→    } else {
+   444→      setFilters({ [field]: value } as Partial<SearchFilters>);
+   445→    }
+   446→  }
+   447→
+   448→  function toggleAmenity(slug: string) {
+   449→    const current = filters.amenities ?? [];
+   450→    if (current.includes(slug)) {
+   451→      setFilters({ amenities: current.filter((s) => s !== slug) });
+   452→    } else {
+   453→      setFilters({ amenities: [...current, slug] });
+   454→    }
+   455→  }
+   456→
+   457→  const amenitiesByCategory = AMENITY_CATEGORIES.map((cat) => ({
+   458→    ...cat,
+   459→    items: amenities.filter((a) => a.category === cat.key),
+   460→  })).filter((c) => c.items.length > 0);
+   461→
+   462→  const activeCount = countActiveFilters(filters);
+   463→
+   464→  const accordion = (
+   465→    <Accordion
+   466→      type="multiple"
+   467→      defaultValue={ACCORDION_DEFAULTS}
+   468→      className="w-full"
+   469→    >
+   470→      {/* Ubicación */}
+   471→      <FilterSection value="location" title="Ubicación">
+   472→        <div className="space-y-1.5">
+   473→          <Label className="text-xs font-medium text-slate-500">Ciudad</Label>
+   474→          <Select
+   475→            value={filters.cityId ?? "all"}
+   476→            onValueChange={(v) =>
+   477→              setFilters({
+   478→                cityId: v === "all" ? undefined : v,
+   479→                neighborhoodId: undefined,
+   480→              })
+   481→            }
+   482→          >
+   483→            <SelectTrigger className="w-full">
+   484→              <SelectValue placeholder="Todas las ciudades" />
+   485→            </SelectTrigger>
+   486→            <SelectContent>
+   487→              <SelectItem value="all">Todas las ciudades</SelectItem>
+   488→              {cities.map((c) => (
+   489→                <SelectItem key={c.id} value={c.id}>
+   490→                  {c.name} ({c.propertyCount})
+   491→                </SelectItem>
+   492→              ))}
+   493→            </SelectContent>
+   494→          </Select>
+   495→        </div>
+   496→
+   497→        <div className="space-y-1.5">
+   498→          <Label className="text-xs font-medium text-slate-500">Barrio</Label>
+   499→          <Select
+   500→            value={filters.neighborhoodId ?? "all"}
+   501→            onValueChange={(v) =>
+   502→              setFilters({ neighborhoodId: v === "all" ? undefined : v })
+   503→            }
+   504→            disabled={!filters.cityId}
+   505→          >
+   506→            <SelectTrigger className="w-full">
+   507→              <SelectValue
+   508→                placeholder={
+   509→                  !filters.cityId
+   510→                    ? "Selecciona ciudad primero"
+   511→                    : neighborhoods.length === 0
+   512→                    ? "Sin barrios disponibles"
+   513→                    : "Todos los barrios"
+   514→                }
+   515→              />
+   516→            </SelectTrigger>
+   517→            <SelectContent>
+   518→              <SelectItem value="all">Todos los barrios</SelectItem>
+   519→              {neighborhoods.map((n) => (
+   520→                <SelectItem key={n.id} value={n.id}>
+   521→                  {n.name} · {n.zone} ({n.propertyCount})
+   522→                </SelectItem>
+   523→              ))}
+   524→            </SelectContent>
+   525→          </Select>
+   526→        </div>
+   527→      </FilterSection>
+   528→
+   529→      {/* Operación */}
+   530→      <FilterSection value="operation" title="Operación">
+   531→        <RadioGroup
+   532→          value={filters.operation ?? "all"}
+   533→          onValueChange={(v) =>
+   534→            setFilters({ operation: v === "all" ? undefined : v })
+   535→          }
+   536→          className="gap-2"
+   537→        >
+   538→          <Label className="cursor-pointer text-sm font-normal text-slate-700">
+   539→            <RadioGroupItem value="all" /> Todas
+   540→          </Label>
+   541→          {OPERATIONS.map((op) => (
+   542→            <Label
+   543→              key={op.value}
+   544→              className="cursor-pointer text-sm font-normal text-slate-700"
+   545→            >
+   546→              <RadioGroupItem value={op.value} /> {op.label}
+   547→            </Label>
+   548→          ))}
+   549→        </RadioGroup>
+   550→      </FilterSection>
+   551→
+   552→      {/* Tipo de inmueble */}
+   553→      <FilterSection value="type" title="Tipo de inmueble">
+   554→        <RadioGroup
+   555→          value={filters.propertyType ?? "all"}
+   556→          onValueChange={(v) =>
+   557→            setFilters({ propertyType: v === "all" ? undefined : v })
+   558→          }
+   559→          className="gap-2"
+   560→        >
+   561→          <Label className="cursor-pointer text-sm font-normal text-slate-700">
+   562→            <RadioGroupItem value="all" /> Todos
+   563→          </Label>
+   564→          {PROPERTY_TYPES.map((t) => (
+   565→            <Label
+   566→              key={t.value}
+   567→              className="cursor-pointer text-sm font-normal text-slate-700"
+   568→            >
+   569→              <RadioGroupItem value={t.value} />
+   570→              <span className="text-base leading-none">{t.icon}</span>
+   571→              {t.label}
+   572→            </Label>
+   573→          ))}
+   574→        </RadioGroup>
+   575→      </FilterSection>
+   576→
+   577→      {/* Precio */}
+   578→      <FilterSection value="price" title={isRent ? "Canon mensual" : "Precio"}>
+   579→        <div className="space-y-1.5">
+   580→          {priceRanges.map((r) => (
+   581→            <Label
+   582→              key={r.label}
+   583→              className="cursor-pointer text-sm font-normal text-slate-700"
+   584→            >
+   585→              <Checkbox
+   586→                checked={selectedPriceRange?.label === r.label}
+   587→                onCheckedChange={() => togglePriceRange(r)}
+   588→              />
+   589→              {r.label}
+   590→            </Label>
+   591→          ))}
+   592→        </div>
+   593→        <Separator className="my-1" />
+   594→        <div className="grid grid-cols-2 gap-2">
+   595→          <div className="space-y-1">
+   596→            <Label className="text-[11px] font-medium text-slate-500">
+   597→              Mínimo (millones)
+   598→            </Label>
+   599→            <Input
+   600→              type="text"
+   601→              inputMode="decimal"
+   602→              value={priceMinText}
+   603→              onChange={(e) =>
+   604→                setPriceMinText(e.target.value.replace(/[^\d.]/g, ""))
+   605→              }
+   606→              placeholder="$ Min"
+   607→              className="h-8 text-xs"
+   608→            />
+   609→          </div>
+   610→          <div className="space-y-1">
+   611→            <Label className="text-[11px] font-medium text-slate-500">
+   612→              Máximo (millones)
+   613→            </Label>
+   614→            <Input
+   615→              type="text"
+   616→              inputMode="decimal"
+   617→              value={priceMaxText}
+   618→              onChange={(e) =>
+   619→                setPriceMaxText(e.target.value.replace(/[^\d.]/g, ""))
+   620→              }
+   621→              placeholder="$ Max"
+   622→              className="h-8 text-xs"
+   623→            />
+   624→          </div>
+   625→        </div>
+   626→      </FilterSection>
+   627→
+   628→      {/* Área */}
+   629→      <FilterSection value="area" title="Área (m²)">
+   630→        <div className="space-y-1.5">
+   631→          {AREA_RANGES.map((r) => (
+   632→            <Label
+   633→              key={r.label}
+   634→              className="cursor-pointer text-sm font-normal text-slate-700"
+   635→            >
+   636→              <Checkbox
+   637→                checked={selectedAreaRange?.label === r.label}
+   638→                onCheckedChange={() => toggleAreaRange(r)}
+   639→              />
+   640→              {r.label}
+   641→            </Label>
+   642→          ))}
+   643→        </div>
+   644→        <Separator className="my-1" />
+   645→        <div className="grid grid-cols-2 gap-2">
+   646→          <div className="space-y-1">
+   647→            <Label className="text-[11px] font-medium text-slate-500">
+   648→              Mínimo
+   649→            </Label>
+   650→            <Input
+   651→              type="text"
+   652→              inputMode="numeric"
+   653→              value={areaMinText}
+   654→              onChange={(e) =>
+   655→                setAreaMinText(e.target.value.replace(/[^\d]/g, ""))
+   656→              }
+   657→              placeholder="m²"
+   658→              className="h-8 text-xs"
+   659→            />
+   660→          </div>
+   661→          <div className="space-y-1">
+   662→            <Label className="text-[11px] font-medium text-slate-500">
+   663→              Máximo
+   664→            </Label>
+   665→            <Input
+   666→              type="text"
+   667→              inputMode="numeric"
+   668→              value={areaMaxText}
+   669→              onChange={(e) =>
+   670→                setAreaMaxText(e.target.value.replace(/[^\d]/g, ""))
+   671→              }
+   672→              placeholder="m²"
+   673→              className="h-8 text-xs"
+   674→            />
+   675→          </div>
+   676→        </div>
+   677→      </FilterSection>
+   678→
+   679→      {/* Habitaciones */}
+   680→      <FilterSection value="rooms" title="Habitaciones">
+   681→        <div className="flex flex-wrap gap-2">
+   682→          {BEDROOM_OPTIONS.map((n) => (
+   683→            <PillToggle
+   684→              key={n}
+   685→              label={`+${n}`}
+   686→              active={filters.bedrooms === n}
+   687→              onClick={() => togglePill("bedrooms", n)}
+   688→              title={`${n} o más`}
+   689→            />
+   690→          ))}
+   691→        </div>
+   692→      </FilterSection>
+   693→
+   694→      {/* Baños */}
+   695→      <FilterSection value="baths" title="Baños">
+   696→        <div className="flex flex-wrap gap-2">
+   697→          {BATHROOM_OPTIONS.map((n) => (
+   698→            <PillToggle
+   699→              key={n}
+   700→              label={`+${n}`}
+   701→              active={filters.bathrooms === n}
+   702→              onClick={() => togglePill("bathrooms", n)}
+   703→              title={`${n} o más`}
+   704→            />
+   705→          ))}
+   706→        </div>
+   707→      </FilterSection>
+   708→
+   709→      {/* Parqueaderos */}
+   710→      <FilterSection value="parking" title="Parqueaderos">
+   711→        <div className="flex flex-wrap gap-2">
+   712→          {PARKING_OPTIONS.map((n) => (
+   713→            <PillToggle
+   714→              key={n}
+   715→              label={`+${n}`}
+   716→              active={filters.parking === n}
+   717→              onClick={() => togglePill("parking", n)}
+   718→              title={`${n} o más`}
+   719→            />
+   720→          ))}
+   721→        </div>
+   722→      </FilterSection>
+   723→
+   724→      {/* Estrato */}
+   725→      <FilterSection value="stratum" title="Estrato">
+   726→        <div className="flex flex-wrap gap-2">
+   727→          {STRATUM_OPTIONS.map((n) => (
+   728→            <PillToggle
+   729→              key={n}
+   730→              label={String(n)}
+   731→              active={filters.stratum === n}
+   732→              onClick={() => togglePill("stratum", n)}
+   733→              title={`Estrato ${n}`}
+   734→            />
+   735→          ))}
+   736→        </div>
+   737→      </FilterSection>
+   738→
+   739→      {/* Características */}
+   740→      <FilterSection value="features" title="Características">
+   741→        <div className="space-y-3">
+   742→          <div className="flex items-center justify-between">
+   743→            <Label
+   744→              htmlFor="filter-furnished"
+   745→              className="cursor-pointer text-sm font-normal text-slate-700"
+   746→            >
+   747→              Amoblado
+   748→            </Label>
+   749→            <Switch
+   750→              id="filter-furnished"
+   751→              checked={!!filters.furnished}
+   752→              onCheckedChange={(c) =>
+   753→                setFilters({ furnished: c || undefined })
+   754→              }
+   755→            />
+   756→          </div>
+   757→          <div className="flex items-center justify-between">
+   758→            <Label
+   759→              htmlFor="filter-pet"
+   760→              className="cursor-pointer text-sm font-normal text-slate-700"
+   761→            >
+   762→              Pet friendly
+   763→            </Label>
+   764→            <Switch
+   765→              id="filter-pet"
+   766→              checked={!!filters.petFriendly}
+   767→              onCheckedChange={(c) =>
+   768→                setFilters({ petFriendly: c || undefined })
+   769→              }
+   770→            />
+   771→          </div>
+   772→        </div>
+   773→      </FilterSection>
+   774→
+   775→      {/* Amenidades */}
+   776→      {amenities.length > 0 && (
+   777→        <FilterSection value="amenities" title="Amenidades">
+   778→          <div className="space-y-4">
+   779→            {amenitiesByCategory.map((cat) => (
+   780→              <div key={cat.key} className="space-y-1.5">
+   781→                <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-400">
+   782→                  {cat.label}
+   783→                </p>
+   784→                {cat.items.map((a) => (
+   785→                  <Label
+   786→                    key={a.id}
+   787→                    className="cursor-pointer text-sm font-normal text-slate-700"
+   788→                  >
+   789→                    <Checkbox
+   790→                      checked={filters.amenities?.includes(a.slug) ?? false}
+   791→                      onCheckedChange={() => toggleAmenity(a.slug)}
+   792→                    />
+   793→                    <AmenityIcon
+   794→                      slug={a.slug}
+   795→                      className="h-3.5 w-3.5 text-blue-600"
+   796→                    />
+   797→                    {amenityLabel(a.slug)}
+   798→                  </Label>
+   799→                ))}
+   800→              </div>
+   801→            ))}
+   802→          </div>
+   803→        </FilterSection>
+   804→      )}
+   805→    </Accordion>
+   806→  );
+   807→
+   808→  if (variant === "mobile") {
+   809→    return (
+   810→      <div className="flex h-full flex-col">
+   811→        <div className="relative flex shrink-0 items-center justify-between border-b border-slate-100 px-4 py-3 pr-12">
+   812→          <div>
+   813→            <h2 className="text-base font-bold text-slate-900">Filtros</h2>
+   814→            <p className="text-xs text-slate-500">
+   815→              {activeCount > 0
+   816→                ? `${activeCount} filtro${activeCount === 1 ? "" : "s"} activo${
+   817→                    activeCount === 1 ? "" : "s"
+   818→                  }`
+   819→                : "Refina tu búsqueda"}
+   820→            </p>
+   821→          </div>
+   822→          {activeCount > 0 && (
+   823→            <Button
+   824→              variant="ghost"
+   825→              size="sm"
+   826→              onClick={resetFilters}
+   827→              className="absolute right-12 top-1/2 h-7 -translate-y-1/2 px-2 text-xs text-slate-500 hover:text-rose-600"
+   828→            >
+   829→              <RotateCcw className="mr-1 h-3.5 w-3.5" /> Limpiar
+   830→            </Button>
+   831→          )}
+   832→        </div>
+   833→        <div className="flex-1 overflow-y-auto scroll-brand px-4 py-4">
+   834→          {accordion}
+   835→        </div>
+   836→        <div className="flex shrink-0 gap-2 border-t border-slate-100 px-4 py-3">
+   837→          <Button
+   838→            variant="outline"
+   839→            className="flex-1"
+   840→            onClick={resetFilters}
+   841→            disabled={activeCount === 0}
+   842→          >
+   843→            <RotateCcw className="mr-1.5 h-4 w-4" /> Limpiar
+   844→          </Button>
+   845→          <Button className="flex-1" onClick={() => setFiltersOpen(false)}>
+   846→            Aplicar filtros
+   847→          </Button>
+   848→        </div>
+   849→      </div>
+   850→    );
+   851→  }
+   852→
+   853→  return <div className="space-y-2">{accordion}</div>;
+   854→}
+   855→
+   856→/* ============================================================
+   857→   Active Filter Chips row
+   858→   ============================================================ */
+   859→
+   860→function ActiveFilterChips({
+   861→  cities,
+   862→  neighborhoods,
+   863→}: {
+   864→  cities: CityItem[];
+   865→  neighborhoods: NeighborhoodItem[];
+   866→}) {
+   867→  const { filters, setFilters, resetFilters } = useNav();
+   868→
+   869→  const chips: { key: string; label: React.ReactNode; remove: () => void }[] =
+   870→    [];
+   871→
+   872→  if (filters.q) {
+   873→    chips.push({
+   874→      key: "q",
+   875→      label: <span>&ldquo;{filters.q}&rdquo;</span>,
+   876→      remove: () => setFilters({ q: undefined }),
+   877→    });
+   878→  }
+   879→  if (filters.operation) {
+   880→    chips.push({
+   881→      key: "op",
+   882→      label: OPERATION_LABELS[filters.operation] ?? filters.operation,
+   883→      remove: () => setFilters({ operation: undefined }),
+   884→    });
+   885→  }
+   886→  if (filters.propertyType) {
+   887→    chips.push({
+   888→      key: "type",
+   889→      label: PROPERTY_TYPE_LABELS[filters.propertyType] ?? filters.propertyType,
+   890→      remove: () => setFilters({ propertyType: undefined }),
+   891→    });
+   892→  }
+   893→  const cityName = cities.find((c) => c.id === filters.cityId)?.name;
+   894→  if (filters.cityId && cityName) {
+   895→    chips.push({
+   896→      key: "city",
+   897→      label: cityName,
+   898→      remove: () =>
+   899→        setFilters({ cityId: undefined, neighborhoodId: undefined }),
+   900→    });
+   901→  }
+   902→  const nbhName = neighborhoods.find(
+   903→    (n) => n.id === filters.neighborhoodId
+   904→  )?.name;
+   905→  if (filters.neighborhoodId && nbhName) {
+   906→    chips.push({
+   907→      key: "nbh",
+   908→      label: nbhName,
+   909→      remove: () => setFilters({ neighborhoodId: undefined }),
+   910→    });
+   911→  }
+   912→  if (filters.priceMin != null || filters.priceMax != null) {
+   913→    const min =
+   914→      filters.priceMin != null ? formatPriceShort(filters.priceMin) : "$0";
+   915→    const max =
+   916→      filters.priceMax != null ? formatPriceShort(filters.priceMax) : "∞";
+   917→    chips.push({
+   918→      key: "price",
+   919→      label: (
+   920→        <span>
+   921→          {min} – {max}
+   922→        </span>
+   923→      ),
+   924→      remove: () => setFilters({ priceMin: undefined, priceMax: undefined }),
+   925→    });
+   926→  }
+   927→  if (filters.areaMin != null || filters.areaMax != null) {
+   928→    const min = filters.areaMin != null ? `${filters.areaMin}` : "0";
+   929→    const max = filters.areaMax != null ? `${filters.areaMax}` : "∞";
+   930→    chips.push({
+   931→      key: "area",
+   932→      label: (
+   933→        <span>
+   934→          {min}–{max} m²
+   935→        </span>
+   936→      ),
+   937→      remove: () => setFilters({ areaMin: undefined, areaMax: undefined }),
+   938→    });
+   939→  }
+   940→  if (filters.bedrooms != null) {
+   941→    chips.push({
+   942→      key: "bed",
+   943→      label: `+${filters.bedrooms} hab`,
+   944→      remove: () => setFilters({ bedrooms: undefined }),
+   945→    });
+   946→  }
+   947→  if (filters.bathrooms != null) {
+   948→    chips.push({
+   949→      key: "bath",
+   950→      label: `+${filters.bathrooms} baños`,
+   951→      remove: () => setFilters({ bathrooms: undefined }),
+   952→    });
+   953→  }
+   954→  if (filters.parking != null) {
+   955→    chips.push({
+   956→      key: "park",
+   957→      label: `+${filters.parking} parqueaderos`,
+   958→      remove: () => setFilters({ parking: undefined }),
+   959→    });
+   960→  }
+   961→  if (filters.stratum != null) {
+   962→    chips.push({
+   963→      key: "str",
+   964→      label: `Estrato ${filters.stratum}`,
+   965→      remove: () => setFilters({ stratum: undefined }),
+   966→    });
+   967→  }
+   968→  if (filters.furnished) {
+   969→    chips.push({
+   970→      key: "fur",
+   971→      label: "Amoblado",
+   972→      remove: () => setFilters({ furnished: undefined }),
+   973→    });
+   974→  }
+   975→  if (filters.petFriendly) {
+   976→    chips.push({
+   977→      key: "pet",
+   978→      label: "Pet friendly",
+   979→      remove: () => setFilters({ petFriendly: undefined }),
+   980→    });
+   981→  }
+   982→  filters.amenities?.forEach((slug) => {
+   983→    chips.push({
+   984→      key: `am-${slug}`,
+   985→      label: amenityLabel(slug),
+   986→      remove: () =>
+   987→        setFilters({
+   988→          amenities: (filters.amenities ?? []).filter((s) => s !== slug),
+   989→        }),
+   990→    });
+   991→  });
+   992→
+   993→  if (chips.length === 0) return null;
+   994→
+   995→  return (
+   996→    <div className="flex flex-wrap items-center gap-2">
+   997→      <AnimatePresence mode="popLayout">
+   998→        {chips.map((c) => (
+   999→          <motion.div
+  1000→            key={c.key}
+  1001→            layout
+  1002→            initial={{ opacity: 0, scale: 0.85 }}
+  1003→            animate={{ opacity: 1, scale: 1 }}
+  1004→            exit={{ opacity: 0, scale: 0.85 }}
+  1005→            transition={{ duration: 0.18 }}
+  1006→          >
+  1007→            <FilterChip label={c.label} onRemove={c.remove} />
+  1008→          </motion.div>
+  1009→        ))}
+  1010→      </AnimatePresence>
+  1011→      {chips.length > 1 && (
+  1012→        <Button
+  1013→          variant="ghost"
+  1014→          size="sm"
+  1015→          onClick={resetFilters}
+  1016→          className="h-7 px-2 text-xs font-medium text-slate-500 hover:text-rose-600"
+  1017→        >
+  1018→          <X className="mr-1 h-3 w-3" /> Limpiar todo
+  1019→        </Button>
+  1020→      )}
+  1021→    </div>
+  1022→  );
+  1023→}
+  1024→
+  1025→/* ============================================================
+  1026→   Pagination
+  1027→   ============================================================ */
+  1028→
+  1029→function Pagination({
+  1030→  page,
+  1031→  pageSize,
+  1032→  total,
+  1033→  onPage,
+  1034→}: {
+  1035→  page: number;
+  1036→  pageSize: number;
+  1037→  total: number;
+  1038→  onPage: (p: number) => void;
+  1039→}) {
+  1040→  if (total === 0) return null;
+  1041→  const totalPages = Math.max(1, Math.ceil(total / pageSize));
+  1042→  const from = (page - 1) * pageSize + 1;
+  1043→  const to = Math.min(total, page * pageSize);
+  1044→
+  1045→  const pages: (number | "…")[] = [];
+  1046→  if (totalPages <= 7) {
+  1047→    for (let i = 1; i <= totalPages; i++) pages.push(i);
+  1048→  } else {
+  1049→    pages.push(1);
+  1050→    if (page > 3) pages.push("…");
+  1051→    const start = Math.max(2, page - 1);
+  1052→    const end = Math.min(totalPages - 1, page + 1);
+  1053→    for (let i = start; i <= end; i++) pages.push(i);
+  1054→    if (page < totalPages - 2) pages.push("…");
+  1055→    pages.push(totalPages);
+  1056→  }
+  1057→
+  1058→  return (
+  1059→    <div className="mt-8 flex flex-col items-center gap-4">
+  1060→      <p className="text-xs text-slate-500">
+  1061→        Mostrando{" "}
+  1062→        <span className="font-semibold text-slate-700">{from}</span>–
+  1063→        <span className="font-semibold text-slate-700">{to}</span> de{" "}
+  1064→        <span className="font-semibold text-slate-700">
+  1065→          {formatNumber(total)}
+  1066→        </span>{" "}
+  1067→        inmuebles
+  1068→      </p>
+  1069→      <div className="flex flex-wrap items-center justify-center gap-1">
+  1070→        <Button
+  1071→          variant="outline"
+  1072→          size="sm"
+  1073→          disabled={page <= 1}
+  1074→          onClick={() => onPage(page - 1)}
+  1075→          className="h-9"
+  1076→        >
+  1077→          <ArrowLeft className="h-4 w-4" />
+  1078→          <span className="hidden sm:inline">Anterior</span>
+  1079→        </Button>
+  1080→
+  1081→        {pages.map((p, i) =>
+  1082→          p === "…" ? (
+  1083→            <span key={`e-${i}`} className="px-2 text-sm text-slate-400">
+  1084→              …
+  1085→            </span>
+  1086→          ) : (
+  1087→            <Button
+  1088→              key={p}
+  1089→              variant={p === page ? "default" : "outline"}
+  1090→              size="sm"
+  1091→              onClick={() => onPage(p)}
+  1092→              className={cn(
+  1093→                "h-9 min-w-[2.25rem] px-2",
+  1094→                p === page && "shadow-sm"
+  1095→              )}
+  1096→            >
+  1097→              {p}
+  1098→            </Button>
+  1099→          )
+  1100→        )}
+  1101→
+  1102→        <Button
+  1103→          variant="outline"
+  1104→          size="sm"
+  1105→          disabled={page >= totalPages}
+  1106→          onClick={() => onPage(page + 1)}
+  1107→          className="h-9"
+  1108→        >
+  1109→          <span className="hidden sm:inline">Siguiente</span>
+  1110→          <ArrowRight className="h-4 w-4" />
+  1111→        </Button>
+  1112→      </div>
+  1113→    </div>
+  1114→  );
+  1115→}
+  1116→
+  1117→/* ============================================================
+  1118→   Empty + Error states
+  1119→   ============================================================ */
+  1120→
+  1121→function EmptyState({ onClear }: { onClear: () => void }) {
+  1122→  return (
+  1123→    <motion.div
+  1124→      initial={{ opacity: 0, y: 12 }}
+  1125→      animate={{ opacity: 1, y: 0 }}
+  1126→      transition={{ duration: 0.35 }}
+  1127→      className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-slate-200 bg-slate-50/60 px-6 py-16 text-center"
+  1128→    >
+  1129→      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-blue-100">
+  1130→        <Building2 className="h-8 w-8 text-blue-600" />
+  1131→      </div>
+  1132→      <h3 className="mt-4 text-lg font-bold text-slate-900">
+  1133→        No encontramos inmuebles con esos filtros
+  1134→      </h3>
+  1135→      <p className="mt-1.5 max-w-md text-sm text-slate-500">
+  1136→        Prueba ampliando la búsqueda: cambia la ciudad, el rango de precio o
+  1137→        quita algunos filtros para ver más opciones.
+  1138→      </p>
+  1139→      <Button onClick={onClear} className="mt-5">
+  1140→        <RotateCcw className="mr-1.5 h-4 w-4" /> Limpiar filtros
+  1141→      </Button>
+  1142→    </motion.div>
+  1143→  );
+  1144→}
+  1145→
+  1146→function ErrorState({ onRetry }: { onRetry: () => void }) {
+  1147→  return (
+  1148→    <div className="flex flex-col items-center justify-center rounded-2xl border border-rose-200 bg-rose-50/60 px-6 py-16 text-center">
+  1149→      <div className="flex h-16 w-16 items-center justify-center rounded-full bg-rose-100">
+  1150→        <AlertCircle className="h-8 w-8 text-rose-600" />
+  1151→      </div>
+  1152→      <h3 className="mt-4 text-lg font-bold text-slate-900">
+  1153→        No pudimos cargar los inmuebles
+  1154→      </h3>
+  1155→      <p className="mt-1.5 text-sm text-slate-500">
+  1156→        Ocurrió un error al consultar el servidor. Inténtalo nuevamente.
+  1157→      </p>
+  1158→      <Button
+  1159→        onClick={onRetry}
+  1160→        variant="outline"
+  1161→        className="mt-5 border-rose-300 text-rose-700 hover:bg-rose-100"
+  1162→      >
+  1163→        <RefreshCw className="mr-1.5 h-4 w-4" /> Reintentar
+  1164→      </Button>
+  1165→    </div>
+  1166→  );
+  1167→}
+  1168→
+  1169→/* ============================================================
+  1170→   Main ResultsView
+  1171→   ============================================================ */
+  1172→
+  1173→interface FetchState {
+  1174→  key: string;
+  1175→  items: PropertyListItem[];
+  1176→  total: number;
+  1177→  page: number;
+  1178→  pageSize: number;
+  1179→  error: string | null;
+  1180→}
+  1181→
+  1182→const EMPTY_FETCH: FetchState = {
+  1183→  key: "",
+  1184→  items: [],
+  1185→  total: 0,
+  1186→  page: 1,
+  1187→  pageSize: 12,
+  1188→  error: null,
+  1189→};
+  1190→
+  1191→export function ResultsView() {
+  1192→  const {
+  1193→    filters,
+  1194→    setFilters,
+  1195→    resetFilters,
+  1196→    isFiltersOpen,
+  1197→    setFiltersOpen,
+  1198→    goHome,
+  1199→  } = useNav();
+  1200→
+  1201→  // Sidebar data
+  1202→  const [cities, setCities] = useState<CityItem[]>([]);
+  1203→  const [allNeighborhoods, setAllNeighborhoods] = useState<NeighborhoodItem[]>(
+  1204→    []
+  1205→  );
+  1206→  const [amenities, setAmenities] = useState<AmenityItem[]>([]);
+  1207→
+  1208→  // Results state — single object updated only via async fetch callbacks
+  1209→  // (avoids synchronous setState in effect; loading is derived by key compare)
+  1210→  const [fetch, setFetch] = useState<FetchState>(EMPTY_FETCH);
+  1211→  const [reloadKey, setReloadKey] = useState(0);
+  1212→
+  1213→  // Scroll anchor for "scroll to top on page change"
+  1214→  const topRef = useRef<HTMLDivElement>(null);
+  1215→
+  1216→  // Fetch cities, neighborhoods (all), amenities once on mount
+  1217→  useEffect(() => {
+  1218→    let alive = true;
+  1219→    fetch("/api/cities")
+  1220→      .then((r) => r.json())
+  1221→      .then((d) => alive && setCities(d.items ?? []))
+  1222→      .catch(() => {});
+  1223→    fetch("/api/neighborhoods")
+  1224→      .then((r) => r.json())
+  1225→      .then((d) => alive && setAllNeighborhoods(d.items ?? []))
+  1226→      .catch(() => {});
+  1227→    fetch("/api/amenities")
+  1228→      .then((r) => r.json())
+  1229→      .then((d) => alive && setAmenities(d.items ?? []))
+  1230→      .catch(() => {});
+  1231→    return () => {
+  1232→      alive = false;
+  1233→    };
+  1234→  }, []);
+  1235→
+  1236→  // Neighborhoods visible to the current city (client-side filter)
+  1237→  const neighborhoods = useMemo(
+  1238→    () =>
+  1239→      filters.cityId
+  1240→        ? allNeighborhoods.filter((n) => n.cityId === filters.cityId)
+  1241→        : [],
+  1242→    [allNeighborhoods, filters.cityId]
+  1243→  );
+  1244→
+  1245→  // Debounce text search (q) ~300ms; other filters apply immediately
+  1246→  const [debouncedQ, setDebouncedQ] = useState(filters.q ?? "");
+  1247→  useEffect(() => {
+  1248→    const t = setTimeout(() => setDebouncedQ(filters.q ?? ""), 300);
+  1249→    return () => clearTimeout(t);
+  1250→  }, [filters.q]);
+  1251→
+  1252→  const effectiveFilters = useMemo<SearchFilters>(
+  1253→    () => ({ ...filters, q: debouncedQ }),
+  1254→    [filters, debouncedQ]
+  1255→  );
+  1256→  const queryKey = useMemo(
+  1257→    () => buildQuery(effectiveFilters),
+  1258→    [effectiveFilters]
+  1259→  );
+  1260→
+  1261→  // Fetch properties whenever the effective filters or reload key change.
+  1262→  // setState calls happen only inside async callbacks (Promise.then / catch),
+  1263→  // so this effect body itself does not synchronously call setState.
+  1264→  const fetchKey = `${queryKey}#${reloadKey}`;
+  1265→  useEffect(() => {
+  1266→    const ctrl = new AbortController();
+  1267→    fetch(`/api/properties?${queryKey}`, { signal: ctrl.signal })
+  1268→      .then((r) => {
+  1269→        if (!r.ok) throw new Error(`Error ${r.status}`);
+  1270→        return r.json();
+  1271→      })
+  1272→      .then((d) => {
+  1273→        if (ctrl.signal.aborted) return;
+  1274→        setFetch({
+  1275→          key: fetchKey,
+  1276→          items: d.items ?? [],
+  1277→          total: d.total ?? 0,
+  1278→          page: d.page ?? 1,
+  1279→          pageSize: d.pageSize ?? 12,
+  1280→          error: null,
+  1281→        });
+  1282→      })
+  1283→      .catch((e) => {
+  1284→        if (e?.name === "AbortError") return;
+  1285→        if (ctrl.signal.aborted) return;
+  1286→        setFetch({
+  1287→          key: fetchKey,
+  1288→          items: [],
+  1289→          total: 0,
+  1290→          page: 1,
+  1291→          pageSize: 12,
+  1292→          error: e?.message || "Error al cargar inmuebles",
+  1293→        });
+  1294→      });
+  1295→    return () => ctrl.abort();
+  1296→  }, [queryKey, reloadKey]);
+  1297→
+  1298→  // Derived loading flag — true while a request is in-flight for the current key
+  1299→  const loading = fetch.key !== fetchKey;
+  1300→  const items = fetch.items;
+  1301→  const total = fetch.total;
+  1302→  const page = fetch.page;
+  1303→  const pageSize = fetch.pageSize;
+  1304→  const error = fetch.error;
+  1305→
+  1306→  // Smooth scroll to top of results area when page changes
+  1307→  useEffect(() => {
+  1308→    if (topRef.current) {
+  1309→      topRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+  1310→    }
+  1311→  }, [filters.page]);
+  1312→
+  1313→  const cityName = cities.find((c) => c.id === filters.cityId)?.name ?? null;
+  1314→  const title = buildTitle(filters, cityName);
+  1315→  const currentSortLabel =
+  1316→    SORT_OPTIONS.find((s) => s.value === (filters.sort ?? "recientes"))
+  1317→      ?.label ?? "Más recientes";
+  1318→  const activeCount = countActiveFilters(filters);
+  1319→  const isInitialLoading = loading && items.length === 0;
+  1320→
+  1321→  return (
+  1322→    <div className="min-h-screen bg-slate-50/40">
+  1323→      {/* Breadcrumb bar */}
+  1324→      <div className="border-b border-slate-100 bg-white">
+  1325→        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+  1326→          <nav className="flex items-center gap-1 py-3 text-xs text-slate-500">
+  1327→            <button
+  1328→              onClick={goHome}
+  1329→              className="flex items-center gap-1 transition-colors hover:text-blue-600"
+  1330→            >
+  1331→              <HomeIcon className="h-3.5 w-3.5" /> Inicio
+  1332→            </button>
+  1333→            <ChevronRight className="h-3 w-3 text-slate-300" />
+  1334→            <button
+  1335→              onClick={() => resetFilters()}
+  1336→              className="transition-colors hover:text-blue-600"
+  1337→            >
+  1338→              Inmuebles
+  1339→            </button>
+  1340→            {filters.operation && (
+  1341→              <>
+  1342→                <ChevronRight className="h-3 w-3 text-slate-300" />
+  1343→                <span className="text-slate-700">
+  1344→                  {OPERATION_LABELS[filters.operation] ?? filters.operation}
+  1345→                </span>
+  1346→              </>
+  1347→            )}
+  1348→            {cityName && (
+  1349→              <>
+  1350→                <ChevronRight className="h-3 w-3 text-slate-300" />
+  1351→                <span className="text-slate-700">{cityName}</span>
+  1352→              </>
+  1353→            )}
+  1354→          </nav>
+  1355→        </div>
+  1356→      </div>
+  1357→
+  1358→      {/* Sticky header row (below the main Header) */}
+  1359→      <div className="sticky top-16 z-30 border-b border-slate-100 bg-white/95 backdrop-blur">
+  1360→        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+  1361→          <div className="flex flex-col gap-2 py-3 md:flex-row md:items-center md:justify-between">
+  1362→            <div className="min-w-0">
+  1363→              <h1 className="clamp-1 text-lg font-bold tracking-tight text-slate-900 sm:text-xl">
+  1364→                {title}
+  1365→              </h1>
+  1366→              <div className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-slate-500">
+  1367→                <span>
+  1368→                  <span className="font-semibold text-slate-700">
+  1369→                    {formatNumber(total)}
+  1370→                  </span>{" "}
+  1371→                  inmueble{total === 1 ? "" : "s"} encontrado
+  1372→                  {total === 1 ? "" : "s"}
+  1373→                </span>
+  1374→                <span className="hidden text-slate-300 sm:inline">·</span>
+  1375→                <span className="hidden sm:inline">
+  1376→                  Ordenados por:{" "}
+  1377→                  <span className="font-medium text-slate-600">
+  1378→                    {currentSortLabel}
+  1379→                  </span>
+  1380→                </span>
+  1381→              </div>
+  1382→            </div>
+  1383→
+  1384→            <div className="flex items-center gap-2">
+  1385→              <span className="hidden text-xs text-slate-500 sm:inline">
+  1386→                Ordenar:
+  1387→              </span>
+  1388→              <Select
+  1389→                value={filters.sort ?? "recientes"}
+  1390→                onValueChange={(v) => setFilters({ sort: v })}
+  1391→              >
+  1392→                <SelectTrigger size="sm" className="w-[170px] sm:w-[200px]">
+  1393→                  <SelectValue />
+  1394→                </SelectTrigger>
+  1395→                <SelectContent>
+  1396→                  {SORT_OPTIONS.map((s) => (
+  1397→                    <SelectItem key={s.value} value={s.value}>
+  1398→                      {s.label}
+  1399→                    </SelectItem>
+  1400→                  ))}
+  1401→                </SelectContent>
+  1402→              </Select>
+  1403→
+  1404→              <Button
+  1405→                variant="outline"
+  1406→                size="sm"
+  1407→                onClick={() => setFiltersOpen(true)}
+  1408→                className="lg:hidden"
+  1409→              >
+  1410→                <SlidersHorizontal className="mr-1.5 h-4 w-4" />
+  1411→                Filtros
+  1412→                {activeCount > 0 && (
+  1413→                  <span className="ml-1.5 inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-blue-600 px-1 text-[11px] font-bold text-white">
+  1414→                    {activeCount}
+  1415→                  </span>
+  1416→                )}
+  1417→              </Button>
+  1418→
+  1419→              <div className="hidden items-center rounded-md border border-slate-200 md:flex">
+  1420→                <Button
+  1421→                  variant="ghost"
+  1422→                  size="sm"
+  1423→                  className="h-8 rounded-r-none bg-blue-50 text-blue-700"
+  1424→                  title="Vista de cuadrícula"
+  1425→                >
+  1426→                  <LayoutGrid className="h-4 w-4" />
+  1427→                </Button>
+  1428→                <Button
+  1429→                  variant="ghost"
+  1430→                  size="sm"
+  1431→                  className="h-8 rounded-l-none text-slate-400"
+  1432→                  title="Vista de lista (próximamente)"
+  1433→                  disabled
+  1434→                >
+  1435→                  <List className="h-4 w-4" />
+  1436→                </Button>
+  1437→              </div>
+  1438→            </div>
+  1439→          </div>
+  1440→        </div>
+  1441→      </div>
+  1442→
+  1443→      {/* Main grid layout */}
+  1444→      <div className="mx-auto max-w-7xl gap-6 px-4 py-6 sm:px-6 lg:grid lg:grid-cols-[280px_1fr] lg:px-8">
+  1445→        {/* Desktop sidebar */}
+  1446→        <aside className="hidden lg:block">
+  1447→          <div className="sticky top-32 flex max-h-[calc(100vh-9rem)] flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+  1448→            <div className="flex shrink-0 items-center justify-between border-b border-slate-100 px-4 py-3">
+  1449→              <h2 className="text-sm font-bold text-slate-900">Filtros</h2>
+  1450→              {activeCount > 0 ? (
+  1451→                <Badge
+  1452→                  variant="secondary"
+  1453→                  className="bg-blue-100 text-blue-700 hover:bg-blue-100"
+  1454→                >
+  1455→                  {activeCount} activo{activeCount === 1 ? "" : "s"}
+  1456→                </Badge>
+  1457→              ) : (
+  1458→                <span className="text-xs text-slate-400">Sin filtros</span>
+  1459→              )}
+  1460→            </div>
+  1461→            <div className="flex-1 overflow-y-auto scroll-brand p-4">
+  1462→              <FilterSidebar
+  1463→                cities={cities}
+  1464→                neighborhoods={neighborhoods}
+  1465→                amenities={amenities}
+  1466→                variant="desktop"
+  1467→              />
+  1468→            </div>
+  1469→            <div className="shrink-0 border-t border-slate-100 p-3">
+  1470→              <Button
+  1471→                variant="outline"
+  1472→                size="sm"
+  1473→                className="w-full"
+  1474→                onClick={resetFilters}
+  1475→                disabled={activeCount === 0}
+  1476→              >
+  1477→                <RotateCcw className="mr-1.5 h-3.5 w-3.5" /> Limpiar filtros
+  1478→              </Button>
+  1479→            </div>
+  1480→          </div>
+  1481→        </aside>
+  1482→
+  1483→        {/* Right content */}
+  1484→        <div ref={topRef} className="min-w-0">
+  1485→          {/* Active filter chips */}
+  1486→          <div className="mb-4 min-h-[1.5rem]">
+  1487→            <ActiveFilterChips
+  1488→              cities={cities}
+  1489→              neighborhoods={neighborhoods}
+  1490→            />
+  1491→          </div>
+  1492→
+  1493→          {/* Results grid */}
+  1494→          {error ? (
+  1495→            <ErrorState onRetry={() => setReloadKey((k) => k + 1)} />
+  1496→          ) : isInitialLoading ? (
+  1497→            <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 xl:grid-cols-3">
+  1498→              {Array.from({ length: 9 }).map((_, i) => (
+  1499→                <SkeletonCard key={i} />
+  1500→              ))}
+  1501→            </div>
+  1502→          ) : items.length === 0 ? (
+  1503→            <EmptyState onClear={resetFilters} />
+  1504→          ) : (
+  1505→            <>
+  1506→              <div
+  1507→                className={cn(
+  1508→                  "grid grid-cols-1 gap-5 transition-opacity duration-200 sm:grid-cols-2 xl:grid-cols-3",
+  1509→                  loading && "pointer-events-none opacity-60"
+  1510→                )}
+  1511→              >
+  1512→                {items.map((p, i) => (
+  1513→                  <PropertyCard key={p.id} property={p} index={i} />
+  1514→                ))}
+  1515→              </div>
+  1516→
+  1517→              <Pagination
+  1518→                page={page}
+  1519→                pageSize={pageSize}
+  1520→                total={total}
+  1521→                onPage={(p) => setFilters({ page: p })}
+  1522→              />
+  1523→            </>
+  1524→          )}
+  1525→        </div>
+  1526→      </div>
+  1527→
+  1528→      {/* Mobile filter Sheet */}
+  1529→      <Sheet open={isFiltersOpen} onOpenChange={setFiltersOpen}>
+  1530→        <SheetContent
+  1531→          side="left"
+  1532→          className="flex w-[90%] max-w-md flex-col gap-0 p-0"
+  1533→        >
+  1534→          <SheetTitle className="sr-only">Filtros de búsqueda</SheetTitle>
+  1535→          <FilterSidebar
+  1536→            cities={cities}
+  1537→            neighborhoods={neighborhoods}
+  1538→            amenities={amenities}
+  1539→            variant="mobile"
+  1540→          />
+  1541→        </SheetContent>
+  1542→      </Sheet>
+  1543→    </div>
+  1544→  );
+  1545→}
+  1546→

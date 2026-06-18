@@ -1,0 +1,255 @@
+// =====================================================================
+// InmoPro - Professional Real Estate Platform
+// Prisma Schema (SQLite-compatible for dev; production-ready design)
+// =====================================================================
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------
+// GEOGRAPHY
+// ---------------------------------------------------------------------
+
+model Country {
+  id        String  @id @default(cuid())
+  name      String  @unique
+  code      String  @unique // ISO code (CO, US, ...)
+  createdAt DateTime @default(now())
+  states    State[]
+}
+
+model State {
+  id        String   @id @default(cuid())
+  name      String
+  code      String // department code (ANT, BQG...)
+  countryId String
+  country   Country @relation(fields: [countryId], references: [id], onDelete: Cascade)
+  cities    City[]
+  createdAt DateTime @default(now())
+
+  @@unique([countryId, name])
+  @@index([countryId])
+}
+
+model City {
+  id            String         @id @default(cuid())
+  name          String
+  code          String // short code for property codes (MED, BOG, BQ...)
+  stateId       String
+  state         State          @relation(fields: [stateId], references: [id], onDelete: Cascade)
+  latitude      Float?
+  longitude     Float?
+  imageUrl      String?
+  neighborhoods Neighborhood[]
+  properties    Property[]
+  createdAt     DateTime       @default(now())
+
+  @@unique([stateId, name])
+  @@index([stateId])
+}
+
+model Neighborhood {
+  id          String     @id @default(cuid())
+  name        String
+  cityId      String
+  city        City       @relation(fields: [cityId], references: [id], onDelete: Cascade)
+  zone        String? // zona (norte, sur, centro...)
+  properties  Property[]
+  createdAt   DateTime   @default(now())
+
+  @@unique([cityId, name])
+  @@index([cityId])
+}
+
+// ---------------------------------------------------------------------
+// USERS / AGENCIES / AGENTS
+// ---------------------------------------------------------------------
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  phone     String?
+  role      String   @default("AGENT") // ADMIN | AGENCY_ADMIN | AGENT | CLIENT
+  agencyId  String?
+  agency    Agency?  @relation(fields: [agencyId], references: [id])
+  password  String // hashed
+  avatar    String?
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  leads     Lead[]
+  properties Property[] @relation("AgentProperties")
+  favorites Favorite[]
+}
+
+model Agency {
+  id          String     @id @default(cuid())
+  name        String
+  logoUrl     String?
+  phone       String?
+  email       String?
+  website     String?
+  description String?
+  createdAt   DateTime   @default(now())
+  agents      User[]
+  properties  Property[]
+}
+
+// ---------------------------------------------------------------------
+// AMENITY CATALOG
+// ---------------------------------------------------------------------
+
+model Amenity {
+  id        String   @id @default(cuid())
+  name      String   @unique
+  slug      String   @unique
+  icon      String? // lucide icon name
+  category  String   @default("general") // general | security | leisure | services
+  createdAt DateTime @default(now())
+}
+
+// ---------------------------------------------------------------------
+// PROPERTY (core entity)
+// ---------------------------------------------------------------------
+
+model Property {
+  id              String   @id @default(cuid())
+  code            String   @unique // INV-2026-MED-000001
+  title           String
+  slug            String   @unique
+  shortDesc       String
+  description     String
+
+  // Operation & type
+  operation       String // VENTA | ARRIENDO | TEMPORAL
+  propertyType    String // CASA | APARTAMENTO | APARTAESTUDIO | OFICINA | LOCAL | BODEGA | LOTE | FINCA | CAMPESTRE | PROYECTO
+  status          String   @default("DISPONIBLE") // DISPONIBLE | RESERVADO | VENDIDO | ARRENDADO | BORRADOR
+  published       Boolean  @default(true)
+  featured        Boolean  @default(false)
+
+  // Pricing
+  price           Float
+  currency        String   @default("COP") // COP | USD
+  adminFee        Float?
+  pricePerM2      Float?
+
+  // Location
+  countryId       String?
+  stateId         String?
+  cityId          String?
+  city            City?    @relation(fields: [cityId], references: [id])
+  neighborhoodId  String?
+  neighborhood    Neighborhood? @relation(fields: [neighborhoodId], references: [id])
+  address         String
+  latitude        Float?
+  longitude       Float?
+
+  // Features
+  area            Float
+  builtArea       Float?
+  bedrooms        Int?
+  bathrooms       Int?
+  parking         Int?
+  stratum         Int? // estrato socioeconomico 1-6
+  ageYears        Int? // antiguedad en anos
+  floor           Int? // piso en el que esta
+  floorsTotal     Int?
+  furnished       Boolean  @default(false)
+  petFriendly     Boolean  @default(false)
+
+  // Amenities stored as JSON array of slugs (SQLite-friendly)
+  amenities       String   @default("[]") // JSON: ["piscina","gimnasio",...]
+
+  // Media
+  images          String   @default("[]") // JSON array of {url, caption, isMain}
+
+  // Ownership / CRM
+  agencyId        String?
+  agency          Agency?  @relation(fields: [agencyId], references: [id])
+  agentId         String?
+  agent           User?    @relation("AgentProperties", fields: [agentId], references: [id])
+
+  // SEO
+  metaTitle       String?
+  metaDescription String?
+  views           Int      @default(0)
+  favorites       Favorite[]
+  leads           Lead[]
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([cityId])
+  @@index([neighborhoodId])
+  @@index([operation])
+  @@index([propertyType])
+  @@index([status])
+  @@index([published])
+  @@index([featured])
+  @@index([price])
+  @@index([createdAt])
+}
+
+// ---------------------------------------------------------------------
+// LEADS / CRM
+// ---------------------------------------------------------------------
+
+model Lead {
+  id          String   @id @default(cuid())
+  name        String
+  email       String
+  phone       String
+  message     String?
+  source      String   @default("WEB") // WEB | WHATSAPP | PHONE | IMPORT | CRM
+  status      String   @default("NUEVO") // NUEVO | CONTACTADO | INTERESADO | VISITA | NEGOCIACION | CERRADO
+  propertyId  String?
+  property    Property? @relation(fields: [propertyId], references: [id], onDelete: SetNull)
+  propertyCode String? // snapshot del codigo consultado
+  agentId     String?
+  agent       User?    @relation(fields: [agentId], references: [id])
+  notes       String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([status])
+  @@index([propertyId])
+  @@index([createdAt])
+}
+
+model Favorite {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  propertyId String
+  property   Property @relation(fields: [propertyId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+
+  @@unique([userId, propertyId])
+}
+
+model SavedSearch {
+  id        String   @id @default(cuid())
+  userId    String
+  name      String
+  filters   String // JSON
+  createdAt DateTime @default(now())
+}
+
+model AuditLog {
+  id        String   @id @default(cuid())
+  action    String // CREATE | UPDATE | DELETE | PUBLISH | UNPUBLISH
+  entity    String // Property | Lead | User...
+  entityId  String?
+  userId    String?
+  metadata  String? // JSON
+  createdAt DateTime @default(now())
+
+  @@index([entity, entityId])
+  @@index([createdAt])
+}
