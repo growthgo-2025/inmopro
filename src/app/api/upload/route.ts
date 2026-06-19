@@ -17,6 +17,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import sharp from "sharp";
 import { getAdminClient, STORAGE_BUCKET, IMAGE_VARIANTS, generateImagePath } from "@/lib/storage";
+import { requireAdmin } from "@/lib/admin-auth";
 
 export const runtime = "nodejs"; // sharp requiere nodejs runtime
 export const maxDuration = 30; // 30s para procesar imágenes grandes
@@ -25,6 +26,8 @@ const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const ALLOWED_MIME = ["image/jpeg", "image/png", "image/webp", "image/avif"];
 
 export async function POST(req: NextRequest) {
+  const denied = await requireAdmin();
+  if (denied) return denied;
   try {
     const formData = await req.formData();
     const file = formData.get("file");
@@ -139,6 +142,8 @@ export async function POST(req: NextRequest) {
 
 // Delete endpoint: /api/upload?paths=path1,path2,path3
 export async function DELETE(req: NextRequest) {
+  const denied = await requireAdmin();
+  if (denied) return denied;
   try {
     const { searchParams } = new URL(req.url);
     const pathsParam = searchParams.get("paths");

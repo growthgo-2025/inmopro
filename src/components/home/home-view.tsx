@@ -271,11 +271,6 @@ export function HomeView() {
         onViewAll={() => openResults()}
       />
 
-      <CtaBannerSection
-        onPublish={() => setView("upload")}
-        onContact={() => openAdmin("dashboard")}
-      />
-
       <SeoSection
         onSearch={(v) => openResults({ q: v })}
       />
@@ -732,70 +727,6 @@ function PropertiesGrid({
         <PropertyCard key={p.id} property={p} index={i} />
       ))}
     </div>
-  );
-}
-
-/* ================================================================== */
-/*  6. CTA banner                                                      */
-/* ================================================================== */
-
-function CtaBannerSection({
-  onPublish,
-  onContact,
-}: {
-  onPublish: () => void;
-  onContact: () => void;
-}) {
-  return (
-    <section className="bg-white py-16">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <motion.div
-          initial={{ opacity: 0, y: 24 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.5 }}
-          className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#6B5D5A] to-[#8A6F4F] px-6 py-12 text-center shadow-xl sm:px-12 sm:py-16"
-        >
-          {/* decorative blobs */}
-          <div className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-[#E0B589]/15 blur-2xl" />
-          <div className="pointer-events-none absolute -bottom-20 -left-10 h-56 w-56 rounded-full bg-[#B08968]/20 blur-2xl" />
-
-          <div className="relative mx-auto max-w-3xl">
-            <div className="inline-flex items-center gap-2 rounded-full bg-[#F5EBE0]/20 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-[#F5EBE0] backdrop-blur-sm">
-              <Building2 className="h-3.5 w-3.5" />
-              Para asesores e inmobiliarias
-            </div>
-            <h2 className="h2-section mt-4 text-white">
-              ¿Eres asesor o inmobiliaria? Publica tus inmuebles
-            </h2>
-            <p className="text-body-lg mt-3 text-[#F5EBE0]/90">
-              Usa nuestro asistente guiado paso a paso. Genera códigos únicos
-              automáticos y llega a miles de clientes.
-            </p>
-
-            <div className="mt-7 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <Button
-                size="lg"
-                onClick={onPublish}
-                className="h-11 bg-white px-6 text-[#9A7558] hover:bg-[#FAF3EC]"
-              >
-                <Building2 className="mr-2 h-4 w-4" />
-                Publicar inmueble
-              </Button>
-              <Button
-                size="lg"
-                variant="outline"
-                onClick={onContact}
-                className="h-11 border-[#F5EBE0]/60 bg-transparent px-6 text-white hover:bg-[#F5EBE0]/10 hover:text-white"
-              >
-                <Phone className="mr-2 h-4 w-4" />
-                Hablar con asesor
-              </Button>
-            </div>
-          </div>
-        </motion.div>
-      </div>
-    </section>
   );
 }
 

@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   Building2, Menu, Search, Heart, ChevronDown, Plus, LayoutDashboard,
-  Users, FileSpreadsheet, X, Phone,
+  Users, FileSpreadsheet, X, Phone, ShieldCheck, LogOut,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -12,6 +12,7 @@ import {
 } from "@/components/ui/navigation-menu";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle, SheetHeader } from "@/components/ui/sheet";
 import { useNav } from "@/lib/store";
+import { useAdminAuth } from "@/lib/auth-store";
 import { cn } from "@/lib/utils";
 
 const PROPERTY_TYPES = [
@@ -27,6 +28,7 @@ const PROPERTY_TYPES = [
 
 export function Header() {
   const { goHome, openResults, openAdmin, setView } = useNav();
+  const { isAdmin, openLogin, logout } = useAdminAuth();
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -145,40 +147,51 @@ export function Header() {
               </button>
             </NavigationMenuItem>
 
-            {/* Admin / CRM */}
-            <NavigationMenuItem>
-              <NavigationMenuTrigger className="bg-transparent text-sm font-semibold text-[#5A4E4B] hover:bg-[#F0EAE5] hover:text-[#3D3530] data-[state=open]:bg-[#F0EAE5]">
-                Gestión
-              </NavigationMenuTrigger>
-              <NavigationMenuContent>
-                <div className="grid w-[400px] gap-1 p-3 pt-4">
-                  <NavigationMenuLink asChild>
-                    <button onClick={() => openAdmin("dashboard")} className="flex items-center gap-3 rounded-lg p-3 text-left hover:bg-[#FAF3EC]">
-                      <div className="rounded-md bg-[#F5EBE0] p-2 text-[#9A7558]"><LayoutDashboard className="h-4 w-4" /></div>
-                      <div><div className="text-sm font-semibold text-[#3D3530]">Panel administrativo</div><div className="text-xs text-[#8B7E78]">Dashboard, estadísticas e inventario</div></div>
+            {/* Admin / CRM — only visible to authenticated admins */}
+            {isAdmin && (
+              <NavigationMenuItem>
+                <NavigationMenuTrigger className="bg-transparent text-sm font-semibold text-[#5A4E4B] hover:bg-[#F0EAE5] hover:text-[#3D3530] data-[state=open]:bg-[#F0EAE5]">
+                  <ShieldCheck className="mr-1.5 h-3.5 w-3.5 text-[#B08968]" />
+                  Gestión
+                </NavigationMenuTrigger>
+                <NavigationMenuContent>
+                  <div className="grid w-[400px] gap-1 p-3 pt-4">
+                    <NavigationMenuLink asChild>
+                      <button onClick={() => openAdmin("dashboard")} className="flex items-center gap-3 rounded-lg p-3 text-left hover:bg-[#FAF3EC]">
+                        <div className="rounded-md bg-[#F5EBE0] p-2 text-[#9A7558]"><LayoutDashboard className="h-4 w-4" /></div>
+                        <div><div className="text-sm font-semibold text-[#3D3530]">Panel administrativo</div><div className="text-xs text-[#8B7E78]">Dashboard, estadísticas e inventario</div></div>
+                      </button>
+                    </NavigationMenuLink>
+                    <NavigationMenuLink asChild>
+                      <button onClick={() => openAdmin("properties")} className="flex items-center gap-3 rounded-lg p-3 text-left hover:bg-[#FAF3EC]">
+                        <div className="rounded-md bg-[#A89B96]/20 p-2 text-[#7A6E6A]"><Building2 className="h-4 w-4" /></div>
+                        <div><div className="text-sm font-semibold text-[#3D3530]">Administrar inmuebles</div><div className="text-xs text-[#8B7E78]">Crear, editar, publicar, eliminar</div></div>
+                      </button>
+                    </NavigationMenuLink>
+                    <NavigationMenuLink asChild>
+                      <button onClick={() => setView("upload")} className="flex items-center gap-3 rounded-lg p-3 text-left hover:bg-[#FAF3EC]">
+                        <div className="rounded-md bg-[#97A97C]/20 p-2 text-[#7A8B66]"><Plus className="h-4 w-4" /></div>
+                        <div><div className="text-sm font-semibold text-[#3D3530]">Publicar inmueble</div><div className="text-xs text-[#8B7E78]">Asistente guiado paso a paso</div></div>
+                      </button>
+                    </NavigationMenuLink>
+                    <NavigationMenuLink asChild>
+                      <button onClick={() => setView("crm")} className="flex items-center gap-3 rounded-lg p-3 text-left hover:bg-[#FAF3EC]">
+                        <div className="rounded-md bg-[#E0B589]/20 p-2 text-[#B89164]"><Users className="h-4 w-4" /></div>
+                        <div><div className="text-sm font-semibold text-[#3D3530]">CRM y leads</div><div className="text-xs text-[#8B7E78]">Gestión de contactos interesados</div></div>
+                      </button>
+                    </NavigationMenuLink>
+                    <div className="my-1 border-t border-[#F0EAE5]" />
+                    <button
+                      onClick={() => { logout(); setMobileOpen(false); }}
+                      className="flex items-center gap-3 rounded-lg p-3 text-left text-[#C97A7A] hover:bg-[#FBEAEA]"
+                    >
+                      <div className="rounded-md bg-[#C97A7A]/15 p-2 text-[#C97A7A]"><LogOut className="h-4 w-4" /></div>
+                      <div><div className="text-sm font-semibold">Cerrar sesión</div><div className="text-xs text-[#8B7E78]">Salir del panel administrativo</div></div>
                     </button>
-                  </NavigationMenuLink>
-                  <NavigationMenuLink asChild>
-                    <button onClick={() => openAdmin("properties")} className="flex items-center gap-3 rounded-lg p-3 text-left hover:bg-[#FAF3EC]">
-                      <div className="rounded-md bg-[#A89B96]/20 p-2 text-[#7A6E6A]"><Building2 className="h-4 w-4" /></div>
-                      <div><div className="text-sm font-semibold text-[#3D3530]">Administrar inmuebles</div><div className="text-xs text-[#8B7E78]">Crear, editar, publicar, duplicar</div></div>
-                    </button>
-                  </NavigationMenuLink>
-                  <NavigationMenuLink asChild>
-                    <button onClick={() => setView("upload")} className="flex items-center gap-3 rounded-lg p-3 text-left hover:bg-[#FAF3EC]">
-                      <div className="rounded-md bg-[#97A97C]/20 p-2 text-[#7A8B66]"><Plus className="h-4 w-4" /></div>
-                      <div><div className="text-sm font-semibold text-[#3D3530]">Publicar inmueble</div><div className="text-xs text-[#8B7E78]">Asistente guiado paso a paso</div></div>
-                    </button>
-                  </NavigationMenuLink>
-                  <NavigationMenuLink asChild>
-                    <button onClick={() => setView("crm")} className="flex items-center gap-3 rounded-lg p-3 text-left hover:bg-[#FAF3EC]">
-                      <div className="rounded-md bg-[#E0B589]/20 p-2 text-[#B89164]"><Users className="h-4 w-4" /></div>
-                      <div><div className="text-sm font-semibold text-[#3D3530]">CRM y leads</div><div className="text-xs text-[#8B7E78]">Gestión de contactos interesados</div></div>
-                    </button>
-                  </NavigationMenuLink>
-                </div>
-              </NavigationMenuContent>
-            </NavigationMenuItem>
+                  </div>
+                </NavigationMenuContent>
+              </NavigationMenuItem>
+            )}
           </NavigationMenuList>
         </NavigationMenu>
 
@@ -192,13 +205,25 @@ export function Header() {
           >
             <Search className="mr-1.5 h-4 w-4" /> Buscar
           </Button>
-          <Button
-            size="sm"
-            className="hidden sm:inline-flex bg-[#B08968] hover:bg-[#9A7558]"
-            onClick={() => setView("upload")}
-          >
-            <Plus className="mr-1 h-4 w-4" /> Publicar
-          </Button>
+          {isAdmin ? (
+            <>
+              <Button
+                size="sm"
+                className="hidden sm:inline-flex bg-[#B08968] hover:bg-[#9A7558]"
+                onClick={() => setView("upload")}
+              >
+                <Plus className="mr-1 h-4 w-4" /> Publicar
+              </Button>
+              <button
+                onClick={logout}
+                title="Cerrar sesión de administrador"
+                className="hidden h-9 w-9 items-center justify-center rounded-md border border-[#E8DFD9] text-[#6B5D5A] transition-colors hover:bg-[#F0EAE5] sm:inline-flex"
+                aria-label="Cerrar sesión"
+              >
+                <LogOut className="h-4 w-4" />
+              </button>
+            </>
+          ) : null}
 
           {/* Mobile menu */}
           <Sheet open={mobileOpen} onOpenChange={setMobileOpen}>
@@ -220,13 +245,18 @@ export function Header() {
                 <MobileLink icon={<Search className="h-4 w-4" />} label="Explorar inmuebles" onClick={() => { setView("results"); setMobileOpen(false); }} />
                 <MobileLink icon={<Building2 className="h-4 w-4" />} label="Comprar" onClick={() => { openResults({ operation: "VENTA" }); setMobileOpen(false); }} />
                 <MobileLink icon={<Building2 className="h-4 w-4" />} label="Arrendar" onClick={() => { openResults({ operation: "ARRIENDO" }); setMobileOpen(false); }} />
-                <div className="my-2 border-t border-[#F0EAE5]" />
-                <div className="px-2 py-1 text-xs font-bold uppercase tracking-wide text-[#A89B96]">Gestión</div>
-                <MobileLink icon={<LayoutDashboard className="h-4 w-4" />} label="Panel administrativo" onClick={() => { openAdmin("dashboard"); setMobileOpen(false); }} />
-                <MobileLink icon={<Building2 className="h-4 w-4" />} label="Administrar inmuebles" onClick={() => { openAdmin("properties"); setMobileOpen(false); }} />
-                <MobileLink icon={<Plus className="h-4 w-4" />} label="Publicar inmueble" onClick={() => { setView("upload"); setMobileOpen(false); }} />
-                <MobileLink icon={<Users className="h-4 w-4" />} label="CRM y leads" onClick={() => { setView("crm"); setMobileOpen(false); }} />
-                <MobileLink icon={<FileSpreadsheet className="h-4 w-4" />} label="Importar CSV / Excel" onClick={() => { openAdmin("import"); setMobileOpen(false); }} />
+                {isAdmin && (
+                  <>
+                    <div className="my-2 border-t border-[#F0EAE5]" />
+                    <div className="px-2 py-1 text-xs font-bold uppercase tracking-wide text-[#A89B96]">Gestión (admin)</div>
+                    <MobileLink icon={<LayoutDashboard className="h-4 w-4" />} label="Panel administrativo" onClick={() => { openAdmin("dashboard"); setMobileOpen(false); }} />
+                    <MobileLink icon={<Building2 className="h-4 w-4" />} label="Administrar inmuebles" onClick={() => { openAdmin("properties"); setMobileOpen(false); }} />
+                    <MobileLink icon={<Plus className="h-4 w-4" />} label="Publicar inmueble" onClick={() => { setView("upload"); setMobileOpen(false); }} />
+                    <MobileLink icon={<Users className="h-4 w-4" />} label="CRM y leads" onClick={() => { setView("crm"); setMobileOpen(false); }} />
+                    <MobileLink icon={<FileSpreadsheet className="h-4 w-4" />} label="Importar CSV / Excel" onClick={() => { openAdmin("import"); setMobileOpen(false); }} />
+                    <MobileLink icon={<LogOut className="h-4 w-4" />} label="Cerrar sesión" onClick={() => { logout(); setMobileOpen(false); }} />
+                  </>
+                )}
                 <div className="my-2 border-t border-[#F0EAE5]" />
                 <div className="rounded-lg bg-[#3D3530] p-4 text-white">
                   <div className="flex items-center gap-2 text-sm font-semibold">

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { searchProperties, getFeaturedProperties, getRecentProperties } from "@/lib/queries";
+import { requireAdmin } from "@/lib/admin-auth";
 import type { SearchFilters } from "@/lib/store";
 
 export async function GET(req: NextRequest) {
@@ -41,6 +42,8 @@ export async function GET(req: NextRequest) {
 }
 
 export async function POST(req: NextRequest) {
+  const denied = await requireAdmin();
+  if (denied) return denied;
   try {
     const body = await req.json();
     const { db } = await import("@/lib/db");

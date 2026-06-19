@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
+import { requireAdmin } from "@/lib/admin-auth";
 
 /** Admin property listing - includes drafts & all statuses */
 export async function GET(req: NextRequest) {
+  const denied = await requireAdmin();
+  if (denied) return denied;
   const sp = req.nextUrl.searchParams;
   const q = sp.get("q") || "";
   const status = sp.get("status");

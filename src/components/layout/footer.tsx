@@ -1,9 +1,11 @@
 "use client";
-import { Building2, Mail, Phone, MapPin, Facebook, Instagram, Linkedin, Twitter, ShieldCheck, Award, Headset } from "lucide-react";
+import { Building2, Mail, Phone, MapPin, Facebook, Instagram, Linkedin, Twitter, ShieldCheck, Award, Headset, LockKeyhole } from "lucide-react";
 import { useNav } from "@/lib/store";
+import { useAdminAuth } from "@/lib/auth-store";
 
 export function Footer() {
   const { goHome, openResults, setView, openAdmin } = useNav();
+  const { isAdmin, openLogin, logout } = useAdminAuth();
 
   return (
     <footer className="mt-auto border-t border-[#5A4E4B] bg-[#6B5D5A] text-[#F5EBE0]">
@@ -64,14 +66,17 @@ export function Footer() {
             <FooterLink onClick={() => openResults({ propertyType: "LOTE" })}>Lotes</FooterLink>
           </FooterCol>
 
-          {/* Gestión */}
-          <FooterCol title="Gestión">
-            <FooterLink onClick={() => openAdmin("dashboard")}>Panel administrativo</FooterLink>
-            <FooterLink onClick={() => openAdmin("properties")}>Administrar inmuebles</FooterLink>
-            <FooterLink onClick={() => setView("upload")}>Publicar inmueble</FooterLink>
-            <FooterLink onClick={() => setView("crm")}>CRM y leads</FooterLink>
-            <FooterLink onClick={() => openAdmin("import")}>Importar masivo</FooterLink>
-          </FooterCol>
+          {/* Gestión — ONLY visible to authenticated admin */}
+          {isAdmin && (
+            <FooterCol title="Gestión (admin)">
+              <FooterLink onClick={() => openAdmin("dashboard")}>Panel administrativo</FooterLink>
+              <FooterLink onClick={() => openAdmin("properties")}>Administrar inmuebles</FooterLink>
+              <FooterLink onClick={() => setView("upload")}>Publicar inmueble</FooterLink>
+              <FooterLink onClick={() => setView("crm")}>CRM y leads</FooterLink>
+              <FooterLink onClick={() => openAdmin("import")}>Importar masivo</FooterLink>
+              <FooterLink onClick={logout}>Cerrar sesión</FooterLink>
+            </FooterCol>
+          )}
 
           {/* Empresa */}
           <FooterCol title="Empresa">
@@ -85,7 +90,25 @@ export function Footer() {
       {/* Bottom bar */}
       <div className="border-t border-[#5A4E4B]">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-4 py-5 text-xs text-[#C9BFB9] sm:flex-row sm:px-6 lg:px-8">
-          <div>© {new Date().getFullYear()} Innovar Showrooms. Todos los derechos reservados. NIT 901.123.456-7</div>
+          <div className="flex items-center gap-2">
+            © {new Date().getFullYear()} Innovar Showrooms. Todos los derechos reservados. NIT 901.123.456-7
+            {/* Secret admin access — very subtle, only reveals on hover */}
+            {!isAdmin && (
+              <button
+                onClick={openLogin}
+                title="Acceso administrativo"
+                aria-label="Acceso administrativo"
+                className="ml-2 inline-flex h-5 w-5 items-center justify-center rounded text-[#5A4E4B] opacity-30 transition-all hover:opacity-100 hover:text-[#E0B589]"
+              >
+                <LockKeyhole className="h-3 w-3" />
+              </button>
+            )}
+            {isAdmin && (
+              <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-[#B08968]/30 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[#E0B589]">
+                <ShieldCheck className="h-3 w-3" /> Modo admin
+              </span>
+            )}
+          </div>
           <div className="flex items-center gap-4">
             <span className="hover:text-white">Términos</span>
             <span className="hover:text-white">Privacidad</span>
