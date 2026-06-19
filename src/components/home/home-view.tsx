@@ -36,16 +36,16 @@ const HERO_IMAGE =
 
 const CITY_IMAGES: Record<string, string> = {
   // Iconic tourist landmarks of each Colombian city (all verified HTTP 200)
-  MED: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600&q=80", // Medellín — metrocable / paisaje urbano
-  BOG: "https://images.unsplash.com/photo-1573843981267-be1999ff37cd?w=600&q=80", // Bogotá — skyline urbano
-  BQ: "https://images.unsplash.com/photo-1493770348161-369560ae357d?w=600&q=80", // Barranquilla — malecón / río Magdalena
-  CALI: "https://images.unsplash.com/photo-1601823984263-b87b59798b70?w=600&q=80", // Cali — Valle del Cauca
-  CTG: "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?w=600&q=80", // Cartagena — centro histórico amurallado
-  BGA: "https://images.unsplash.com/photo-1515462277126-2dd0c162007a?w=600&q=80", // Bucaramanga — parque / ciudad
-  MZL: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=600&q=80", // Manizales — montañas / Nevado
-  PEI: "https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=600&q=80", // Pereira — Valle del café
-  ARM: "https://images.unsplash.com/photo-1505761671935-60b3a7427bad?w=600&q=80", // Armenia — Valle del Cocora (palmas de cera)
-  STA: "https://images.unsplash.com/photo-1493558103817-58b2924bce98?w=600&q=80", // Santa Marta — bahía / playa caribe
+  MED: "/cities/medellin.png", // Medellín — imagen personalizada del usuario
+  BOG: "/cities/bogota.png", // Bogotá — imagen personalizada del usuario
+  BQ: "/cities/barranquilla.png", // Barranquilla — imagen personalizada del usuario
+  CALI: "/cities/cali.png", // Cali — imagen personalizada del usuario
+  CTG: "/cities/cartagena.png", // Cartagena — imagen personalizada del usuario
+  BGA: "/cities/bucaramanga.png", // Bucaramanga — imagen personalizada del usuario
+  MZL: "/cities/manizales.png", // Manizales — imagen personalizada del usuario
+  PEI: "/cities/pereira.png", // Pereira — imagen personalizada del usuario
+  ARM: "/cities/armenia.png", // Armenia — imagen personalizada del usuario (⚠️ 275x183 — pendiente reemplazo)
+  STA: "/cities/santa-marta.png", // Santa Marta — imagen personalizada del usuario
 };
 const CITY_FALLBACK =
   "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=600&q=80"; // Colombia genérico
