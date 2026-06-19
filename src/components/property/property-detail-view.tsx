@@ -30,7 +30,7 @@ import {
   MapPin, BedDouble, Bath, Car, Maximize, Layers, CalendarClock,
   Heart, Share2, ChevronRight, ChevronLeft, Eye, Clock, ZoomIn, Maximize2,
   Phone, Mail, MessageCircle, Facebook, Twitter, Linkedin, Link2,
-  Check, X, Building2, ArrowLeft, Send, ShieldCheck,
+  Check, X, Building2, ArrowLeft, Send, ShieldCheck, Pencil,
   Home as HomeIcon, Tag, ExternalLink,
 } from "lucide-react";
 
@@ -51,6 +51,7 @@ import {
   formatRelativeTime, PROPERTY_TYPE_LABELS, OPERATION_LABELS, OPERATION_COLORS,
 } from "@/lib/format";
 import { useNav } from "@/lib/store";
+import { useAdminAuth } from "@/lib/auth-store";
 import { PropertyCodeBadge } from "./property-code-badge";
 import { AmenityIcon, amenityLabel } from "./amenity-icon";
 import { PropertyCard } from "./property-card";
@@ -148,11 +149,15 @@ function TitleBar({
   fav,
   onToggleFav,
   onShare,
+  isAdmin,
+  onEdit,
 }: {
   p: PropertyDetail;
   fav: boolean;
   onToggleFav: () => void;
   onShare: () => void;
+  isAdmin: boolean;
+  onEdit: () => void;
 }) {
   return (
     <div className="mt-4">
@@ -170,8 +175,19 @@ function TitleBar({
           </div>
         </div>
 
-        {/* Right: share + favorite */}
+        {/* Right: edit (admin) + share + favorite */}
         <div className="flex shrink-0 items-center gap-2">
+          {isAdmin && (
+            <Button
+              variant="default"
+              size="sm"
+              onClick={onEdit}
+              className="gap-1.5 bg-[#6B5D5A] text-white hover:bg-[#5A4E4B]"
+            >
+              <Pencil className="h-4 w-4" />
+              <span className="hidden sm:inline">Editar</span>
+            </Button>
+          )}
           <Button variant="outline" size="sm" onClick={onShare} className="gap-1.5">
             <Share2 className="h-4 w-4" />
             <span className="hidden sm:inline">Compartir</span>
@@ -1200,7 +1216,8 @@ function JsonLd({ p }: { p: PropertyDetail }) {
    ============================================================ */
 
 export function PropertyDetailView() {
-  const { propertyCode, goHome, openResults } = useNav();
+  const { propertyCode, goHome, openResults, openEdit } = useNav();
+  const { isAdmin } = useAdminAuth();
   const [property, setProperty] = useState<PropertyDetail | null>(null);
   const [similar, setSimilar] = useState<PropertyListItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -1304,6 +1321,8 @@ export function PropertyDetailView() {
             fav={fav}
             onToggleFav={toggleFav}
             onShare={scrollToContact}
+            isAdmin={isAdmin}
+            onEdit={() => openEdit(property.code)}
           />
         </motion.div>
 

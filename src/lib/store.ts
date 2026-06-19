@@ -40,12 +40,14 @@ export interface SearchFilters {
 interface NavState {
   view: ViewName;
   propertyCode: string | null;
+  editCode: string | null;
   filters: SearchFilters;
   isFiltersOpen: boolean;
   adminSection: string;
 
   setView: (v: ViewName) => void;
   openProperty: (code: string) => void;
+  openEdit: (code: string) => void;
   openResults: (filters?: SearchFilters) => void;
   goHome: () => void;
   openAdmin: (section?: string) => void;
@@ -64,18 +66,28 @@ const DEFAULT_FILTERS: SearchFilters = {
 export const useNav = create<NavState>((set, get) => ({
   view: "home",
   propertyCode: null,
+  editCode: null,
   filters: { ...DEFAULT_FILTERS },
   isFiltersOpen: false,
   adminSection: "dashboard",
 
   setView: (v) => {
-    set({ view: v });
+    // Clear editCode when navigating away from upload view explicitly
+    set({ view: v, ...(v === "upload" ? {} : { editCode: null }) });
+    // If going to upload via setView (not openEdit), it's a new publish — clear editCode
+    if (v === "upload") set({ editCode: null });
     get().syncToUrl();
     if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
   },
 
   openProperty: (code) => {
     set({ view: "property", propertyCode: code });
+    get().syncToUrl();
+    if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
+  },
+
+  openEdit: (code) => {
+    set({ view: "upload", editCode: code, propertyCode: null });
     get().syncToUrl();
     if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
   },
@@ -90,7 +102,7 @@ export const useNav = create<NavState>((set, get) => ({
   },
 
   goHome: () => {
-    set({ view: "home", filters: { ...DEFAULT_FILTERS }, propertyCode: null });
+    set({ view: "home", filters: { ...DEFAULT_FILTERS }, propertyCode: null, editCode: null });
     get().syncToUrl();
     if (typeof window !== "undefined") window.scrollTo({ top: 0, behavior: "smooth" });
   },
@@ -118,6 +130,7 @@ export const useNav = create<NavState>((set, get) => ({
     const params = new URLSearchParams(window.location.search);
     const view = (params.get("view") as ViewName) || "home";
     const propertyCode = params.get("code");
+    const editCode = view === "upload" ? params.get("edit") : null;
     const adminSection = params.get("section") || "dashboard";
 
     const filters: SearchFilters = { ...DEFAULT_FILTERS };
@@ -140,15 +153,16 @@ export const useNav = create<NavState>((set, get) => ({
     if (params.get("sort")) filters.sort = params.get("sort")!;
     if (params.get("page")) filters.page = Number(params.get("page"));
 
-    set({ view, propertyCode, filters, adminSection });
+    set({ view, propertyCode, editCode, filters, adminSection });
   },
 
   syncToUrl: () => {
     if (typeof window === "undefined") return;
-    const { view, propertyCode, filters, adminSection } = get();
+    const { view, propertyCode, editCode, filters, adminSection } = get();
     const params = new URLSearchParams();
     if (view !== "home") params.set("view", view);
     if (propertyCode) params.set("code", propertyCode);
+    if (editCode && view === "upload") params.set("edit", editCode);
     if (view === "admin" && adminSection !== "dashboard") params.set("section", adminSection);
 
     if (view === "results") {

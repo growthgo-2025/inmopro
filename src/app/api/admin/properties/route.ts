@@ -21,11 +21,31 @@ export async function GET(req: NextRequest) {
     where.OR = [{ title: { contains: q } }, { code: { contains: q } }];
   }
 
+  // Use `select` with nested `select` on relations so we only transfer the
+  // fields we actually render (code/title/price/… + city.name, neighborhood.name,
+  // agent.name). This keeps the payload small and the query fast over the
+  // remote Supabase connection.
   const items = await db.property.findMany({
     where,
     orderBy: { createdAt: "desc" },
     take: 100,
-    include: { city: true, neighborhood: true, agent: true },
+    select: {
+      id: true,
+      code: true,
+      title: true,
+      operation: true,
+      propertyType: true,
+      status: true,
+      published: true,
+      featured: true,
+      price: true,
+      currency: true,
+      createdAt: true,
+      views: true,
+      city: { select: { name: true } },
+      neighborhood: { select: { name: true } },
+      agent: { select: { name: true } },
+    },
   });
 
   return NextResponse.json({

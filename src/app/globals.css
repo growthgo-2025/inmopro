@@ -209,6 +209,84 @@
 }
 
 /* ============================================================
+   Admin table — horizontal scrollbar reachable from the top
+   (sticky header + always-visible styled horizontal scrollbar)
+   ============================================================ */
+.inmopro-table-scroll {
+  position: relative;
+  overflow-x: auto !important;
+}
+/* Neutralize the shadcn Table's inner overflow-x-auto wrapper so our
+   outer .inmopro-table-scroll is the single scroll container. */
+.inmopro-table-scroll > div {
+  overflow: visible !important;
+}
+/* Sticky header so it stays visible while scrolling vertically */
+.inmopro-table-scroll thead tr {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #FAF6F3;
+}
+/* Horizontal scrollbar styled + always visible */
+.inmopro-table-scroll::-webkit-scrollbar {
+  height: 10px;
+  -webkit-appearance: none;
+}
+.inmopro-table-scroll::-webkit-scrollbar-track {
+  background: #F5EBE0;
+  border-radius: 9999px;
+}
+.inmopro-table-scroll::-webkit-scrollbar-thumb {
+  background: #C9BFB9;
+  border-radius: 9999px;
+  border: 2px solid #F5EBE0;
+}
+.inmopro-table-scroll::-webkit-scrollbar-thumb:hover {
+  background: #B08968;
+}
+/* Firefox */
+.inmopro-table-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #C9BFB9 #F5EBE0;
+}
+/* Min width on table so columns don't squish and trigger the horizontal
+   scroll that the user can reach from the top of the list.
+   Use !important to override shadcn Table's w-full utility. */
+.inmopro-table-scroll table {
+  min-width: 1100px !important;
+}
+
+/* Sticky TOP mirror scrollbar — always visible so the admin can reach the
+   "Publicado" / "Acciones" columns without scrolling to the bottom of a long
+   list. Styled to match the bottom scrollbar but always-on (track visible
+   even when content doesn't overflow, so it's discoverable). */
+.inmopro-top-scroll {
+  height: 12px;
+  -webkit-appearance: none;
+}
+.inmopro-top-scroll::-webkit-scrollbar {
+  height: 12px;
+  -webkit-appearance: none;
+}
+.inmopro-top-scroll::-webkit-scrollbar-track {
+  background: #F5EBE0;
+  border-radius: 0;
+}
+.inmopro-top-scroll::-webkit-scrollbar-thumb {
+  background: #B08968;
+  border-radius: 9999px;
+  border: 2px solid #F5EBE0;
+}
+.inmopro-top-scroll::-webkit-scrollbar-thumb:hover {
+  background: #9A7558;
+}
+.inmopro-top-scroll {
+  scrollbar-width: auto;
+  scrollbar-color: #B08968 #F5EBE0;
+}
+
+/* ============================================================
    Animations / helpers
    ============================================================ */
 @keyframes fade-up {

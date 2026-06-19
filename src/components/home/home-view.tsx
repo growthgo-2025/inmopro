@@ -44,7 +44,7 @@ const CITY_IMAGES: Record<string, string> = {
   BGA: "/cities/bucaramanga.png", // Bucaramanga — imagen personalizada del usuario
   MZL: "/cities/manizales.png", // Manizales — imagen personalizada del usuario
   PEI: "/cities/pereira.png", // Pereira — imagen personalizada del usuario
-  ARM: "/cities/armenia.png", // Armenia — imagen personalizada del usuario (⚠️ 275x183 — pendiente reemplazo)
+  ARM: "/cities/armenia.png", // Armenia — imagen personalizada del usuario (1200x675)
   STA: "/cities/santa-marta.png", // Santa Marta — imagen personalizada del usuario
 };
 const CITY_FALLBACK =
@@ -86,7 +86,7 @@ const VALUE_PROPS = [
   {
     icon: TrendingUp,
     title: "Optimizado para SEO y escala",
-    desc: "Miles de inmuebles indexables con sitemap dinámico, metadatos y URLs amigables.",
+    desc: "Cada inmueble indexable con sitemap dinámico, metadatos y URLs amigables.",
   },
 ];
 
@@ -335,7 +335,7 @@ function HeroSection({
           </h1>
 
           <p className="text-body-lg mx-auto mt-4 max-w-2xl text-[#E8DFD9]">
-            Miles de propiedades verificadas con códigos únicos. Busca por
+            Cada inmueble verificado con su código único. Busca por
             ciudad, barrio, tipo o código de inmueble.
           </p>
         </motion.div>

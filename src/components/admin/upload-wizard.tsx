@@ -227,7 +227,11 @@ function parseNumeric(value: string): number | null {
 /* ========================================================================== */
 
 export function UploadWizard() {
-  const { setView, openProperty, goHome } = useNav();
+  const { setView, openProperty, goHome, editCode } = useNav();
+
+  // Edit mode: when editCode is set, we're editing an existing property
+  const isEditMode = !!editCode;
+  const [loadingExisting, setLoadingExisting] = useState(isEditMode);
 
   const [form, setForm] = useState<WizardForm>(DEFAULT_FORM);
   const [step, setStep] = useState(1);
@@ -244,7 +248,7 @@ export function UploadWizard() {
 
   const containerRef = useRef<HTMLDivElement>(null);
 
-  /* -------- Load cities + amenities on mount; check for draft -------- */
+  /* -------- Load cities + amenities on mount; check for draft (create mode only) -------- */
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -267,43 +271,130 @@ export function UploadWizard() {
       }
     })();
 
-    // Draft recovery prompt
-    try {
-      const raw = localStorage.getItem(DRAFT_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw) as WizardForm;
-        if (parsed && parsed.title !== undefined) {
-          toast.info("Borrador encontrado", {
-            description: "Tienes un borrador guardado. ¿Recuperarlo?",
-            duration: 8000,
-            action: {
-              label: "Recuperar",
-              onClick: () => {
-                // Strip blob URLs from images (they won't survive reload)
-                const cleanImages = (parsed.images || []).filter(
-                  (i) => !i.url.startsWith("blob:")
-                );
-                setForm({ ...DEFAULT_FORM, ...parsed, images: cleanImages });
-                toast.success("Borrador recuperado");
+    // Draft recovery prompt — only in create mode (not edit mode)
+    if (!isEditMode) {
+      try {
+        const raw = localStorage.getItem(DRAFT_KEY);
+        if (raw) {
+          const parsed = JSON.parse(raw) as WizardForm;
+          if (parsed && parsed.title !== undefined) {
+            toast.info("Borrador encontrado", {
+              description: "Tienes un borrador guardado. ¿Recuperarlo?",
+              duration: 8000,
+              action: {
+                label: "Recuperar",
+                onClick: () => {
+                  // Strip blob URLs from images (they won't survive reload)
+                  const cleanImages = (parsed.images || []).filter(
+                    (i) => !i.url.startsWith("blob:")
+                  );
+                  setForm({ ...DEFAULT_FORM, ...parsed, images: cleanImages });
+                  toast.success("Borrador recuperado");
+                },
               },
-            },
-            cancel: {
-              label: "Descartar",
-              onClick: () => {
-                localStorage.removeItem(DRAFT_KEY);
+              cancel: {
+                label: "Descartar",
+                onClick: () => {
+                  localStorage.removeItem(DRAFT_KEY);
+                },
               },
-            },
-          });
+            });
+          }
         }
+      } catch {
+        /* ignore */
       }
-    } catch {
-      /* ignore */
     }
 
     return () => {
       cancelled = true;
     };
   }, []);
+
+  /* -------- Edit mode: load existing property data -------- */
+  useEffect(() => {
+    if (!editCode) {
+      setLoadingExisting(false);
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      setLoadingExisting(true);
+      try {
+        const res = await fetch(`/api/properties/${editCode}`);
+        if (!res.ok) throw new Error("No se pudo cargar el inmueble");
+        const data = await res.json();
+        const p = data.property;
+        if (!p || cancelled) return;
+
+        // Parse amenities (stored as JSON string of slugs in DB)
+        let amenitySlugs: string[] = [];
+        if (typeof p.amenities === "string") {
+          try { amenitySlugs = JSON.parse(p.amenities || "[]"); } catch { /* ignore */ }
+        } else if (Array.isArray(p.amenities)) {
+          amenitySlugs = p.amenities;
+        }
+
+        // Parse images (stored as JSON string in DB)
+        let imgs: any[] = [];
+        if (typeof p.images === "string") {
+          try { imgs = JSON.parse(p.images || "[]"); } catch { /* ignore */ }
+        } else if (Array.isArray(p.images)) {
+          imgs = p.images;
+        }
+        const wizardImages: WizardImage[] = imgs.map((img: any, idx: number) => ({
+          id: img.id || `existing-${idx}`,
+          url: img.url,
+          caption: img.caption || "",
+          isMain: img.isMain ?? idx === 0,
+        }));
+
+        const loadedForm: WizardForm = {
+          operation: p.operation || "",
+          propertyType: p.propertyType || "",
+          cityId: p.cityId || "",
+          neighborhoodId: p.neighborhoodId || "",
+          address: p.address || "",
+          price: p.price != null ? String(p.price) : "",
+          currency: p.currency || "COP",
+          area: p.area != null ? String(p.area) : "",
+          bedrooms: p.bedrooms != null ? String(p.bedrooms) : "0",
+          bathrooms: p.bathrooms != null ? String(p.bathrooms) : "0",
+          parking: p.parking != null ? String(p.parking) : "0",
+          stratum: p.stratum != null ? String(p.stratum) : "",
+          amenities: amenitySlugs,
+          furnished: !!p.furnished,
+          petFriendly: !!p.petFriendly,
+          floor: p.floor != null ? String(p.floor) : "",
+          floorsTotal: p.floorsTotal != null ? String(p.floorsTotal) : "",
+          ageYears: p.ageYears != null ? String(p.ageYears) : "",
+          builtArea: p.builtArea != null ? String(p.builtArea) : "",
+          adminFee: p.adminFee != null ? String(p.adminFee) : "",
+          status: p.status || "DISPONIBLE",
+          title: p.title || "",
+          shortDesc: p.shortDesc || "",
+          description: p.description || "",
+          agentName: p.agentName || "Asesor Innovar Showrooms",
+          agentPhone: p.agentPhone || "",
+          agentWhatsapp: p.agentWhatsapp || p.agentPhone || "",
+          agentEmail: p.agentEmail || "",
+          images: wizardImages,
+        };
+        if (!cancelled) {
+          setForm(loadedForm);
+          toast.info("Modo edición", {
+            description: `Editando ${editCode}`,
+          });
+        }
+      } catch (e: unknown) {
+        const msg = e instanceof Error ? e.message : "Error desconocido";
+        if (!cancelled) toast.error("No se pudo cargar el inmueble", { description: msg });
+      } finally {
+        if (!cancelled) setLoadingExisting(false);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [editCode]);
 
   /* -------- Load neighborhoods when city changes -------- */
   useEffect(() => {
@@ -326,8 +417,9 @@ export function UploadWizard() {
     };
   }, [form.cityId]);
 
-  /* -------- Persist draft to localStorage on form change -------- */
+  /* -------- Persist draft to localStorage on form change (create mode only) -------- */
   useEffect(() => {
+    if (isEditMode) return; // don't persist edit data as a draft
     try {
       // Don't persist blob URLs (they won't be valid on reload)
       const persistable: WizardForm = {
@@ -338,7 +430,7 @@ export function UploadWizard() {
     } catch {
       /* ignore quota errors */
     }
-  }, [form]);
+  }, [form, isEditMode]);
 
   /* -------- Update helper -------- */
   const update = <K extends keyof WizardForm>(key: K, value: WizardForm[K]) => {
@@ -444,7 +536,7 @@ export function UploadWizard() {
     localStorage.removeItem(DRAFT_KEY);
   };
 
-  /* -------- Publish -------- */
+  /* -------- Publish (create) or Save (edit) -------- */
   const handlePublish = async () => {
     if (!confirmChecked) {
       toast.error("Debes confirmar que la información es correcta");
@@ -490,22 +582,39 @@ export function UploadWizard() {
         agentEmail: form.agentEmail.trim(),
       };
 
-      const res = await fetch("/api/properties", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-      const json = await res.json();
-      if (!res.ok || !json.ok) {
-        throw new Error(json.error || "No se pudo publicar");
+      if (isEditMode && editCode) {
+        // Edit mode: PUT to update existing property
+        const res = await fetch(`/api/properties/${editCode}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+        const json = await res.json();
+        if (!res.ok || !json.ok) {
+          throw new Error(json.error || "No se pudo guardar");
+        }
+        setPublished({ code: editCode, id: "" });
+        toast.success("¡Inmueble actualizado!", { description: editCode });
+        containerRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+      } else {
+        // Create mode: POST to create new property
+        const res = await fetch("/api/properties", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+        const json = await res.json();
+        if (!res.ok || !json.ok) {
+          throw new Error(json.error || "No se pudo publicar");
+        }
+        setPublished({ code: json.code, id: json.id });
+        localStorage.removeItem(DRAFT_KEY);
+        toast.success("¡Inmueble publicado!", { description: json.code });
+        containerRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
       }
-      setPublished({ code: json.code, id: json.id });
-      localStorage.removeItem(DRAFT_KEY);
-      toast.success("¡Inmueble publicado!", { description: json.code });
-      containerRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     } catch (e: unknown) {
       const msg = e instanceof Error ? e.message : "Error desconocido";
-      toast.error("Error al publicar", { description: msg });
+      toast.error(isEditMode ? "Error al actualizar" : "Error al publicar", { description: msg });
     } finally {
       setPublishing(false);
     }
@@ -540,26 +649,30 @@ export function UploadWizard() {
             <CheckCircle2 className="size-14 text-[#7A8B66]" />
           </motion.div>
           <h1 className="text-3xl font-bold tracking-tight text-[#3D3530]">
-            ¡Inmueble publicado!
+            {isEditMode ? "¡Inmueble actualizado!" : "¡Inmueble publicado!"}
           </h1>
           <p className="mt-2 text-[#6B5D5A]">
-            Tu inmueble ya está disponible en el portal. Comparte su código con tus clientes.
+            {isEditMode
+              ? "Los cambios se guardaron correctamente y ya están visibles en el portal."
+              : "Tu inmueble ya está disponible en el portal. Comparte su código con tus clientes."}
           </p>
 
           <div className="mt-6 flex flex-col items-center gap-3">
             <div className="text-xs font-medium uppercase tracking-wider text-[#8B7E78]">
-              Código generado
+              {isEditMode ? "Código del inmueble" : "Código generado"}
             </div>
             <PropertyCodeBadge code={published.code} variant="solid" className="text-base" />
           </div>
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:justify-center">
             <Button onClick={() => openProperty(published.code)} size="lg">
-              <Eye className="size-4" /> Ver inmueble publicado
+              <Eye className="size-4" /> {isEditMode ? "Ver inmueble" : "Ver inmueble publicado"}
             </Button>
-            <Button onClick={resetForm} variant="outline" size="lg">
-              <RotateCcw className="size-4" /> Publicar otro
-            </Button>
+            {!isEditMode && (
+              <Button onClick={resetForm} variant="outline" size="lg">
+                <RotateCcw className="size-4" /> Publicar otro
+              </Button>
+            )}
             <Button onClick={() => setView("admin")} variant="ghost" size="lg">
               <Building2 className="size-4" /> Ir al panel
             </Button>
@@ -580,14 +693,35 @@ export function UploadWizard() {
         >
           <ArrowLeft className="size-4" /> Volver
         </button>
-        <h1 className="text-2xl font-bold tracking-tight text-[#3D3530] sm:text-3xl">
-          Publicar inmueble
-        </h1>
+        <div className="flex flex-wrap items-center gap-3">
+          <h1 className="text-2xl font-bold tracking-tight text-[#3D3530] sm:text-3xl">
+            {isEditMode ? "Editar inmueble" : "Publicar inmueble"}
+          </h1>
+          {isEditMode && editCode && (
+            <Badge variant="outline" className="gap-1.5 border-[#B08968]/40 bg-[#F5EBE0] text-[#8B5E34]">
+              <Pencil className="size-3" />
+              <span className="font-mono text-xs">{editCode}</span>
+            </Badge>
+          )}
+        </div>
         <p className="mt-1 text-sm text-[#8B7E78]">
-          Asistente guiado · Paso {step} de 7
+          {isEditMode
+            ? "Modifica los campos que necesites y guarda los cambios · "
+            : "Asistente guiado · "}
+          Paso {step} de 7
         </p>
       </div>
 
+      {/* Loading state while fetching existing property in edit mode */}
+      {loadingExisting && (
+        <div className="flex flex-col items-center justify-center gap-3 py-20">
+          <Loader2 className="size-8 animate-spin text-[#B08968]" />
+          <p className="text-sm text-[#8B7E78]">Cargando datos del inmueble…</p>
+        </div>
+      )}
+
+      {!loadingExisting && (
+        <>
       {/* Progress */}
       <div className="mb-8">
         <Progress value={(step / 7) * 100} className="h-2" />
@@ -669,6 +803,7 @@ export function UploadWizard() {
               setConfirmChecked={setConfirmChecked}
               publishing={publishing}
               onPublish={handlePublish}
+              isEditMode={isEditMode}
             />
           )}
         </motion.div>
@@ -685,9 +820,11 @@ export function UploadWizard() {
             >
               <ChevronLeft className="size-4" /> Anterior
             </Button>
-            <Button variant="ghost" onClick={saveDraft}>
-              <Save className="size-4" /> Guardar borrador
-            </Button>
+            {!isEditMode && (
+              <Button variant="ghost" onClick={saveDraft}>
+                <Save className="size-4" /> Guardar borrador
+              </Button>
+            )}
           </div>
 
           {step < 7 ? (
@@ -703,17 +840,21 @@ export function UploadWizard() {
             >
               {publishing ? (
                 <>
-                  <Loader2 className="size-4 animate-spin" /> Publicando…
+                  <Loader2 className="size-4 animate-spin" />
+                  {isEditMode ? "Guardando…" : "Publicando…"}
                 </>
               ) : (
                 <>
-                  <Send className="size-4" /> PUBLICAR INMUEBLE
+                  <Send className="size-4" />
+                  {isEditMode ? "GUARDAR CAMBIOS" : "PUBLICAR INMUEBLE"}
                 </>
               )}
             </Button>
           )}
         </div>
       </div>
+        </>
+      )}
     </div>
   );
 }
@@ -1996,6 +2137,7 @@ function Step7Publish({
   setConfirmChecked,
   publishing,
   onPublish,
+  isEditMode = false,
 }: {
   form: WizardForm;
   selectedCity: CityOption | null;
@@ -2004,6 +2146,7 @@ function Step7Publish({
   setConfirmChecked: (v: boolean) => void;
   publishing: boolean;
   onPublish: () => void;
+  isEditMode?: boolean;
 }) {
   const rows: { label: string; value: string }[] = [
     { label: "Operación", value: OPERATION_LABELS[form.operation] || form.operation || "—" },
@@ -2091,8 +2234,12 @@ function Step7Publish({
         <div className="flex items-start gap-2 rounded-lg border border-amber-100 bg-[#FAF0E0]/60 p-3 text-xs text-[#A8814E]">
           <Sparkles className="mt-0.5 size-3.5 shrink-0" />
           <span>
-            Al publicar, el sistema generará automáticamente el código único
-            <span className="font-mono"> INV-2026-XXX-######</span> y el slug de la URL.
+            {isEditMode ? (
+              <>Al guardar, se actualizarán todos los campos del inmueble en el portal. El código y el slug se mantienen.</>
+            ) : (
+              <>Al publicar, el sistema generará automáticamente el código único
+              <span className="font-mono"> INV-2026-XXX-######</span> y el slug de la URL.</>
+            )}
           </span>
         </div>
 
@@ -2104,11 +2251,13 @@ function Step7Publish({
         >
           {publishing ? (
             <>
-              <Loader2 className="size-4 animate-spin" /> Publicando…
+              <Loader2 className="size-4 animate-spin" />
+              {isEditMode ? "Guardando…" : "Publicando…"}
             </>
           ) : (
             <>
-              <Send className="size-4" /> PUBLICAR INMUEBLE
+              <Send className="size-4" />
+              {isEditMode ? "GUARDAR CAMBIOS" : "PUBLICAR INMUEBLE"}
             </>
           )}
         </Button>

@@ -405,7 +405,7 @@ function FilterPanel({
       </div>
 
       {/* Accordion sections */}
-      <div className="flex-1 overflow-y-auto scroll-brand px-4">
+      <div className="flex-1 min-h-0 overflow-y-auto scroll-brand px-4">
         <Accordion type="multiple" defaultValue={accordionValue} className="w-full">
           {/* 1. Ubicación */}
           <AccordionItem value="loc">
@@ -1260,7 +1260,7 @@ export function ResultsView() {
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-[280px_1fr]">
           {/* Left sidebar (desktop) */}
           <aside className="hidden lg:block">
-            <div className="sticky top-36 max-h-[calc(100vh-10rem)] overflow-hidden rounded-xl border border-[#E8DFD9] bg-white shadow-sm">
+            <div className="sticky top-36 h-[calc(100vh-10rem)] overflow-hidden rounded-xl border border-[#E8DFD9] bg-white shadow-sm">
               <FilterPanel
                 filters={filters}
                 setFilters={setFilters}
@@ -1410,20 +1410,22 @@ export function ResultsView() {
 
       {/* ===== Mobile filter sheet ===== */}
       <Sheet open={isFiltersOpen} onOpenChange={setFiltersOpen}>
-        <SheetContent side="left" className="w-[88%] max-w-md p-0 sm:max-w-md">
+        <SheetContent side="left" className="flex h-full w-[88%] max-w-md flex-col p-0 sm:max-w-md">
           <SheetTitle className="sr-only">Filtros de búsqueda</SheetTitle>
-          <FilterPanel
-            filters={filters}
-            setFilters={(f) => setFilters(f)}
-            resetFilters={resetFilters}
-            cities={cities}
-            neighborhoods={neighborhoods}
-            amenities={amenities}
-            neighborhoodsLoading={neighborhoodsLoading}
-            onAfterChange={() => {
-              /* close on demand could go here; left open for fine-tuning */
-            }}
-          />
+          <div className="flex-1 min-h-0 overflow-hidden">
+            <FilterPanel
+              filters={filters}
+              setFilters={(f) => setFilters(f)}
+              resetFilters={resetFilters}
+              cities={cities}
+              neighborhoods={neighborhoods}
+              amenities={amenities}
+              neighborhoodsLoading={neighborhoodsLoading}
+              onAfterChange={() => {
+                /* close on demand could go here; left open for fine-tuning */
+              }}
+            />
+          </div>
           <div className="border-t border-[#E8DFD9] bg-white p-3">
             <Button
               className="h-10 w-full bg-[#B08968] text-white hover:bg-[#9A7558]"

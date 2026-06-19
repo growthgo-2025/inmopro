@@ -56,3 +56,13 @@ server.log
 /skills/
 # Context document (contains tokens - do not commit)
 INMOPRO_CONTEXT.md
+
+# Sandbox / tool artifacts (never commit these)
+/tool-results/
+/upload/
+/download/
+/db/*.db
+/db/*.db-journal
+*.pid
+crm-verify.png
+*.screenshot.png
