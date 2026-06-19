@@ -527,3 +527,36 @@ Note for next phase (city re-scope to Barranquilla-only):
 Stage Summary:
 - Misleading "miles de propiedades" copy replaced with honest wording; no other quantity-inflating claims remain in the visible hero.
 - City re-scope to Barranquilla-only is the next planned task (user will trigger separately).
+
+---
+Task ID: SANDBOX-IMPORT-006
+Agent: main (Z.ai Code)
+Task: Push sandbox changes to GitHub (growthgo-2025/inmopro) and prepare for Vercel deployment.
+
+Work Log:
+- SECURITY CLEANUP (critical): discovered `.env` (with Supabase service role key, admin password, admin session secret) AND `upload/INNOVAR_CONTEXT.md` (with GitHub token) were tracked in the local git history. Although `.gitignore` already had `.env*`, the files were committed before that rule existed.
+- Updated `.gitignore` to also exclude `/tool-results/`, `/upload/`, `/download/`, `/db/*.db`, `*.pid`, `crm-verify.png`.
+- Strategy: since the local sandbox repo had no remote configured and its commit history was auto-generated UUIDs (not the real project history), I created an orphan branch with a single clean commit (no secrets in history), then rebased onto GitHub's `origin/main`:
+  1. `git rm --cached` .env, tool-results/, upload/ (untracked but kept on disk)
+  2. Created orphan branch, single clean commit
+  3. Added remote `https://github.com/growthgo-2025/inmopro.git`
+  4. `git fetch origin main`, then `git reset --soft origin/main` (rebased pointer onto real GitHub history, kept sandbox working tree)
+  5. `git add -A` (respecting updated .gitignore) → staged 14 modified files + 13 junk-file deletions
+  6. Verified `.env` NOT in staged changes
+  7. Committed with descriptive message + pushed (fast-forward, no force)
+- Push result: `f421716..e61d4fb main -> main` (GitHub history preserved, my commit added on top)
+- Verified via GitHub API: latest commit on main = `e61d4fb5` "Mejoras CRM, buscador y copy honesta"; `.env` returns HTTP 404 on GitHub (not present = secrets safe).
+- Files pushed: .gitignore, .zscripts/dev.sh, package.json, public/cities/armenia.png, src/app/api/admin/properties/route.ts, src/app/api/properties/[code]/route.ts, src/app/globals.css, src/components/admin/admin-properties.tsx, src/components/admin/upload-wizard.tsx, src/components/home/home-view.tsx, src/components/property/property-detail-view.tsx, src/components/results/results-view.tsx, src/lib/store.ts, worklog.md.
+- Junk removed from GitHub: tool-results/*.txt, upload/*.png (screenshots), db/custom.db, .zscripts/dev.pid, download/README.md.
+
+Vercel deployment readiness:
+- Next.js 16 auto-detected by Vercel; `build` script = `next build` (standard).
+- `postinstall: prisma generate` ensures Prisma client is generated during Vercel build.
+- `typescript.ignoreBuildErrors: true` prevents type errors from failing the build.
+- `output: "standalone"` in next.config is supported by Vercel (auto-handled).
+- 7 environment variables must be set in Vercel dashboard (see handover to user): DATABASE_URL, NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY, SUPABASE_SERVICE_ROLE_KEY, SUPABASE_STORAGE_BUCKET, ADMIN_PASSWORD, ADMIN_SESSION_SECRET.
+- No vercel.json needed (framework auto-detected).
+
+Stage Summary:
+- GitHub push complete and verified; secrets are NOT on GitHub.
+- Vercel deployment pending user action (import repo via dashboard + set env vars). No blockers identified.
