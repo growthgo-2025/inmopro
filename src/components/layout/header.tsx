@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import {
   Building2, Menu, Search, Heart, ChevronDown, Plus, LayoutDashboard,
-  Users, FileSpreadsheet, X, Phone, ShieldCheck, LogOut,
+  Users, FileSpreadsheet, X, Phone, ShieldCheck, LogOut, Home,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
@@ -66,6 +66,17 @@ export function Header() {
         {/* Desktop nav */}
         <NavigationMenu className="hidden lg:flex">
           <NavigationMenuList>
+            {/* Inicio */}
+            <NavigationMenuItem>
+              <button
+                onClick={goHome}
+                className="inline-flex h-9 items-center gap-1.5 rounded-md px-3 text-sm font-semibold text-[#5A4E4B] hover:bg-[#F0EAE5] hover:text-[#3D3530]"
+              >
+                <Home className="h-4 w-4 text-[#B08968]" />
+                Inicio
+              </button>
+            </NavigationMenuItem>
+
             {/* Comprar / Vender dropdown */}
             <NavigationMenuItem>
               <NavigationMenuTrigger className="bg-transparent text-sm font-semibold text-[#5A4E4B] hover:bg-[#F0EAE5] hover:text-[#3D3530] data-[state=open]:bg-[#F0EAE5]">
@@ -242,6 +253,7 @@ export function Header() {
                 </SheetTitle>
               </SheetHeader>
               <div className="mt-6 space-y-1 px-2">
+                <MobileLink icon={<Home className="h-4 w-4" />} label="Inicio" onClick={() => { goHome(); setMobileOpen(false); }} />
                 <MobileLink icon={<Search className="h-4 w-4" />} label="Explorar inmuebles" onClick={() => { setView("results"); setMobileOpen(false); }} />
                 <MobileLink icon={<Building2 className="h-4 w-4" />} label="Comprar" onClick={() => { openResults({ operation: "VENTA" }); setMobileOpen(false); }} />
                 <MobileLink icon={<Building2 className="h-4 w-4" />} label="Arrendar" onClick={() => { openResults({ operation: "ARRIENDO" }); setMobileOpen(false); }} />

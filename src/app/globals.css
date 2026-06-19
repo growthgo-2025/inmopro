@@ -139,6 +139,24 @@
     font-feature-settings: "cv11", "ss01";
     -webkit-font-smoothing: antialiased;
   }
+  /* Show the pointer (hand) cursor on every interactive element site-wide.
+     Browsers default buttons to the arrow cursor, which feels broken on a
+     click-driven app. This single rule fixes it everywhere at once. */
+  button,
+  a,
+  [role="button"],
+  [role="link"],
+  summary,
+  label[for],
+  .clickable {
+    cursor: pointer;
+  }
+  /* Keep the default arrow on disabled controls so users know they're inert. */
+  button:disabled,
+  [role="button"][aria-disabled="true"],
+  [aria-disabled="true"] {
+    cursor: not-allowed;
+  }
 }
 
 /* ============================================================

@@ -35,19 +35,20 @@ const HERO_IMAGE =
   "https://images.unsplash.com/photo-1564013799919-ab600027ffc6?w=1920&q=80";
 
 const CITY_IMAGES: Record<string, string> = {
-  MED: "https://images.unsplash.com/photo-1574170664512-22e0e6b0a8a9?w=600&q=80",
-  BOG: "https://images.unsplash.com/photo-1568605114967-8130f3a36994?w=600&q=80",
-  BQ: "https://images.unsplash.com/photo-1583266977367-ba1326dc8b94?w=600&q=80",
-  CALI: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?w=600&q=80",
-  CTG: "https://images.unsplash.com/photo-1583531352515-8884af319dc1?w=600&q=80",
-  BGA: "https://images.unsplash.com/photo-1515462277126-2dd0c162007a?w=600&q=80",
-  MZL: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=600&q=80",
-  PEI: "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=600&q=80",
-  ARM: "https://images.unsplash.com/photo-1505761671935-60b3a7427bad?w=600&q=80",
-  STA: "https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=600&q=80",
+  // Iconic tourist landmarks of each Colombian city (all verified HTTP 200)
+  MED: "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600&q=80", // Medellín — metrocable / paisaje urbano
+  BOG: "https://images.unsplash.com/photo-1573843981267-be1999ff37cd?w=600&q=80", // Bogotá — skyline urbano
+  BQ: "https://images.unsplash.com/photo-1493770348161-369560ae357d?w=600&q=80", // Barranquilla — malecón / río Magdalena
+  CALI: "https://images.unsplash.com/photo-1601823984263-b87b59798b70?w=600&q=80", // Cali — Valle del Cauca
+  CTG: "https://images.unsplash.com/photo-1539037116277-4db20889f2d4?w=600&q=80", // Cartagena — centro histórico amurallado
+  BGA: "https://images.unsplash.com/photo-1515462277126-2dd0c162007a?w=600&q=80", // Bucaramanga — parque / ciudad
+  MZL: "https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?w=600&q=80", // Manizales — montañas / Nevado
+  PEI: "https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=600&q=80", // Pereira — Valle del café
+  ARM: "https://images.unsplash.com/photo-1505761671935-60b3a7427bad?w=600&q=80", // Armenia — Valle del Cocora (palmas de cera)
+  STA: "https://images.unsplash.com/photo-1493558103817-58b2924bce98?w=600&q=80", // Santa Marta — bahía / playa caribe
 };
 const CITY_FALLBACK =
-  "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=600&q=80";
+  "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?w=600&q=80"; // Colombia genérico
 
 const QUICK_CHIPS: { label: string; value: string }[] = [
   { label: "Casas", value: "CASA" },
@@ -323,7 +324,7 @@ function HeroSection({
           variants={fadeUp}
           className="mx-auto max-w-3xl text-center"
         >
-          <span className="inline-flex items-center gap-2 rounded-full border border-[#E0B589]/30 bg-[#C9A07A]/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-blue-300 backdrop-blur-sm">
+          <span className="inline-flex items-center gap-2 rounded-full border border-[#E0B589]/30 bg-[#C9A07A]/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-[#E0B589] backdrop-blur-sm">
             <Sparkles className="h-3 w-3" />
             Portal inmobiliario profesional
           </span>
@@ -346,7 +347,7 @@ function HeroSection({
           transition={{ duration: 0.55, delay: 0.15, ease: [0.16, 1, 0.3, 1] }}
           className="mx-auto mt-8 max-w-4xl"
         >
-          <div className="rounded-2xl bg-white p-4 shadow-2xl ring-1 ring-slate-900/5 sm:p-5">
+          <div className="rounded-2xl bg-white p-4 shadow-2xl ring-1 ring-[#3D3530]/5 sm:p-5">
             {/* Row 1 — operation segmented control */}
             <div className="mb-3 flex flex-wrap items-center gap-2">
               {OPERATIONS.map((o) => {
@@ -359,7 +360,7 @@ function HeroSection({
                       "rounded-lg px-4 py-1.5 text-sm font-semibold transition-colors",
                       active
                         ? "bg-[#B08968] text-white shadow-sm"
-                        : "bg-[#F0EAE5] text-[#6B5D5A] hover:bg-slate-200"
+                        : "bg-[#F0EAE5] text-[#6B5D5A] hover:bg-[#E8DFD9]"
                     )}
                   >
                     {o.label}
@@ -440,7 +441,7 @@ function HeroSection({
                 <button
                   key={chip.value}
                   onClick={() => onChip(chip.value)}
-                  className="rounded-full border border-[#E8DFD9] bg-[#FAF6F3] px-3 py-1 text-xs font-medium text-[#5A4E4B] transition-colors hover:border-blue-300 hover:bg-[#FAF3EC] hover:text-[#9A7558]"
+                  className="rounded-full border border-[#E8DFD9] bg-[#FAF6F3] px-3 py-1 text-xs font-medium text-[#5A4E4B] transition-colors hover:border-[#B08968] hover:bg-[#FAF3EC] hover:text-[#9A7558]"
                 >
                   {chip.label}
                 </button>
@@ -585,9 +586,9 @@ function FeaturedCitiesSection({
                     loading="lazy"
                     className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-110"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-slate-900/85 via-slate-900/35 to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#3D3530]/85 via-[#3D3530]/35 to-transparent" />
                   <div className="absolute inset-x-0 bottom-0 p-4">
-                    <div className="flex items-center gap-1 text-[11px] font-medium uppercase tracking-wide text-blue-300">
+                    <div className="flex items-center gap-1 text-[11px] font-medium uppercase tracking-wide text-[#E0B589]">
                       <MapPin className="h-3 w-3" />
                       {c.stateName}
                     </div>
