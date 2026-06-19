@@ -560,3 +560,48 @@ Vercel deployment readiness:
 Stage Summary:
 - GitHub push complete and verified; secrets are NOT on GitHub.
 - Vercel deployment pending user action (import repo via dashboard + set env vars). No blockers identified.
+
+---
+Task ID: SANDBOX-IMPORT-007
+Agent: main (Z.ai Code)
+Task: 3 ajustes al CRM/upload: (1) opción "Otro" en Ciudad/Barrio del wizard, (2) lentitud de upload de imágenes, (3) sección Borradores para recuperar inmuebles guardados.
+
+Work Log:
+
+Fix #1 — Opción "Otro" en Ciudad y Barrio (upload-wizard.tsx + schema + API):
+- Añadidos campos `customCityName` y `customNeighborhoodName` al WizardForm interface + DEFAULT_FORM.
+- En el select de Ciudad: añadida opción "+ Otro (escribir manualmente)" con value `__other__`. Al seleccionarla aparece un Input para escribir el nombre manual.
+- En el select de Barrio: misma opción "Otro". Además, si la ciudad es "Otro", el select de barrio se deshabilita y solo se muestra el input manual (placeholder "Ciudad manual — escribe el barrio abajo").
+- Validación del step 1 actualizada: exige nombre manual cuando se elige "Otro".
+- handlePublish envía `cityId: null` y `customCityName: <texto>` cuando es "Otro" (igual para barrio).
+- Schema Prisma: nuevos campos `customCityName String?` y `customNeighborhoodName String?` en modelo Property. `prisma db:push` aplicado a Supabase.
+- API POST /api/properties: maneja cityId null derivando un cityCode de 3 letras del customCityName (ej "Soledad" → "SOL", "Por definir" → "POR") para generar el código INV-YYYY-{CITY}-NNNNNN.
+- API PUT: propaga customCityName/customNeighborhoodName vía spread de `...rest`.
+- queries.ts / admin/properties / stats: cityName y neighborhoodName ahora devuelven `customCityName || city?.name` y `customNeighborhoodName || neighborhood?.name` para que la UI muestre el nombre manual cuando aplique.
+- Vista previa (Step6) y resumen (Step7): cityLabel/neighborhoodLabel muestran el nombre manual cuando es "Otro".
+- Verificado vía agent-browser: opción "Otro" aparece en el dropdown, al seleccionarla aparece el input manual, se puede escribir, y el barrio también muestra input manual.
+
+Fix #2 — Upload de imágenes paralelizado (api/upload/route.ts):
+- Root cause: las 4 variantes WebP (thumb/medium/large/original) se generaban con sharp y subían a Supabase SECUENCIALMENTE (4 uploads, cada uno con su latencia de red a US-East). Para una imagen de 5MB esto tomaba 15-30s y parecía congelado.
+- Fix: las 4 variantes ahora se procesan con `Promise.all` (sharp) Y se suben a Supabase con `Promise.all` (4 uploads concurrentes).
+- WebP effort reducido 4→2 (menos tiempo de CPU, calidad similar).
+- Mejora medida: imagen de 6KB pasó de ~2.5s a ~0.7s (warm). Imagen 3000x2000: ~1.1s.
+- No se encontró error real en el upload — era puramente lentitud por serialización.
+
+Fix #3 — Sección Borradores (admin-drafts.tsx + admin-view + admin-dashboard + upload-wizard saveDraft):
+- Root cause: `saveDraft` solo guardaba en localStorage (navegador). Si el usuario cambiaba de dispositivo o limpiaba el browser, perdía el borrador. Además no había UI para listar/recuperar borradores.
+- Fix saveDraft (upload-wizard.tsx): ahora hace POST/PUT a /api/properties con `published:false` y `status:"BORRADOR"`, persistiendo en la BD. Mantiene el localStorage como respaldo. Botón muestra spinner "Guardando…" mientras guarda. Validación permisiva: si faltan ciudad/barrio, usa placeholders "Por definir" para que el backend no rechace.
+- Nuevo componente `src/components/admin/admin-drafts.tsx`: lista inmuebles con `published=false` (fetch a /api/admin/properties?published=false + filtro client-side status BORRADOR). Cada item muestra código, título, operación, ubicación, precio, fecha. Botones "Continuar" (abre edit wizard vía openEdit) y "Eliminar" (con confirmación). Empty state con CTA "Publicar inmueble".
+- admin-view.tsx: añadida sección "drafts" al nav (icono FileEdit), SECTION_LABELS, y render `{section === "drafts" && <AdminDrafts />}`.
+- admin-dashboard.tsx: KPI "Borradores" ahora es clickeable (abre sección drafts). Banner destacado "Tenés N borradores sin terminar" con botón "Ver borradores" cuando hay drafts > 0.
+- Verificado vía API: POST creó borrador INV-2026-POR-000058 con customCityName "Por definir". Sección Borradores muestra los 2 drafts preexistentes (INV-2026-BOG-000054, INV-2026-BOG-000015) con botones Continuar/Eliminar.
+
+Push a GitHub + Vercel:
+- Commit `c7fb908` "Otro en ciudad/barrio, upload paralelo, sección Borradores" pusheado a main (fast-forward e61d4fb..c7fb908).
+- Vercel auto-desplegó: estado "success" — "Deployment has completed" (deploy 9WcPP6vNeK2nwF9Eb72RrYQ2CpbD).
+- URL de producción: https://inmopro.vercel.app/
+
+Stage Summary:
+- Los 3 ajustes quedaron implementados, verificados y desplegados a producción.
+- Importante para próximo deploy a Vercel: las variables de entorno deben incluir DATABASE_URL (PostgreSQL de Supabase), no SQLite. En Vercel esto ya está configurado correctamente.
+- El cliente Prisma debe regenerarse tras cambios de schema (`prisma generate` corre automáticamente en `postinstall` durante el build de Vercel).
