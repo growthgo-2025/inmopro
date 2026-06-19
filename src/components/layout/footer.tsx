@@ -92,21 +92,26 @@ export function Footer() {
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-3 px-4 py-5 text-xs text-[#C9BFB9] sm:flex-row sm:px-6 lg:px-8">
           <div className="flex items-center gap-2">
             © {new Date().getFullYear()} Innovar Showrooms. Todos los derechos reservados. NIT 901.123.456-7
-            {/* Secret admin access — very subtle, only reveals on hover */}
+            {/* Discrete admin access — visible enough for the admin to find,
+                subtle enough that the public won't click it randomly. */}
             {!isAdmin && (
               <button
                 onClick={openLogin}
                 title="Acceso administrativo"
                 aria-label="Acceso administrativo"
-                className="ml-2 inline-flex h-5 w-5 items-center justify-center rounded text-[#5A4E4B] opacity-30 transition-all hover:opacity-100 hover:text-[#E0B589]"
+                className="ml-3 inline-flex h-6 w-6 items-center justify-center rounded-md border border-[#5A4E4B] text-[#A89B96] opacity-60 transition-all hover:border-[#E0B589] hover:bg-[#B08968]/20 hover:text-[#E0B589] hover:opacity-100"
               >
-                <LockKeyhole className="h-3 w-3" />
+                <LockKeyhole className="h-3.5 w-3.5" />
               </button>
             )}
             {isAdmin && (
-              <span className="ml-2 inline-flex items-center gap-1 rounded-full bg-[#B08968]/30 px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider text-[#E0B589]">
+              <button
+                onClick={openLogin}
+                className="ml-3 inline-flex items-center gap-1.5 rounded-full bg-[#B08968] px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-white shadow-sm transition-all hover:bg-[#9A7558]"
+                title="Sesión de administrador activa"
+              >
                 <ShieldCheck className="h-3 w-3" /> Modo admin
-              </span>
+              </button>
             )}
           </div>
           <div className="flex items-center gap-4">
