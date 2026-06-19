@@ -38,8 +38,8 @@ export function AppShell() {
         <Header />
         <main className="flex flex-1 items-center justify-center">
           <div className="flex flex-col items-center gap-3">
-            <div className="h-8 w-8 animate-spin rounded-full border-2 border-slate-200 border-t-blue-600" />
-            <p className="text-sm text-slate-400">Cargando InmoPro…</p>
+            <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#E8DFD9] border-t-[#B08968]" />
+            <p className="text-sm text-[#8B7E78]">Cargando Innovar Showrooms…</p>
           </div>
         </main>
         <Footer />
@@ -54,7 +54,7 @@ export function AppShell() {
         <Suspense
           fallback={
             <div className="flex min-h-[60vh] items-center justify-center">
-              <div className="h-8 w-8 animate-spin rounded-full border-2 border-slate-200 border-t-blue-600" />
+              <div className="h-8 w-8 animate-spin rounded-full border-2 border-[#E8DFD9] border-t-[#B08968]" />
             </div>
           }
         >

@@ -61,8 +61,8 @@ export function AdminView() {
               </BreadcrumbItem>
             </BreadcrumbList>
           </Breadcrumb>
-          <h1 className="mt-1 text-2xl font-bold tracking-tight text-slate-900">Panel administrativo</h1>
-          <p className="text-sm text-slate-500">Gestiona inmuebles, leads y métricas de tu agencia.</p>
+          <h1 className="mt-1 text-2xl font-bold tracking-tight text-[#3D3530]">Panel administrativo</h1>
+          <p className="text-sm text-[#8B7E78]">Gestiona inmuebles, leads y métricas de tu agencia.</p>
         </div>
         <Button onClick={() => setView("upload")} className="self-start sm:self-auto">
           <Plus /> Publicar inmueble
@@ -72,17 +72,17 @@ export function AdminView() {
       <div className="flex gap-6">
         {/* Desktop sidebar */}
         <aside className="hidden md:block w-60 shrink-0">
-          <div className="sticky top-20 rounded-xl bg-slate-900 p-3 text-slate-300 shadow-sm">
+          <div className="sticky top-20 rounded-xl bg-[#6B5D5A] p-3 text-[#F5EBE0] shadow-sm">
             <div className="mb-3 flex items-center gap-2 px-1">
-              <div className="grid size-8 place-items-center rounded-lg bg-blue-600 text-sm font-bold text-white">A</div>
+              <div className="grid size-8 place-items-center rounded-lg bg-[#B08968] text-sm font-bold text-white">A</div>
               <div className="flex-1 min-w-0">
-                <div className="text-[10px] uppercase tracking-wider text-slate-400">Administrador</div>
-                <div className="truncate text-sm font-semibold text-white">InmoPro</div>
+                <div className="text-[10px] uppercase tracking-wider text-[#C9BFB9]">Administrador</div>
+                <div className="truncate text-sm font-semibold text-white">Innovar Showrooms</div>
               </div>
             </div>
             <button
               onClick={goHome}
-              className="mb-2 flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-xs text-slate-400 transition-colors hover:bg-slate-800 hover:text-white"
+              className="mb-2 flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-xs text-[#A89B96] transition-colors hover:bg-[#4A3D38] hover:text-white"
             >
               <ArrowLeft className="size-3.5" /> Volver al sitio
             </button>
@@ -95,7 +95,7 @@ export function AdminView() {
                     onClick={() => go(item)}
                     className={cn(
                       "flex w-full items-center gap-2.5 rounded-md px-3 py-2 text-sm font-medium transition-colors",
-                      active ? "bg-blue-600 text-white shadow-sm" : "text-slate-300 hover:bg-slate-800 hover:text-white"
+                      active ? "bg-[#B08968] text-white shadow-sm" : "text-[#C9BFB9] hover:bg-[#4A3D38] hover:text-white"
                     )}
                   >
                     <item.icon className="size-4" />
@@ -104,8 +104,8 @@ export function AdminView() {
                 );
               })}
             </nav>
-            <div className="mt-4 rounded-lg bg-slate-800/60 p-3 text-xs text-slate-400">
-              <div className="font-semibold text-slate-200">Tip</div>
+            <div className="mt-4 rounded-lg bg-[#4A3D38]/60 p-3 text-xs text-[#A89B96]">
+              <div className="font-semibold text-[#E8DFD9]">Tip</div>
               <p className="mt-1 leading-relaxed">Usa el CRM para dar seguimiento a tus leads desde el primer contacto hasta el cierre.</p>
             </div>
           </div>
@@ -122,7 +122,7 @@ export function AdminView() {
                   onClick={() => go(item)}
                   className={cn(
                     "flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-medium transition-colors",
-                    active ? "bg-blue-600 text-white" : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                    active ? "bg-[#B08968] text-white" : "bg-[#F0EAE5] text-[#5A4E4B] hover:bg-slate-200"
                   )}
                 >
                   <item.icon className="size-3.5" />

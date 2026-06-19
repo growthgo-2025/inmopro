@@ -29,10 +29,10 @@ export function PropertyCodeBadge({
 
   const styles =
     variant === "solid"
-      ? "bg-slate-900 text-white border-slate-900 hover:bg-slate-800"
+      ? "bg-[#3D3530] text-white border-slate-900 hover:bg-[#4A3D38]"
       : variant === "light"
-      ? "bg-white/95 text-slate-900 border-white shadow-sm hover:bg-white"
-      : "bg-slate-100 text-slate-700 border-slate-200 hover:bg-slate-200";
+      ? "bg-white/95 text-[#3D3530] border-white shadow-sm hover:bg-white"
+      : "bg-[#F0EAE5] text-[#5A4E4B] border-[#E8DFD9] hover:bg-slate-200";
 
   return (
     <button
@@ -47,7 +47,7 @@ export function PropertyCodeBadge({
       <Hash className="h-3 w-3 opacity-70" />
       <span>{code}</span>
       {copied ? (
-        <Check className="h-3 w-3 text-emerald-500" />
+        <Check className="h-3 w-3 text-[#97A97C]" />
       ) : (
         <Copy className="h-3 w-3 opacity-50" />
       )}

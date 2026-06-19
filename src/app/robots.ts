@@ -9,7 +9,7 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/api/"],
       },
     ],
-    sitemap: "https://inmopro.co/sitemap.xml",
-    host: "https://inmopro.co",
+    sitemap: "https://innovarshowrooms.co/sitemap.xml",
+    host: "https://innovarshowrooms.co",
   };
 }

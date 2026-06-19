@@ -28,7 +28,7 @@ export function PropertyCard({
   const { openProperty } = useNav();
   const p = property;
 
-  const opColor = OPERATION_COLORS[p.operation] || "bg-slate-100 text-slate-700";
+  const opColor = OPERATION_COLORS[p.operation] || "bg-[#F0EAE5] text-[#5A4E4B]";
 
   const topAmenities = p.amenities.slice(0, 3);
 
@@ -41,10 +41,10 @@ export function PropertyCard({
     >
       <Card
         onClick={() => openProperty(p.code)}
-        className="card-lift group relative h-full cursor-pointer overflow-hidden border-slate-200 p-0"
+        className="card-lift group relative h-full cursor-pointer overflow-hidden border-[#E8DFD9] p-0"
       >
         {/* Image */}
-        <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100">
+        <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#F0EAE5]">
           {p.mainImage ? (
             <img
               src={p.mainImage}
@@ -53,7 +53,7 @@ export function PropertyCard({
               className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
             />
           ) : (
-            <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200 text-slate-400">
+            <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200 text-[#A89B96]">
               <Maximize className="h-10 w-10" />
             </div>
           )}
@@ -76,7 +76,7 @@ export function PropertyCard({
           </div>
 
           {/* Quick stats overlay */}
-          <div className="absolute bottom-3 left-3 flex items-center gap-3 rounded-lg bg-slate-900/80 px-3 py-1.5 text-white backdrop-blur-sm">
+          <div className="absolute bottom-3 left-3 flex items-center gap-3 rounded-lg bg-[#3D3530]/80 px-3 py-1.5 text-white backdrop-blur-sm">
             <span className="flex items-center gap-1 text-xs font-medium">
               <BedDouble className="h-3.5 w-3.5" /> {p.bedrooms ?? "—"}
             </span>
@@ -94,10 +94,10 @@ export function PropertyCard({
           {/* Price + type */}
           <div className="flex items-start justify-between gap-2">
             <div>
-              <div className="text-xl font-bold tracking-tight text-slate-900">
+              <div className="text-xl font-bold tracking-tight text-[#3D3530]">
                 {formatPrice(p.price, p.currency)}
               </div>
-              <div className="text-xs font-medium text-slate-500">
+              <div className="text-xs font-medium text-[#8B7E78]">
                 {PROPERTY_TYPE_LABELS[p.propertyType] || p.propertyType}
                 {p.stratum ? ` · Estrato ${p.stratum}` : ""}
               </div>
@@ -105,7 +105,7 @@ export function PropertyCard({
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 shrink-0 text-slate-400 hover:text-rose-500"
+              className="h-8 w-8 shrink-0 text-[#A89B96] hover:text-rose-500"
               onClick={(e) => {
                 e.stopPropagation();
                 // favorite toggle (client-only demo)
@@ -117,12 +117,12 @@ export function PropertyCard({
           </div>
 
           {/* Title */}
-          <h3 className="clamp-2 text-[15px] font-semibold leading-snug text-slate-900 group-hover:text-blue-700">
+          <h3 className="clamp-2 text-[15px] font-semibold leading-snug text-[#3D3530] group-hover:text-[#9A7558]">
             {p.title}
           </h3>
 
           {/* Location */}
-          <div className="flex items-center gap-1 text-xs text-slate-500">
+          <div className="flex items-center gap-1 text-xs text-[#8B7E78]">
             <MapPin className="h-3.5 w-3.5 shrink-0" />
             <span className="truncate">
               {[p.neighborhoodName, p.cityName].filter(Boolean).join(", ")}
@@ -135,14 +135,14 @@ export function PropertyCard({
               {topAmenities.map((a) => (
                 <span
                   key={a}
-                  className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2 py-0.5 text-[11px] font-medium text-blue-700"
+                  className="inline-flex items-center gap-1 rounded-full bg-[#FAF3EC] px-2 py-0.5 text-[11px] font-medium text-[#9A7558]"
                 >
                   <AmenityIcon slug={a} className="h-3 w-3" />
                   {a}
                 </span>
               ))}
               {p.amenities.length > 3 && (
-                <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-500">
+                <span className="rounded-full bg-[#F0EAE5] px-2 py-0.5 text-[11px] font-medium text-[#8B7E78]">
                   +{p.amenities.length - 3}
                 </span>
               )}
@@ -150,11 +150,11 @@ export function PropertyCard({
           )}
 
           {/* Footer */}
-          <div className="flex items-center justify-between border-t border-slate-100 pt-3">
-            <span className="flex items-center gap-1 text-[11px] text-slate-400">
+          <div className="flex items-center justify-between border-t border-[#F0EAE5] pt-3">
+            <span className="flex items-center gap-1 text-[11px] text-[#A89B96]">
               <Eye className="h-3 w-3" /> Ver detalle
             </span>
-            <span className="text-[11px] font-semibold uppercase tracking-wide text-blue-600 group-hover:underline">
+            <span className="text-[11px] font-semibold uppercase tracking-wide text-[#B08968] group-hover:underline">
               Ver inmueble →
             </span>
           </div>

@@ -53,11 +53,11 @@ const OP_HEX: Record<string, string> = {
   TEMPORAL: "#f59e0b",
 };
 const STATUS_BADGES: Record<string, string> = {
-  DISPONIBLE: "bg-emerald-100 text-emerald-700 border-emerald-200",
-  RESERVADO: "bg-amber-100 text-amber-700 border-amber-200",
-  VENDIDO: "bg-slate-200 text-slate-700 border-slate-300",
-  ARRENDADO: "bg-blue-100 text-blue-700 border-blue-200",
-  BORRADOR: "bg-slate-100 text-slate-500 border-slate-200",
+  DISPONIBLE: "bg-[#97A97C]/20 text-[#7A8B66] border-[#97A97C]/30",
+  RESERVADO: "bg-[#E0B589]/20 text-[#B89164] border-[#E0B589]/30",
+  VENDIDO: "bg-slate-200 text-[#5A4E4B] border-[#D8CFC9]",
+  ARRENDADO: "bg-[#F5EBE0] text-[#9A7558] border-blue-200",
+  BORRADOR: "bg-[#F0EAE5] text-[#8B7E78] border-[#E8DFD9]",
 };
 
 export function AdminDashboard() {
@@ -90,15 +90,15 @@ export function AdminDashboard() {
   }));
 
   const primaryKpis = [
-    { label: "Total inmuebles", value: t.properties, icon: Building2, tint: "bg-blue-100 text-blue-700", trend: `${t.published} publicados` },
-    { label: "Publicados", value: t.published, icon: CheckCircle2, tint: "bg-emerald-100 text-emerald-700", trend: `${t.featured} destacados` },
-    { label: "Leads nuevos", value: t.newLeads, icon: Users, tint: "bg-amber-100 text-amber-700", trend: `${t.leads} totales` },
-    { label: "Visitas totales", value: t.totalViews, icon: Eye, tint: "bg-violet-100 text-violet-700", trend: "acumulado" },
+    { label: "Total inmuebles", value: t.properties, icon: Building2, tint: "bg-[#F5EBE0] text-[#9A7558]", trend: `${t.published} publicados` },
+    { label: "Publicados", value: t.published, icon: CheckCircle2, tint: "bg-[#97A97C]/20 text-[#7A8B66]", trend: `${t.featured} destacados` },
+    { label: "Leads nuevos", value: t.newLeads, icon: Users, tint: "bg-[#E0B589]/20 text-[#B89164]", trend: `${t.leads} totales` },
+    { label: "Visitas totales", value: t.totalViews, icon: Eye, tint: "bg-[#A89B96]/20 text-[#7A6E6A]", trend: "acumulado" },
   ];
   const secondaryKpis = [
-    { label: "Destacados", value: t.featured, icon: Star, tint: "bg-amber-100 text-amber-700" },
-    { label: "Borradores", value: drafts, icon: FileEdit, tint: "bg-slate-100 text-slate-700" },
-    { label: "Leads cerrados", value: t.closedLeads, icon: CheckCircle, tint: "bg-emerald-100 text-emerald-700" },
+    { label: "Destacados", value: t.featured, icon: Star, tint: "bg-[#E0B589]/20 text-[#B89164]" },
+    { label: "Borradores", value: drafts, icon: FileEdit, tint: "bg-[#F0EAE5] text-[#5A4E4B]" },
+    { label: "Leads cerrados", value: t.closedLeads, icon: CheckCircle, tint: "bg-[#97A97C]/20 text-[#7A8B66]" },
     { label: "Ciudades activas", value: t.citiesActive, icon: MapPin, tint: "bg-cyan-100 text-cyan-700" },
   ];
 
@@ -155,8 +155,8 @@ export function AdminDashboard() {
                 </PieChart>
               </ResponsiveContainer>
               <div className="pointer-events-none absolute inset-0 flex flex-col items-center justify-center">
-                <span className="text-2xl font-bold text-slate-900">{formatNumber(totalLeadsByStatus)}</span>
-                <span className="text-xs text-slate-500">leads totales</span>
+                <span className="text-2xl font-bold text-[#3D3530]">{formatNumber(totalLeadsByStatus)}</span>
+                <span className="text-xs text-[#8B7E78]">leads totales</span>
               </div>
             </div>
           </CardContent>
@@ -216,7 +216,7 @@ export function AdminDashboard() {
           <CardHeader>
             <CardTitle className="text-base">Inmuebles recientes</CardTitle>
             <CardAction>
-              <Button size="sm" variant="ghost" onClick={() => openAdmin("properties")} className="text-blue-600 hover:text-blue-700">
+              <Button size="sm" variant="ghost" onClick={() => openAdmin("properties")} className="text-[#B08968] hover:text-[#9A7558]">
                 Ver todos <ArrowRight className="size-3.5" />
               </Button>
             </CardAction>
@@ -235,8 +235,8 @@ export function AdminDashboard() {
               </TableHeader>
               <TableBody>
                 {data.recentProperties.map((p) => (
-                  <TableRow key={p.id} className="cursor-pointer hover:bg-slate-50" onClick={() => openProperty(p.code)}>
-                    <TableCell className="font-mono text-xs text-blue-600">{p.code}</TableCell>
+                  <TableRow key={p.id} className="cursor-pointer hover:bg-[#FAF6F3]" onClick={() => openProperty(p.code)}>
+                    <TableCell className="font-mono text-xs text-[#B08968]">{p.code}</TableCell>
                     <TableCell className="max-w-[200px] truncate">{p.title}</TableCell>
                     <TableCell className="whitespace-nowrap font-medium">{formatPriceShort(p.price, p.currency)}</TableCell>
                     <TableCell>
@@ -245,16 +245,16 @@ export function AdminDashboard() {
                       </Badge>
                     </TableCell>
                     <TableCell>
-                      <Badge variant="outline" className={cn(STATUS_BADGES[p.status] || "bg-slate-100 text-slate-600 border-slate-200")}>
+                      <Badge variant="outline" className={cn(STATUS_BADGES[p.status] || "bg-[#F0EAE5] text-[#6B5D5A] border-[#E8DFD9]")}>
                         {(p.status || "").toLowerCase()}
                       </Badge>
                     </TableCell>
-                    <TableCell className="whitespace-nowrap text-xs text-slate-500">{formatRelativeTime(p.createdAt)}</TableCell>
+                    <TableCell className="whitespace-nowrap text-xs text-[#8B7E78]">{formatRelativeTime(p.createdAt)}</TableCell>
                   </TableRow>
                 ))}
                 {data.recentProperties.length === 0 && (
                   <TableRow>
-                    <TableCell colSpan={6} className="py-8 text-center text-sm text-slate-400">Sin inmuebles recientes</TableCell>
+                    <TableCell colSpan={6} className="py-8 text-center text-sm text-[#A89B96]">Sin inmuebles recientes</TableCell>
                   </TableRow>
                 )}
               </TableBody>
@@ -266,24 +266,24 @@ export function AdminDashboard() {
           <CardHeader>
             <CardTitle className="text-base">Leads recientes</CardTitle>
             <CardAction>
-              <Button size="sm" variant="ghost" onClick={() => setView("crm")} className="text-blue-600 hover:text-blue-700">
+              <Button size="sm" variant="ghost" onClick={() => setView("crm")} className="text-[#B08968] hover:text-[#9A7558]">
                 Ver todos <ArrowRight className="size-3.5" />
               </Button>
             </CardAction>
           </CardHeader>
           <CardContent>
-            <ul className="divide-y divide-slate-100">
+            <ul className="divide-y divide-[#F0EAE5]">
               {data.recentLeads.map((l) => (
                 <li key={l.id} className="flex items-center gap-3 py-2.5">
-                  <div className="grid size-9 shrink-0 place-items-center rounded-full bg-slate-100 text-xs font-semibold text-slate-600">
+                  <div className="grid size-9 shrink-0 place-items-center rounded-full bg-[#F0EAE5] text-xs font-semibold text-[#6B5D5A]">
                     {l.name?.charAt(0)?.toUpperCase() || "?"}
                   </div>
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center justify-between gap-2">
-                      <span className="truncate text-sm font-medium text-slate-900">{l.name}</span>
-                      <span className="shrink-0 text-xs text-slate-400">{formatRelativeTime(l.createdAt)}</span>
+                      <span className="truncate text-sm font-medium text-[#3D3530]">{l.name}</span>
+                      <span className="shrink-0 text-xs text-[#A89B96]">{formatRelativeTime(l.createdAt)}</span>
                     </div>
-                    <div className="flex items-center gap-2 truncate text-xs text-slate-500">
+                    <div className="flex items-center gap-2 truncate text-xs text-[#8B7E78]">
                       <span className="font-mono">{l.propertyCode || "—"}</span>
                       {l.phone && <span>· {l.phone}</span>}
                     </div>
@@ -294,7 +294,7 @@ export function AdminDashboard() {
                 </li>
               ))}
               {data.recentLeads.length === 0 && (
-                <li className="py-8 text-center text-sm text-slate-400">Sin leads recientes</li>
+                <li className="py-8 text-center text-sm text-[#A89B96]">Sin leads recientes</li>
               )}
             </ul>
           </CardContent>
@@ -317,9 +317,9 @@ function KpiCard({
             <Icon className="size-5" />
           </div>
           <div className="min-w-0 flex-1">
-            <div className="text-xs font-medium text-slate-500">{label}</div>
-            <div className="text-2xl font-bold leading-tight text-slate-900">{formatNumber(value)}</div>
-            {trend && <div className="text-xs text-slate-400">{trend}</div>}
+            <div className="text-xs font-medium text-[#8B7E78]">{label}</div>
+            <div className="text-2xl font-bold leading-tight text-[#3D3530]">{formatNumber(value)}</div>
+            {trend && <div className="text-xs text-[#A89B96]">{trend}</div>}
           </div>
         </CardContent>
       </Card>

@@ -164,8 +164,8 @@ export function AdminImport() {
       {/* Header */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-xl font-bold text-slate-900">Importar inmuebles masivamente</h2>
-          <p className="text-sm text-slate-500">Sube un archivo CSV o Excel con tus inmuebles para crearlos de una sola vez.</p>
+          <h2 className="text-xl font-bold text-[#3D3530]">Importar inmuebles masivamente</h2>
+          <p className="text-sm text-[#8B7E78]">Sube un archivo CSV o Excel con tus inmuebles para crearlos de una sola vez.</p>
         </div>
         <Button variant="outline" onClick={downloadTemplate}>
           <Download className="size-4" /> Descargar plantilla CSV
@@ -189,15 +189,15 @@ export function AdminImport() {
                 className={cn(
                   "font-mono text-xs",
                   REQUIRED_FIELDS.includes(h)
-                    ? "border-blue-300 bg-blue-50 text-blue-700"
-                    : "border-slate-200 bg-slate-50 text-slate-600"
+                    ? "border-blue-300 bg-[#FAF3EC] text-[#9A7558]"
+                    : "border-[#E8DFD9] bg-[#FAF6F3] text-[#6B5D5A]"
                 )}
               >
                 {h}{REQUIRED_FIELDS.includes(h) && " *"}
               </Badge>
             ))}
           </div>
-          <p className="mt-2 text-xs text-slate-500">Los campos marcados con <span className="font-semibold text-blue-700">*</span> son obligatorios. Las filas incompletas se resaltan en rojo.</p>
+          <p className="mt-2 text-xs text-[#8B7E78]">Los campos marcados con <span className="font-semibold text-[#9A7558]">*</span> son obligatorios. Las filas incompletas se resaltan en rojo.</p>
         </CardContent>
       </Card>
 
@@ -210,7 +210,7 @@ export function AdminImport() {
             onClick={() => inputRef.current?.click()}
             className={cn(
               "flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed px-6 py-14 text-center transition-colors",
-              dragOver ? "border-blue-500 bg-blue-50" : "border-slate-300 bg-slate-50 hover:border-blue-400 hover:bg-blue-50/40"
+              dragOver ? "border-[#C9A07A] bg-[#FAF3EC]" : "border-[#D8CFC9] bg-[#FAF6F3] hover:border-[#E0B589] hover:bg-[#FAF3EC]/40"
             )}
           >
             <input
@@ -225,11 +225,11 @@ export function AdminImport() {
               }}
             />
             <div className="grid size-14 place-items-center rounded-full bg-white shadow-sm">
-              <FileSpreadsheet className="size-7 text-blue-600" />
+              <FileSpreadsheet className="size-7 text-[#B08968]" />
             </div>
             <div>
-              <div className="text-sm font-semibold text-slate-900">Arrastra tu archivo o haz clic para seleccionar</div>
-              <div className="mt-0.5 text-xs text-slate-500">Formatos admitidos: CSV, XLSX · hasta 100 filas</div>
+              <div className="text-sm font-semibold text-[#3D3530]">Arrastra tu archivo o haz clic para seleccionar</div>
+              <div className="mt-0.5 text-xs text-[#8B7E78]">Formatos admitidos: CSV, XLSX · hasta 100 filas</div>
             </div>
           </div>
         </motion.div>
@@ -238,7 +238,7 @@ export function AdminImport() {
           <CardHeader>
             <div className="flex items-center justify-between">
               <div className="flex min-w-0 items-center gap-2">
-                <FileUp className="size-4 shrink-0 text-blue-600" />
+                <FileUp className="size-4 shrink-0 text-[#B08968]" />
                 <CardTitle className="truncate text-base">{parsed.fileName}</CardTitle>
               </div>
               <Button size="icon" variant="ghost" onClick={reset} disabled={importing} className="shrink-0">
@@ -248,31 +248,31 @@ export function AdminImport() {
           </CardHeader>
           <CardContent className="space-y-4">
             {parsed.isExcel ? (
-              <div className="flex items-center gap-3 rounded-lg border border-amber-200 bg-amber-50 p-4">
-                <AlertCircle className="size-5 shrink-0 text-amber-600" />
-                <div className="text-sm text-amber-800">Excel detectado, se procesará en el servidor al momento de la importación.</div>
+              <div className="flex items-center gap-3 rounded-lg border border-[#E0B589]/30 bg-[#FAF0E0] p-4">
+                <AlertCircle className="size-5 shrink-0 text-[#B89164]" />
+                <div className="text-sm text-[#A8814E]">Excel detectado, se procesará en el servidor al momento de la importación.</div>
               </div>
             ) : (
               <>
                 <div className="flex flex-wrap items-center gap-2 text-sm">
-                  <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200">
+                  <Badge variant="outline" className="bg-emerald-50 text-[#7A8B66] border-[#97A97C]/30">
                     <CheckCircle2 className="size-3" /> {parsed.rows.length} inmuebles detectados
                   </Badge>
                   {invalidCount > 0 && (
-                    <Badge variant="outline" className="bg-red-50 text-red-700 border-red-200">
+                    <Badge variant="outline" className="bg-red-50 text-[#A85F5F] border-[#C97A7A]/30">
                       <AlertCircle className="size-3" /> {invalidCount} fila(s) con campos faltantes
                     </Badge>
                   )}
-                  <span className="text-xs text-slate-500">· {parsed.headers.length} columnas · vista previa (5 filas)</span>
+                  <span className="text-xs text-[#8B7E78]">· {parsed.headers.length} columnas · vista previa (5 filas)</span>
                 </div>
 
-                <div className="overflow-x-auto rounded-lg border border-slate-200">
+                <div className="overflow-x-auto rounded-lg border border-[#E8DFD9]">
                   <Table>
                     <TableHeader>
-                      <TableRow className="bg-slate-50">
+                      <TableRow className="bg-[#FAF6F3]">
                         {parsed.headers.map((h, i) => (
                           <TableHead key={i} className="font-mono text-xs">
-                            {h}{REQUIRED_FIELDS.includes(h) && <span className="ml-0.5 text-blue-600">*</span>}
+                            {h}{REQUIRED_FIELDS.includes(h) && <span className="ml-0.5 text-[#B08968]">*</span>}
                           </TableHead>
                         ))}
                       </TableRow>
@@ -294,13 +294,13 @@ export function AdminImport() {
                   </Table>
                 </div>
                 {parsed.rows.length > 5 && (
-                  <div className="text-xs text-slate-500">y {parsed.rows.length - 5} filas más…</div>
+                  <div className="text-xs text-[#8B7E78]">y {parsed.rows.length - 5} filas más…</div>
                 )}
 
                 {importing && (
                   <div className="space-y-1.5">
-                    <div className="flex justify-between text-xs text-slate-600">
-                      <span className="flex items-center gap-1.5"><FileCheck2 className="size-3.5 text-blue-600" /> Importando…</span>
+                    <div className="flex justify-between text-xs text-[#6B5D5A]">
+                      <span className="flex items-center gap-1.5"><FileCheck2 className="size-3.5 text-[#B08968]" /> Importando…</span>
                       <span>{progress}%</span>
                     </div>
                     <Progress value={progress} />

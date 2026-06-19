@@ -45,86 +45,86 @@
 }
 
 /* ============================================================
-   InmoPro Corporate Design System
-   Palette: Slate-navy primary, blue secondary/support, blue CTA
+   Innovar Showrooms - Pastel Premium Design System
+   Palette: Warm taupe + caramel + cream (boutique showroom)
    ============================================================ */
 :root {
-  --radius: 0.625rem;
+  --radius: 0.75rem;
 
-  /* Brand */
-  --brand-primary: #0F172A;   /* slate-900 - header, dark sections */
-  --brand-secondary: #1E40AF; /* blue-800  - secondary accents */
-  --brand-support: #3B82F6;   /* blue-500  - links, highlights */
-  --brand-cta: #2563EB;       /* blue-600  - primary buttons */
-  --brand-bg: #F8FAFC;        /* slate-50  - page background */
-  --brand-text: #1E293B;      /* slate-800 - body text */
-  --brand-text-muted: #64748B;/* slate-500 - secondary text */
-  --brand-success: #10B981;   /* emerald-500 */
-  --brand-warning: #F59E0B;   /* amber-500 */
-  --brand-danger: #EF4444;    /* red-500 */
-  --brand-border: #E2E8F0;    /* slate-200 */
+  /* Brand - Pastel Premium */
+  --brand-primary: #6B5D5A;   /* taupe oscuro - header, dark sections */
+  --brand-secondary: #A89B96; /* taupe medio - secondary accents */
+  --brand-support: #C9BFB9;   /* taupe claro - links, highlights */
+  --brand-cta: #B08968;       /* caramel - primary buttons */
+  --brand-bg: #FAF6F3;        /* crema cálido - page background */
+  --brand-text: #3D3530;      /* marrón oscuro - body text */
+  --brand-text-muted: #8B7E78;/* taupe medio - secondary text */
+  --brand-success: #97A97C;   /* sage verde pastel */
+  --brand-warning: #E0B589;   /* melocotón cálido */
+  --brand-danger: #C97A7A;    /* rosa coral apagado */
+  --brand-border: #E8DFD9;    /* crema-gris */
 
   /* shadcn tokens mapped to brand */
-  --background: #ffffff;
-  --foreground: #1E293B;
-  --card: #ffffff;
-  --card-foreground: #1E293B;
-  --popover: #ffffff;
-  --popover-foreground: #1E293B;
-  --primary: #2563EB;
-  --primary-foreground: #ffffff;
-  --secondary: #F1F5F9;
-  --secondary-foreground: #0F172A;
-  --muted: #F1F5F9;
-  --muted-foreground: #64748B;
-  --accent: #EFF6FF;
-  --accent-foreground: #1E40AF;
-  --destructive: #EF4444;
-  --border: #E2E8F0;
-  --input: #E2E8F0;
-  --ring: #3B82F6;
-  --chart-1: #2563EB;
-  --chart-2: #10B981;
-  --chart-3: #F59E0B;
-  --chart-4: #8B5CF6;
-  --chart-5: #EF4444;
-  --sidebar: #0F172A;
-  --sidebar-foreground: #E2E8F0;
-  --sidebar-primary: #2563EB;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #1E293B;
-  --sidebar-accent-foreground: #F8FAFC;
-  --sidebar-border: #1E293B;
-  --sidebar-ring: #3B82F6;
+  --background: #FFFEFB;
+  --foreground: #3D3530;
+  --card: #FFFFFF;
+  --card-foreground: #3D3530;
+  --popover: #FFFFFF;
+  --popover-foreground: #3D3530;
+  --primary: #B08968;
+  --primary-foreground: #FFFFFF;
+  --secondary: #F0EAE5;
+  --secondary-foreground: #6B5D5A;
+  --muted: #F5F0EC;
+  --muted-foreground: #8B7E78;
+  --accent: #F5EBE0;
+  --accent-foreground: #6B5D5A;
+  --destructive: #C97A7A;
+  --border: #E8DFD9;
+  --input: #E8DFD9;
+  --ring: #C9BFB9;
+  --chart-1: #B08968;
+  --chart-2: #97A97C;
+  --chart-3: #E0B589;
+  --chart-4: #A89B96;
+  --chart-5: #C97A7A;
+  --sidebar: #6B5D5A;
+  --sidebar-foreground: #F5EBE0;
+  --sidebar-primary: #B08968;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #5A4E4B;
+  --sidebar-accent-foreground: #F5EBE0;
+  --sidebar-border: #5A4E4B;
+  --sidebar-ring: #C9BFB9;
 }
 
 .dark {
-  --background: #0B1220;
-  --foreground: #F8FAFC;
-  --card: #0F172A;
-  --card-foreground: #F8FAFC;
-  --popover: #0F172A;
-  --popover-foreground: #F8FAFC;
-  --primary: #3B82F6;
-  --primary-foreground: #ffffff;
-  --secondary: #1E293B;
-  --secondary-foreground: #F8FAFC;
-  --muted: #1E293B;
-  --muted-foreground: #94A3B8;
-  --accent: #1E3A8A;
-  --accent-foreground: #BFDBFE;
-  --destructive: #DC2626;
-  --border: #1E293B;
-  --input: #1E293B;
-  --ring: #3B82F6;
-  --sidebar: #020617;
-  --sidebar-foreground: #E2E8F0;
-  --sidebar-primary: #3B82F6;
-  --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #1E293B;
-  --sidebar-accent-foreground: #F8FAFC;
-  --sidebar-border: #1E293B;
-  --sidebar-ring: #3B82F6;
+  --background: #2D2624;
+  --foreground: #FAF6F3;
+  --card: #3D3530;
+  --card-foreground: #FAF6F3;
+  --popover: #3D3530;
+  --popover-foreground: #FAF6F3;
+  --primary: #C9A07A;
+  --primary-foreground: #FFFFFF;
+  --secondary: #4A3D38;
+  --secondary-foreground: #FAF6F3;
+  --muted: #4A3D38;
+  --muted-foreground: #A89B96;
+  --accent: #5A4E4B;
+  --accent-foreground: #E0C9B5;
+  --destructive: #D89595;
+  --border: #4A3D38;
+  --input: #4A3D38;
+  --ring: #A89B96;
+  --sidebar: #1F1A18;
+  --sidebar-foreground: #F5EBE0;
+  --sidebar-primary: #C9A07A;
+  --sidebar-primary-foreground: #FFFFFF;
+  --sidebar-accent: #3D3530;
+  --sidebar-accent-foreground: #F5EBE0;
+  --sidebar-border: #3D3530;
+  --sidebar-ring: #A89B96;
 }
 
 @layer base {
@@ -183,11 +183,11 @@
   background: transparent;
 }
 .scroll-brand::-webkit-scrollbar-thumb {
-  background: #CBD5E1;
+  background: #C9BFB9;
   border-radius: 9999px;
 }
 .scroll-brand::-webkit-scrollbar-thumb:hover {
-  background: #94A3B8;
+  background: #A89B96;
 }
 
 /* ============================================================
@@ -204,14 +204,14 @@
   100% { background-position: 1000px 0; }
 }
 .shimmer {
-  background: linear-gradient(90deg, #F1F5F9 0%, #E2E8F0 50%, #F1F5F9 100%);
+  background: linear-gradient(90deg, #F5F0EC 0%, #E8DFD9 50%, #F5F0EC 100%);
   background-size: 1000px 100%;
   animation: shimmer 1.6s infinite linear;
 }
 
 /* Premium gradient text */
 .text-gradient-brand {
-  background: linear-gradient(135deg, #2563EB 0%, #3B82F6 50%, #60A5FA 100%);
+  background: linear-gradient(135deg, #B08968 0%, #C9A07A 50%, #E0B589 100%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -219,7 +219,7 @@
 
 /* Hero overlay */
 .hero-overlay {
-  background: linear-gradient(180deg, rgba(15,23,42,0.45) 0%, rgba(15,23,42,0.65) 60%, rgba(15,23,42,0.85) 100%);
+  background: linear-gradient(180deg, rgba(61,53,48,0.45) 0%, rgba(61,53,48,0.65) 60%, rgba(61,53,48,0.85) 100%);
 }
 
 /* Card hover lift */
@@ -228,7 +228,7 @@
 }
 .card-lift:hover {
   transform: translateY(-4px);
-  box-shadow: 0 18px 40px -12px rgba(15, 23, 42, 0.22);
+  box-shadow: 0 18px 40px -12px rgba(107, 93, 90, 0.22);
 }
 
 /* Line clamp helpers */

@@ -18,10 +18,10 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://inmopro.co"),
+  metadataBase: new URL("https://innovarshowrooms.co"),
   title: {
-    default: "InmoPro — Inmuebles en Venta y Arriendo en Colombia | Portal Inmobiliario Profesional",
-    template: "%s | InmoPro",
+    default: "Innovar Showrooms — Inmuebles en Venta y Arriendo en Colombia | Portal Inmobiliario Profesional",
+    template: "%s | Innovar Showrooms",
   },
   description:
     "Encuentra casas, apartamentos, fincas, lotes, oficinas y locales en venta y arriendo en toda Colombia. Buscador avanzado, códigos únicos de inmueble, filtros profesionales y contacto directo con asesores certificados.",
@@ -36,24 +36,25 @@ export const metadata: Metadata = {
     "oficinas",
     "locales",
     "arriendo temporal",
+    "Innovar Showrooms",
   ],
-  authors: [{ name: "InmoPro" }],
-  creator: "InmoPro",
+  authors: [{ name: "Innovar Showrooms" }],
+  creator: "Innovar Showrooms",
   icons: {
     icon: "/favicon.svg",
   },
   openGraph: {
-    title: "InmoPro — Portal Inmobiliario Profesional",
+    title: "Innovar Showrooms — Portal Inmobiliario Profesional",
     description:
       "Inmuebles en venta y arriendo en toda Colombia. Buscador avanzado, filtros profesionales y contacto directo con asesores.",
-    url: "https://inmopro.co",
-    siteName: "InmoPro",
+    url: "https://innovarshowrooms.co",
+    siteName: "Innovar Showrooms",
     locale: "es_CO",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "InmoPro — Portal Inmobiliario Profesional",
+    title: "Innovar Showrooms — Portal Inmobiliario Profesional",
     description: "Inmuebles en venta y arriendo en toda Colombia.",
   },
   robots: {
@@ -65,7 +66,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport = {
-  themeColor: "#0F172A",
+  themeColor: "#6B5D5A",
   width: "device-width",
   initialScale: 1,
 };

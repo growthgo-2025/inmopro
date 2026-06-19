@@ -360,8 +360,8 @@ function FilterPanel({
       className={cn(
         "h-8 rounded-full border px-3 text-xs font-semibold transition-colors",
         active
-          ? "border-blue-600 bg-blue-600 text-white shadow-sm"
-          : "border-slate-200 bg-white text-slate-700 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700"
+          ? "border-[#B08968] bg-[#B08968] text-white shadow-sm"
+          : "border-[#E8DFD9] bg-white text-[#5A4E4B] hover:border-blue-300 hover:bg-[#FAF3EC] hover:text-[#9A7558]"
       )}
     >
       {children}
@@ -373,9 +373,9 @@ function FilterPanel({
   return (
     <div className="flex h-full flex-col">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3">
-        <div className="flex items-center gap-2 text-sm font-bold text-slate-900">
-          <SlidersHorizontal className="h-4 w-4 text-blue-600" />
+      <div className="flex items-center justify-between border-b border-[#E8DFD9] px-4 py-3">
+        <div className="flex items-center gap-2 text-sm font-bold text-[#3D3530]">
+          <SlidersHorizontal className="h-4 w-4 text-[#B08968]" />
           Filtros
         </div>
         <Button
@@ -383,7 +383,7 @@ function FilterPanel({
           variant="ghost"
           size="sm"
           onClick={resetFilters}
-          className="h-7 gap-1 px-2 text-xs text-slate-500 hover:text-rose-600"
+          className="h-7 gap-1 px-2 text-xs text-[#8B7E78] hover:text-rose-600"
         >
           <RotateCcw className="h-3.5 w-3.5" />
           Limpiar
@@ -391,8 +391,8 @@ function FilterPanel({
       </div>
 
       {/* Free-text search */}
-      <div className="border-b border-slate-100 px-4 py-3">
-        <Label htmlFor="filter-q" className="mb-1.5 block text-xs font-semibold text-slate-700">
+      <div className="border-b border-[#F0EAE5] px-4 py-3">
+        <Label htmlFor="filter-q" className="mb-1.5 block text-xs font-semibold text-[#5A4E4B]">
           Buscar
         </Label>
         <Input
@@ -409,12 +409,12 @@ function FilterPanel({
         <Accordion type="multiple" defaultValue={accordionValue} className="w-full">
           {/* 1. Ubicación */}
           <AccordionItem value="loc">
-            <AccordionTrigger className="py-3 text-sm font-bold text-slate-900 hover:no-underline">
+            <AccordionTrigger className="py-3 text-sm font-bold text-[#3D3530] hover:no-underline">
               Ubicación
             </AccordionTrigger>
             <AccordionContent className="space-y-3">
               <div>
-                <Label className="mb-1.5 block text-xs font-medium text-slate-600">Ciudad</Label>
+                <Label className="mb-1.5 block text-xs font-medium text-[#6B5D5A]">Ciudad</Label>
                 <Select
                   value={filters.cityId ?? "all"}
                   onValueChange={(v) => handleCityChange(v === "all" ? undefined : v)}
@@ -433,7 +433,7 @@ function FilterPanel({
                 </Select>
               </div>
               <div>
-                <Label className="mb-1.5 block text-xs font-medium text-slate-600">Barrio</Label>
+                <Label className="mb-1.5 block text-xs font-medium text-[#6B5D5A]">Barrio</Label>
                 <Select
                   value={filters.neighborhoodId ?? "all"}
                   onValueChange={(v) => {
@@ -468,7 +468,7 @@ function FilterPanel({
 
           {/* 2. Operación */}
           <AccordionItem value="op">
-            <AccordionTrigger className="py-3 text-sm font-bold text-slate-900 hover:no-underline">
+            <AccordionTrigger className="py-3 text-sm font-bold text-[#3D3530] hover:no-underline">
               Operación
             </AccordionTrigger>
             <AccordionContent>
@@ -477,14 +477,14 @@ function FilterPanel({
                 onValueChange={handleOperation}
                 className="gap-1.5"
               >
-                <label className="flex cursor-pointer items-center gap-2 rounded-md px-1.5 py-1 text-sm hover:bg-slate-50">
+                <label className="flex cursor-pointer items-center gap-2 rounded-md px-1.5 py-1 text-sm hover:bg-[#FAF6F3]">
                   <RadioGroupItem value="all" id="op-all" />
                   <span>Todas</span>
                 </label>
                 {OPERATIONS.map((op) => (
                   <label
                     key={op.value}
-                    className="flex cursor-pointer items-center gap-2 rounded-md px-1.5 py-1 text-sm hover:bg-slate-50"
+                    className="flex cursor-pointer items-center gap-2 rounded-md px-1.5 py-1 text-sm hover:bg-[#FAF6F3]"
                   >
                     <RadioGroupItem value={op.value} id={`op-${op.value}`} />
                     <span>{op.label}</span>
@@ -496,7 +496,7 @@ function FilterPanel({
 
           {/* 3. Tipo */}
           <AccordionItem value="type">
-            <AccordionTrigger className="py-3 text-sm font-bold text-slate-900 hover:no-underline">
+            <AccordionTrigger className="py-3 text-sm font-bold text-[#3D3530] hover:no-underline">
               Tipo de inmueble
             </AccordionTrigger>
             <AccordionContent>
@@ -525,7 +525,7 @@ function FilterPanel({
 
           {/* 4. Precio */}
           <AccordionItem value="price">
-            <AccordionTrigger className="py-3 text-sm font-bold text-slate-900 hover:no-underline">
+            <AccordionTrigger className="py-3 text-sm font-bold text-[#3D3530] hover:no-underline">
               Precio
             </AccordionTrigger>
             <AccordionContent className="space-y-3">
@@ -533,7 +533,7 @@ function FilterPanel({
                 {priceRanges.map((r) => (
                   <label
                     key={r.label}
-                    className="flex cursor-pointer items-center gap-2 text-sm text-slate-700"
+                    className="flex cursor-pointer items-center gap-2 text-sm text-[#5A4E4B]"
                   >
                     <Checkbox
                       checked={isPriceRangeSelected(r.min, r.max)}
@@ -563,13 +563,13 @@ function FilterPanel({
                   className="h-9 text-sm"
                 />
               </div>
-              <p className="text-[11px] text-slate-400">Pesos colombianos (COP)</p>
+              <p className="text-[11px] text-[#A89B96]">Pesos colombianos (COP)</p>
             </AccordionContent>
           </AccordionItem>
 
           {/* 5. Área */}
           <AccordionItem value="area">
-            <AccordionTrigger className="py-3 text-sm font-bold text-slate-900 hover:no-underline">
+            <AccordionTrigger className="py-3 text-sm font-bold text-[#3D3530] hover:no-underline">
               Área (m²)
             </AccordionTrigger>
             <AccordionContent className="space-y-3">
@@ -577,7 +577,7 @@ function FilterPanel({
                 {AREA_RANGES.map((r) => (
                   <label
                     key={r.label}
-                    className="flex cursor-pointer items-center gap-2 text-sm text-slate-700"
+                    className="flex cursor-pointer items-center gap-2 text-sm text-[#5A4E4B]"
                   >
                     <Checkbox
                       checked={isAreaRangeSelected(r.min, r.max)}
@@ -612,7 +612,7 @@ function FilterPanel({
 
           {/* 6. Habitaciones */}
           <AccordionItem value="bed">
-            <AccordionTrigger className="py-3 text-sm font-bold text-slate-900 hover:no-underline">
+            <AccordionTrigger className="py-3 text-sm font-bold text-[#3D3530] hover:no-underline">
               Habitaciones
             </AccordionTrigger>
             <AccordionContent>
@@ -632,7 +632,7 @@ function FilterPanel({
 
           {/* 7. Baños */}
           <AccordionItem value="bath">
-            <AccordionTrigger className="py-3 text-sm font-bold text-slate-900 hover:no-underline">
+            <AccordionTrigger className="py-3 text-sm font-bold text-[#3D3530] hover:no-underline">
               Baños
             </AccordionTrigger>
             <AccordionContent>
@@ -652,7 +652,7 @@ function FilterPanel({
 
           {/* 8. Parqueaderos */}
           <AccordionItem value="park">
-            <AccordionTrigger className="py-3 text-sm font-bold text-slate-900 hover:no-underline">
+            <AccordionTrigger className="py-3 text-sm font-bold text-[#3D3530] hover:no-underline">
               Parqueaderos
             </AccordionTrigger>
             <AccordionContent>
@@ -672,7 +672,7 @@ function FilterPanel({
 
           {/* 9. Estrato */}
           <AccordionItem value="stratum">
-            <AccordionTrigger className="py-3 text-sm font-bold text-slate-900 hover:no-underline">
+            <AccordionTrigger className="py-3 text-sm font-bold text-[#3D3530] hover:no-underline">
               Estrato
             </AccordionTrigger>
             <AccordionContent>
@@ -692,11 +692,11 @@ function FilterPanel({
 
           {/* 10. Características */}
           <AccordionItem value="feat">
-            <AccordionTrigger className="py-3 text-sm font-bold text-slate-900 hover:no-underline">
+            <AccordionTrigger className="py-3 text-sm font-bold text-[#3D3530] hover:no-underline">
               Características
             </AccordionTrigger>
             <AccordionContent className="space-y-3">
-              <label className="flex cursor-pointer items-center justify-between gap-2 text-sm text-slate-700">
+              <label className="flex cursor-pointer items-center justify-between gap-2 text-sm text-[#5A4E4B]">
                 <span>Amoblado</span>
                 <Switch
                   checked={!!filters.furnished}
@@ -706,7 +706,7 @@ function FilterPanel({
                   }}
                 />
               </label>
-              <label className="flex cursor-pointer items-center justify-between gap-2 text-sm text-slate-700">
+              <label className="flex cursor-pointer items-center justify-between gap-2 text-sm text-[#5A4E4B]">
                 <span>Pet friendly</span>
                 <Switch
                   checked={!!filters.petFriendly}
@@ -721,7 +721,7 @@ function FilterPanel({
 
           {/* 11. Amenidades */}
           <AccordionItem value="amen">
-            <AccordionTrigger className="py-3 text-sm font-bold text-slate-900 hover:no-underline">
+            <AccordionTrigger className="py-3 text-sm font-bold text-[#3D3530] hover:no-underline">
               Amenidades
             </AccordionTrigger>
             <AccordionContent className="space-y-4">
@@ -730,7 +730,7 @@ function FilterPanel({
                 if (!items.length) return null;
                 return (
                   <div key={cat.key}>
-                    <p className="mb-2 text-[11px] font-bold uppercase tracking-wide text-slate-500">
+                    <p className="mb-2 text-[11px] font-bold uppercase tracking-wide text-[#8B7E78]">
                       {cat.label}
                     </p>
                     <div className="space-y-1.5">
@@ -739,13 +739,13 @@ function FilterPanel({
                         return (
                           <label
                             key={a.id}
-                            className="flex cursor-pointer items-center gap-2 text-sm text-slate-700"
+                            className="flex cursor-pointer items-center gap-2 text-sm text-[#5A4E4B]"
                           >
                             <Checkbox
                               checked={checked}
                               onCheckedChange={() => toggleAmenity(a.slug)}
                             />
-                            <AmenityIcon slug={a.slug} className="h-3.5 w-3.5 text-blue-600" />
+                            <AmenityIcon slug={a.slug} className="h-3.5 w-3.5 text-[#B08968]" />
                             <span>{amenityLabel(a.slug)}</span>
                           </label>
                         );
@@ -760,11 +760,11 @@ function FilterPanel({
       </div>
 
       {/* Footer */}
-      <div className="border-t border-slate-200 p-3">
+      <div className="border-t border-[#E8DFD9] p-3">
         <Button
           type="button"
           variant="outline"
-          className="h-9 w-full border-slate-300 text-slate-700 hover:border-rose-300 hover:text-rose-600"
+          className="h-9 w-full border-[#D8CFC9] text-[#5A4E4B] hover:border-rose-300 hover:text-rose-600"
           onClick={resetFilters}
         >
           <RotateCcw className="mr-2 h-4 w-4" />
@@ -781,7 +781,7 @@ function FilterPanel({
 
 function SkeletonCard() {
   return (
-    <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
+    <div className="overflow-hidden rounded-xl border border-[#E8DFD9] bg-white">
       <Skeleton className="aspect-[4/3] w-full rounded-none" />
       <div className="space-y-3 p-4">
         <div className="flex justify-between">
@@ -839,11 +839,11 @@ function Pagination({
   }
 
   return (
-    <div className="mt-8 flex flex-col items-center justify-between gap-4 border-t border-slate-200 pt-6 sm:flex-row">
-      <p className="text-sm text-slate-500">
-        Mostrando <span className="font-semibold text-slate-900">{formatNumber(start)}</span>–
-        <span className="font-semibold text-slate-900">{formatNumber(end)}</span> de{" "}
-        <span className="font-semibold text-slate-900">{formatNumber(total)}</span> inmuebles
+    <div className="mt-8 flex flex-col items-center justify-between gap-4 border-t border-[#E8DFD9] pt-6 sm:flex-row">
+      <p className="text-sm text-[#8B7E78]">
+        Mostrando <span className="font-semibold text-[#3D3530]">{formatNumber(start)}</span>–
+        <span className="font-semibold text-[#3D3530]">{formatNumber(end)}</span> de{" "}
+        <span className="font-semibold text-[#3D3530]">{formatNumber(total)}</span> inmuebles
       </p>
 
       <div className="flex items-center gap-1.5">
@@ -852,7 +852,7 @@ function Pagination({
           size="sm"
           disabled={page <= 1}
           onClick={() => onChange(page - 1)}
-          className="h-9 gap-1 border-slate-200"
+          className="h-9 gap-1 border-[#E8DFD9]"
         >
           <ArrowLeft className="h-4 w-4" />
           <span className="hidden sm:inline">Anterior</span>
@@ -863,7 +863,7 @@ function Pagination({
             p === "…" ? (
               <span
                 key={`e-${i}`}
-                className="px-2 text-sm text-slate-400"
+                className="px-2 text-sm text-[#A89B96]"
                 aria-hidden
               >
                 …
@@ -876,8 +876,8 @@ function Pagination({
                 className={cn(
                   "h-9 min-w-9 rounded-md px-3 text-sm font-semibold transition-colors",
                   p === page
-                    ? "bg-blue-600 text-white shadow-sm"
-                    : "border border-slate-200 bg-white text-slate-700 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700"
+                    ? "bg-[#B08968] text-white shadow-sm"
+                    : "border border-[#E8DFD9] bg-white text-[#5A4E4B] hover:border-blue-300 hover:bg-[#FAF3EC] hover:text-[#9A7558]"
                 )}
               >
                 {p}
@@ -891,7 +891,7 @@ function Pagination({
           size="sm"
           disabled={page >= totalPages}
           onClick={() => onChange(page + 1)}
-          className="h-9 gap-1 border-slate-200"
+          className="h-9 gap-1 border-[#E8DFD9]"
         >
           <span className="hidden sm:inline">Siguiente</span>
           <ArrowRight className="h-4 w-4" />
@@ -1169,10 +1169,10 @@ export function ResultsView() {
   const hasActiveFilters = chips.length > 0;
 
   return (
-    <div ref={resultsRef} className="min-h-screen bg-slate-50">
+    <div ref={resultsRef} className="min-h-screen bg-[#FAF6F3]">
       {/* ===== Breadcrumb ===== */}
       <div className="mx-auto max-w-7xl px-4 pt-5 sm:px-6 lg:px-8">
-        <nav className="flex items-center gap-1 text-xs text-slate-500">
+        <nav className="flex items-center gap-1 text-xs text-[#8B7E78]">
           {crumbs.map((c, i) => {
             const isLast = i === crumbs.length - 1;
             return (
@@ -1184,13 +1184,13 @@ export function ResultsView() {
                   type="button"
                   onClick={c.onClick}
                   className={cn(
-                    "transition-colors hover:text-blue-700",
-                    isLast && "font-semibold text-slate-900"
+                    "transition-colors hover:text-[#9A7558]",
+                    isLast && "font-semibold text-[#3D3530]"
                   )}
                 >
                   {c.label}
                 </button>
-                {!isLast && <ChevronRight className="h-3 w-3 text-slate-300" />}
+                {!isLast && <ChevronRight className="h-3 w-3 text-[#C9BFB9]" />}
               </span>
             );
           })}
@@ -1198,26 +1198,26 @@ export function ResultsView() {
       </div>
 
       {/* ===== Sticky header ===== */}
-      <div className="sticky top-16 z-30 mt-4 border-b border-slate-200 bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80">
+      <div className="sticky top-16 z-30 mt-4 border-b border-[#E8DFD9] bg-white/95 backdrop-blur supports-[backdrop-filter]:bg-white/80">
         <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-4 sm:px-6 lg:flex-row lg:items-end lg:justify-between lg:px-8">
           <div className="min-w-0 flex-1">
-            <h1 className="truncate text-xl font-bold tracking-tight text-slate-900 sm:text-2xl">
+            <h1 className="truncate text-xl font-bold tracking-tight text-[#3D3530] sm:text-2xl">
               {h1}
             </h1>
-            <p className="mt-0.5 text-sm text-slate-500">
+            <p className="mt-0.5 text-sm text-[#8B7E78]">
               {!loading && (
                 <>
-                  <span className="font-semibold text-slate-700">{formatNumber(total)}</span> inmuebles
+                  <span className="font-semibold text-[#5A4E4B]">{formatNumber(total)}</span> inmuebles
                   encontrados
                 </>
               )}
-              {loading && <span className="text-slate-400">Buscando inmuebles…</span>}
+              {loading && <span className="text-[#A89B96]">Buscando inmuebles…</span>}
             </p>
           </div>
 
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-2">
-              <Label htmlFor="sort" className="hidden text-xs font-medium text-slate-500 sm:inline">
+              <Label htmlFor="sort" className="hidden text-xs font-medium text-[#8B7E78] sm:inline">
                 Ordenar
               </Label>
               <Select
@@ -1240,7 +1240,7 @@ export function ResultsView() {
             {/* Mobile: open filters sheet */}
             <Button
               variant="default"
-              className="h-9 gap-2 bg-blue-600 text-white hover:bg-blue-700 lg:hidden"
+              className="h-9 gap-2 bg-[#B08968] text-white hover:bg-[#9A7558] lg:hidden"
               onClick={() => setFiltersOpen(true)}
             >
               <SlidersHorizontal className="h-4 w-4" />
@@ -1260,7 +1260,7 @@ export function ResultsView() {
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-[280px_1fr]">
           {/* Left sidebar (desktop) */}
           <aside className="hidden lg:block">
-            <div className="sticky top-36 max-h-[calc(100vh-10rem)] overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm">
+            <div className="sticky top-36 max-h-[calc(100vh-10rem)] overflow-hidden rounded-xl border border-[#E8DFD9] bg-white shadow-sm">
               <FilterPanel
                 filters={filters}
                 setFilters={setFilters}
@@ -1282,14 +1282,14 @@ export function ResultsView() {
                   <Badge
                     key={c.key}
                     variant="outline"
-                    className="gap-1 rounded-full border-blue-200 bg-blue-50 py-1 pl-3 pr-1.5 text-xs font-medium text-blue-800"
+                    className="gap-1 rounded-full border-blue-200 bg-[#FAF3EC] py-1 pl-3 pr-1.5 text-xs font-medium text-[#8A6549]"
                   >
                     {c.label}
                     <button
                       type="button"
                       aria-label={`Quitar ${c.label}`}
                       onClick={c.clear}
-                      className="ml-0.5 inline-flex h-4 w-4 items-center justify-center rounded-full text-blue-600 transition-colors hover:bg-blue-200 hover:text-blue-900"
+                      className="ml-0.5 inline-flex h-4 w-4 items-center justify-center rounded-full text-[#B08968] transition-colors hover:bg-blue-200 hover:text-blue-900"
                     >
                       <X className="h-3 w-3" />
                     </button>
@@ -1299,7 +1299,7 @@ export function ResultsView() {
                   variant="ghost"
                   size="sm"
                   onClick={resetFilters}
-                  className="h-7 gap-1 px-2 text-xs text-slate-500 hover:text-rose-600"
+                  className="h-7 gap-1 px-2 text-xs text-[#8B7E78] hover:text-rose-600"
                 >
                   <RotateCcw className="h-3 w-3" />
                   Limpiar todo
@@ -1318,16 +1318,16 @@ export function ResultsView() {
 
             {/* Error */}
             {!loading && error && (
-              <div className="flex min-h-[400px] flex-col items-center justify-center rounded-xl border border-slate-200 bg-white p-8 text-center">
+              <div className="flex min-h-[400px] flex-col items-center justify-center rounded-xl border border-[#E8DFD9] bg-white p-8 text-center">
                 <div className="flex h-14 w-14 items-center justify-center rounded-full bg-rose-50 text-rose-500">
                   <X className="h-6 w-6" />
                 </div>
-                <h3 className="mt-4 text-base font-semibold text-slate-900">
+                <h3 className="mt-4 text-base font-semibold text-[#3D3530]">
                   No pudimos cargar los resultados
                 </h3>
-                <p className="mt-1 text-sm text-slate-500">{error}</p>
+                <p className="mt-1 text-sm text-[#8B7E78]">{error}</p>
                 <Button
-                  className="mt-4 bg-blue-600 text-white hover:bg-blue-700"
+                  className="mt-4 bg-[#B08968] text-white hover:bg-[#9A7558]"
                   onClick={() => setFilters({ ...filters })}
                 >
                   Reintentar
@@ -1337,20 +1337,20 @@ export function ResultsView() {
 
             {/* Empty */}
             {!loading && !error && items.length === 0 && (
-              <div className="flex min-h-[400px] flex-col items-center justify-center rounded-xl border border-slate-200 bg-white p-8 text-center">
-                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-slate-100 text-slate-400">
+              <div className="flex min-h-[400px] flex-col items-center justify-center rounded-xl border border-[#E8DFD9] bg-white p-8 text-center">
+                <div className="flex h-16 w-16 items-center justify-center rounded-full bg-[#F0EAE5] text-[#A89B96]">
                   <Building2 className="h-8 w-8" />
                 </div>
-                <h3 className="mt-4 text-lg font-bold text-slate-900">
+                <h3 className="mt-4 text-lg font-bold text-[#3D3530]">
                   No encontramos inmuebles
                 </h3>
-                <p className="mt-1 max-w-sm text-sm text-slate-500">
+                <p className="mt-1 max-w-sm text-sm text-[#8B7E78]">
                   Prueba ampliar la zona, ajustar el rango de precio o quitar algunos filtros
                   para ver más opciones.
                 </p>
                 {hasActiveFilters && (
                   <Button
-                    className="mt-5 gap-2 bg-blue-600 text-white hover:bg-blue-700"
+                    className="mt-5 gap-2 bg-[#B08968] text-white hover:bg-[#9A7558]"
                     onClick={resetFilters}
                   >
                     <RotateCcw className="h-4 w-4" />
@@ -1398,7 +1398,7 @@ export function ResultsView() {
 
             {/* Empty-state helper at bottom when no items */}
             {!loading && !error && items.length === 0 && (
-              <p className="mt-6 flex items-center justify-center gap-1.5 text-xs text-slate-400">
+              <p className="mt-6 flex items-center justify-center gap-1.5 text-xs text-[#A89B96]">
                 <MapPin className="h-3.5 w-3.5" />
                 Sugerencia: explora Medellín, Bogotá o Barranquilla — tenemos propiedades
                 destacadas en cada ciudad.
@@ -1424,9 +1424,9 @@ export function ResultsView() {
               /* close on demand could go here; left open for fine-tuning */
             }}
           />
-          <div className="border-t border-slate-200 bg-white p-3">
+          <div className="border-t border-[#E8DFD9] bg-white p-3">
             <Button
-              className="h-10 w-full bg-blue-600 text-white hover:bg-blue-700"
+              className="h-10 w-full bg-[#B08968] text-white hover:bg-[#9A7558]"
               onClick={() => setFiltersOpen(false)}
             >
               Ver {formatNumber(total)} resultados

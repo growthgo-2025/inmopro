@@ -195,7 +195,7 @@ const DEFAULT_FORM: WizardForm = {
   title: "",
   shortDesc: "",
   description: "",
-  agentName: "Asesor InmoPro",
+  agentName: "Asesor Innovar Showrooms",
   agentPhone: "",
   agentWhatsapp: "",
   agentEmail: "",
@@ -535,19 +535,19 @@ export function UploadWizard() {
             initial={{ scale: 0, rotate: -30 }}
             animate={{ scale: 1, rotate: 0 }}
             transition={{ delay: 0.15, type: "spring", stiffness: 200 }}
-            className="mx-auto mb-6 grid size-24 place-items-center rounded-full bg-emerald-100"
+            className="mx-auto mb-6 grid size-24 place-items-center rounded-full bg-[#97A97C]/20"
           >
-            <CheckCircle2 className="size-14 text-emerald-600" />
+            <CheckCircle2 className="size-14 text-[#7A8B66]" />
           </motion.div>
-          <h1 className="text-3xl font-bold tracking-tight text-slate-900">
+          <h1 className="text-3xl font-bold tracking-tight text-[#3D3530]">
             ¡Inmueble publicado!
           </h1>
-          <p className="mt-2 text-slate-600">
+          <p className="mt-2 text-[#6B5D5A]">
             Tu inmueble ya está disponible en el portal. Comparte su código con tus clientes.
           </p>
 
           <div className="mt-6 flex flex-col items-center gap-3">
-            <div className="text-xs font-medium uppercase tracking-wider text-slate-500">
+            <div className="text-xs font-medium uppercase tracking-wider text-[#8B7E78]">
               Código generado
             </div>
             <PropertyCodeBadge code={published.code} variant="solid" className="text-base" />
@@ -576,14 +576,14 @@ export function UploadWizard() {
       <div className="mb-6">
         <button
           onClick={() => setView("admin")}
-          className="mb-3 inline-flex items-center gap-1 text-sm text-slate-500 transition-colors hover:text-slate-900"
+          className="mb-3 inline-flex items-center gap-1 text-sm text-[#8B7E78] transition-colors hover:text-[#3D3530]"
         >
           <ArrowLeft className="size-4" /> Volver
         </button>
-        <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+        <h1 className="text-2xl font-bold tracking-tight text-[#3D3530] sm:text-3xl">
           Publicar inmueble
         </h1>
-        <p className="mt-1 text-sm text-slate-500">
+        <p className="mt-1 text-sm text-[#8B7E78]">
           Asistente guiado · Paso {step} de 7
         </p>
       </div>
@@ -601,9 +601,9 @@ export function UploadWizard() {
                   key={s.id}
                   className={cn(
                     "flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-medium transition-colors",
-                    isComplete && "bg-blue-100 text-blue-700",
-                    isCurrent && "bg-blue-600 text-white",
-                    !isComplete && !isCurrent && "bg-slate-100 text-slate-500"
+                    isComplete && "bg-[#F5EBE0] text-[#9A7558]",
+                    isCurrent && "bg-[#B08968] text-white",
+                    !isComplete && !isCurrent && "bg-[#F0EAE5] text-[#8B7E78]"
                   )}
                 >
                   {isComplete ? (
@@ -675,7 +675,7 @@ export function UploadWizard() {
       </AnimatePresence>
 
       {/* Bottom navigation */}
-      <div className="sticky bottom-0 z-20 mt-8 -mx-4 border-t border-slate-200 bg-white/95 px-4 py-3 backdrop-blur sm:mx-0 sm:rounded-b-xl sm:border-x">
+      <div className="sticky bottom-0 z-20 mt-8 -mx-4 border-t border-[#E8DFD9] bg-white/95 px-4 py-3 backdrop-blur sm:mx-0 sm:rounded-b-xl sm:border-x">
         <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex gap-2">
             <Button
@@ -724,7 +724,7 @@ export function UploadWizard() {
 
 function FieldError({ message }: { message?: string }) {
   if (!message) return null;
-  return <p className="mt-1 text-xs font-medium text-red-600">{message}</p>;
+  return <p className="mt-1 text-xs font-medium text-[#C97A7A]">{message}</p>;
 }
 
 /* ========================================================================== */
@@ -747,10 +747,10 @@ function Step1Basic({
   loadingLookups: boolean;
 }) {
   return (
-    <Card className="border-slate-200">
+    <Card className="border-[#E8DFD9]">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg">
-          <Building2 className="size-5 text-blue-600" /> Información básica
+          <Building2 className="size-5 text-[#B08968]" /> Información básica
         </CardTitle>
         <CardDescription>
           Los campos marcados con <span className="text-red-500">*</span> son obligatorios.
@@ -774,15 +774,15 @@ function Step1Basic({
                 className={cn(
                   "cursor-pointer rounded-xl border-2 p-4 transition-all",
                   form.operation === op.value
-                    ? "border-blue-500 bg-blue-50 shadow-sm"
-                    : "border-slate-200 hover:border-slate-300"
+                    ? "border-[#C9A07A] bg-[#FAF3EC] shadow-sm"
+                    : "border-[#E8DFD9] hover:border-[#D8CFC9]"
                 )}
               >
                 <div className="flex items-center gap-3">
                   <RadioGroupItem value={op.value} id={`op-${op.value}`} />
                   <div>
-                    <div className="text-sm font-semibold text-slate-900">{op.label}</div>
-                    <div className="text-xs text-slate-500">
+                    <div className="text-sm font-semibold text-[#3D3530]">{op.label}</div>
+                    <div className="text-xs text-[#8B7E78]">
                       {op.value === "VENTA"
                         ? "Comprar propiedad"
                         : op.value === "ARRIENDO"
@@ -932,7 +932,7 @@ function Step1Basic({
               }
             />
             {form.price && (
-              <p className="mt-1 text-xs font-medium text-blue-700">
+              <p className="mt-1 text-xs font-medium text-[#9A7558]">
                 {formatPrice(Number(form.price), form.currency)} ·{" "}
                 {formatPriceShort(Number(form.price), form.currency)}
               </p>
@@ -970,7 +970,7 @@ function Step1Basic({
             onChange={(e) => update("area", e.target.value)}
           />
           {form.area && (
-            <p className="mt-1 text-xs text-slate-500">{formatArea(Number(form.area))}</p>
+            <p className="mt-1 text-xs text-[#8B7E78]">{formatArea(Number(form.area))}</p>
           )}
           <FieldError message={errors.area} />
         </div>
@@ -1197,10 +1197,10 @@ function Step2Images({
   };
 
   return (
-    <Card className="border-slate-200">
+    <Card className="border-[#E8DFD9]">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg">
-          <ImageIcon className="size-5 text-blue-600" /> Imágenes del inmueble
+          <ImageIcon className="size-5 text-[#B08968]" /> Imágenes del inmueble
         </CardTitle>
         <CardDescription>
           Mínimo 1 imagen. La primera o la marcada como Principal será la foto principal del anuncio.
@@ -1219,8 +1219,8 @@ function Step2Images({
           className={cn(
             "flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed px-6 py-10 text-center transition-colors",
             dragOver
-              ? "border-blue-500 bg-blue-50"
-              : "border-slate-300 bg-slate-50 hover:border-blue-400 hover:bg-blue-50/40"
+              ? "border-[#C9A07A] bg-[#FAF3EC]"
+              : "border-[#D8CFC9] bg-[#FAF6F3] hover:border-[#E0B589] hover:bg-[#FAF3EC]/40"
           )}
         >
           <input
@@ -1235,13 +1235,13 @@ function Step2Images({
             }}
           />
           <div className="grid size-12 place-items-center rounded-full bg-white shadow-sm">
-            <ImagePlus className="size-6 text-blue-600" />
+            <ImagePlus className="size-6 text-[#B08968]" />
           </div>
           <div>
-            <div className="text-sm font-semibold text-slate-900">
+            <div className="text-sm font-semibold text-[#3D3530]">
               Arrastra tus fotos o haz clic para subir
             </div>
-            <div className="mt-0.5 text-xs text-slate-500">
+            <div className="mt-0.5 text-xs text-[#8B7E78]">
               JPG, PNG, WebP · hasta 20 imágenes · {form.images.length}/20
             </div>
           </div>
@@ -1275,14 +1275,14 @@ function Step2Images({
         )}
 
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <div className="flex items-center gap-2 text-xs text-slate-500">
+          <div className="flex items-center gap-2 text-xs text-[#8B7E78]">
             <Badge
               variant="outline"
               className={cn(
-                "border-slate-200",
+                "border-[#E8DFD9]",
                 form.images.length >= 1
-                  ? "bg-emerald-50 text-emerald-700"
-                  : "bg-amber-50 text-amber-700"
+                  ? "bg-emerald-50 text-[#7A8B66]"
+                  : "bg-[#FAF0E0] text-[#B89164]"
               )}
             >
               {form.images.length} imagen{form.images.length !== 1 ? "es" : ""}
@@ -1336,9 +1336,9 @@ function SortableImage({
     <div
       ref={setNodeRef}
       style={style}
-      className="group relative overflow-hidden rounded-lg border border-slate-200 bg-white"
+      className="group relative overflow-hidden rounded-lg border border-[#E8DFD9] bg-white"
     >
-      <div className="relative aspect-square w-full overflow-hidden bg-slate-100">
+      <div className="relative aspect-square w-full overflow-hidden bg-[#F0EAE5]">
         <img
           src={image.url}
           alt={image.caption || `Imagen ${index + 1}`}
@@ -1350,9 +1350,9 @@ function SortableImage({
         />
         {/* Overlay: subiendo a Supabase */}
         {image.uploading && (
-          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-slate-900/30">
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-[#3D3530]/30">
             <Loader2 className="size-6 animate-spin text-white" />
-            <span className="rounded-full bg-slate-900/80 px-2 py-0.5 text-[10px] font-medium text-white">
+            <span className="rounded-full bg-[#3D3530]/80 px-2 py-0.5 text-[10px] font-medium text-white">
               Subiendo a Supabase...
             </span>
           </div>
@@ -1371,7 +1371,7 @@ function SortableImage({
           <button
             {...attributes}
             {...listeners}
-            className="cursor-grab rounded bg-white/80 p-1 text-slate-700 active:cursor-grabbing disabled:opacity-50"
+            className="cursor-grab rounded bg-white/80 p-1 text-[#5A4E4B] active:cursor-grabbing disabled:opacity-50"
             title="Arrastrar para reordenar"
             onClick={(e) => e.stopPropagation()}
             disabled={image.uploading}
@@ -1387,7 +1387,7 @@ function SortableImage({
                 "rounded p-1 transition-colors disabled:opacity-50 disabled:cursor-not-allowed",
                 image.isMain
                   ? "bg-amber-400 text-amber-950"
-                  : "bg-white/80 text-slate-600 hover:bg-amber-100 hover:text-amber-700"
+                  : "bg-white/80 text-[#6B5D5A] hover:bg-[#E0B589]/20 hover:text-[#B89164]"
               )}
             >
               <Star className={cn("size-3.5", image.isMain && "fill-current")} />
@@ -1395,7 +1395,7 @@ function SortableImage({
             <button
               onClick={() => onRemove(image.id)}
               title="Eliminar"
-              className="rounded bg-white/80 p-1 text-slate-600 hover:bg-red-100 hover:text-red-600"
+              className="rounded bg-white/80 p-1 text-[#6B5D5A] hover:bg-[#C97A7A]/20 hover:text-[#C97A7A]"
             >
               <X className="size-3.5" />
             </button>
@@ -1457,10 +1457,10 @@ function Step3Features({
   };
 
   return (
-    <Card className="border-slate-200">
+    <Card className="border-[#E8DFD9]">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg">
-          <ListChecks className="size-5 text-blue-600" /> Características y amenities
+          <ListChecks className="size-5 text-[#B08968]" /> Características y amenities
         </CardTitle>
         <CardDescription>
           Selecciona las características que aplican al inmueble.
@@ -1469,13 +1469,13 @@ function Step3Features({
       <CardContent className="space-y-6">
         {/* Amenities grouped */}
         {loading ? (
-          <div className="flex items-center gap-2 text-sm text-slate-500">
+          <div className="flex items-center gap-2 text-sm text-[#8B7E78]">
             <Loader2 className="size-4 animate-spin" /> Cargando características…
           </div>
         ) : (
           Object.entries(grouped).map(([cat, items]) => (
             <div key={cat}>
-              <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-500">
+              <h3 className="mb-2 text-xs font-semibold uppercase tracking-wider text-[#8B7E78]">
                 {CATEGORY_LABELS[cat] || cat}
               </h3>
               <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
@@ -1489,8 +1489,8 @@ function Step3Features({
                       className={cn(
                         "flex items-center gap-2 rounded-lg border p-2.5 text-left text-sm transition-all",
                         checked
-                          ? "border-blue-500 bg-blue-50 text-blue-900"
-                          : "border-slate-200 hover:border-slate-300 hover:bg-slate-50"
+                          ? "border-[#C9A07A] bg-[#FAF3EC] text-blue-900"
+                          : "border-[#E8DFD9] hover:border-[#D8CFC9] hover:bg-[#FAF6F3]"
                       )}
                     >
                       <Checkbox checked={checked} className="pointer-events-none" />
@@ -1498,7 +1498,7 @@ function Step3Features({
                         slug={a.slug}
                         className={cn(
                           "size-4 shrink-0",
-                          checked ? "text-blue-600" : "text-slate-400"
+                          checked ? "text-[#B08968]" : "text-[#A89B96]"
                         )}
                       />
                       <span className="truncate">{a.name}</span>
@@ -1514,20 +1514,20 @@ function Step3Features({
 
         {/* Switches */}
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
-          <div className="flex items-center justify-between rounded-lg border border-slate-200 p-3">
+          <div className="flex items-center justify-between rounded-lg border border-[#E8DFD9] p-3">
             <div>
               <div className="text-sm font-medium">Amoblado</div>
-              <div className="text-xs text-slate-500">¿El inmueble viene amoblado?</div>
+              <div className="text-xs text-[#8B7E78]">¿El inmueble viene amoblado?</div>
             </div>
             <Switch
               checked={form.furnished}
               onCheckedChange={(v) => update("furnished", v)}
             />
           </div>
-          <div className="flex items-center justify-between rounded-lg border border-slate-200 p-3">
+          <div className="flex items-center justify-between rounded-lg border border-[#E8DFD9] p-3">
             <div>
               <div className="text-sm font-medium">Pet friendly</div>
-              <div className="text-xs text-slate-500">¿Permite mascotas?</div>
+              <div className="text-xs text-[#8B7E78]">¿Permite mascotas?</div>
             </div>
             <Switch
               checked={form.petFriendly}
@@ -1625,10 +1625,10 @@ function Step4Description({
   update: <K extends keyof WizardForm>(key: K, value: WizardForm[K]) => void;
 }) {
   return (
-    <Card className="border-slate-200">
+    <Card className="border-[#E8DFD9]">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg">
-          <FileText className="size-5 text-blue-600" /> Descripción del anuncio
+          <FileText className="size-5 text-[#B08968]" /> Descripción del anuncio
         </CardTitle>
         <CardDescription>
           Textos que aparecerán en la tarjeta y detalle del inmueble.
@@ -1643,7 +1643,7 @@ function Step4Description({
             <span
               className={cn(
                 "text-xs",
-                form.title.length > 100 ? "text-red-600" : "text-slate-400"
+                form.title.length > 100 ? "text-[#C97A7A]" : "text-[#A89B96]"
               )}
             >
               {form.title.length}/100
@@ -1667,7 +1667,7 @@ function Step4Description({
             <span
               className={cn(
                 "text-xs",
-                form.shortDesc.length > 160 ? "text-red-600" : "text-slate-400"
+                form.shortDesc.length > 160 ? "text-[#C97A7A]" : "text-[#A89B96]"
               )}
             >
               {form.shortDesc.length}/160
@@ -1680,7 +1680,7 @@ function Step4Description({
             value={form.shortDesc}
             onChange={(e) => update("shortDesc", e.target.value)}
           />
-          <p className="mt-1 text-xs text-slate-500">
+          <p className="mt-1 text-xs text-[#8B7E78]">
             Se usa en las tarjetas y resultados de búsqueda (SEO).
           </p>
           <FieldError message={errors.shortDesc} />
@@ -1694,7 +1694,7 @@ function Step4Description({
             <span
               className={cn(
                 "text-xs",
-                form.description.length > 3000 ? "text-red-600" : "text-slate-400"
+                form.description.length > 3000 ? "text-[#C97A7A]" : "text-[#A89B96]"
               )}
             >
               {form.description.length}/3000
@@ -1708,13 +1708,13 @@ function Step4Description({
             value={form.description}
             onChange={(e) => update("description", e.target.value)}
           />
-          <p className="mt-1 text-xs text-slate-500">
+          <p className="mt-1 text-xs text-[#8B7E78]">
             Recomendado: mínimo 100 caracteres. Detalla ubicación, características y cercanías.
           </p>
           <FieldError message={errors.description} />
         </div>
 
-        <div className="flex items-start gap-2 rounded-lg border border-blue-100 bg-blue-50/60 p-3 text-xs text-blue-800">
+        <div className="flex items-start gap-2 rounded-lg border border-blue-100 bg-[#FAF3EC]/60 p-3 text-xs text-[#8A6549]">
           <Sparkles className="mt-0.5 size-3.5 shrink-0" />
           <span>
             El slug (URL) y los meta-tags SEO se generarán automáticamente al publicar.
@@ -1740,10 +1740,10 @@ function Step5Contact({
   update: <K extends keyof WizardForm>(key: K, value: WizardForm[K]) => void;
 }) {
   return (
-    <Card className="border-slate-200">
+    <Card className="border-[#E8DFD9]">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg">
-          <User className="size-5 text-blue-600" /> Información de contacto
+          <User className="size-5 text-[#B08968]" /> Información de contacto
         </CardTitle>
         <CardDescription>
           Estos datos se mostrarán en el detalle del inmueble para que los clientes te contacten.
@@ -1779,7 +1779,7 @@ function Step5Contact({
           </div>
           <div>
             <Label className="mb-2" htmlFor="agentWhatsapp">
-              WhatsApp <span className="text-slate-400">(opcional)</span>
+              WhatsApp <span className="text-[#A89B96]">(opcional)</span>
             </Label>
             <Input
               id="agentWhatsapp"
@@ -1798,7 +1798,7 @@ function Step5Contact({
           <Input
             id="agentEmail"
             type="email"
-            placeholder="Ej: carlos.marin@inmopro.co"
+            placeholder="Ej: carlos.marin@innovarshowrooms.co"
             value={form.agentEmail}
             onChange={(e) => update("agentEmail", e.target.value)}
           />
@@ -1832,10 +1832,10 @@ function Step6Preview({
 
   return (
     <div className="space-y-4">
-      <Card className="border-slate-200">
+      <Card className="border-[#E8DFD9]">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-lg">
-            <Eye className="size-5 text-blue-600" /> Vista previa del anuncio
+            <Eye className="size-5 text-[#B08968]" /> Vista previa del anuncio
           </CardTitle>
           <CardDescription>
             Así se verá tu anuncio. El código único se generará automáticamente al publicar.
@@ -1843,8 +1843,8 @@ function Step6Preview({
         </CardHeader>
         <CardContent>
           {/* Preview card mimicking the live card */}
-          <div className="overflow-hidden rounded-xl border border-slate-200 bg-white">
-            <div className="relative aspect-[4/3] w-full overflow-hidden bg-slate-100">
+          <div className="overflow-hidden rounded-xl border border-[#E8DFD9] bg-white">
+            <div className="relative aspect-[4/3] w-full overflow-hidden bg-[#F0EAE5]">
               {mainImage ? (
                 <img
                   src={mainImage.url}
@@ -1852,27 +1852,27 @@ function Step6Preview({
                   className="h-full w-full object-cover"
                 />
               ) : (
-                <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200 text-slate-400">
+                <div className="flex h-full w-full items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200 text-[#A89B96]">
                   <Maximize className="h-12 w-12" />
                 </div>
               )}
               <div className="absolute left-3 top-3 flex gap-1.5">
-                <span className="rounded-md border border-emerald-200 bg-emerald-100 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-emerald-700">
+                <span className="rounded-md border border-[#97A97C]/30 bg-[#97A97C]/20 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-[#7A8B66]">
                   {opLabel}
                 </span>
                 {form.status === "RESERVADO" && (
-                  <span className="rounded-md border border-amber-200 bg-amber-100 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-amber-700">
+                  <span className="rounded-md border border-[#E0B589]/30 bg-[#E0B589]/20 px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide text-[#B89164]">
                     Reservado
                   </span>
                 )}
               </div>
               <div className="absolute right-3 top-3">
-                <div className="inline-flex items-center gap-1.5 rounded-md border border-white bg-white/95 px-2 py-1 text-xs font-mono font-semibold tracking-wide text-slate-700 shadow-sm">
+                <div className="inline-flex items-center gap-1.5 rounded-md border border-white bg-white/95 px-2 py-1 text-xs font-mono font-semibold tracking-wide text-[#5A4E4B] shadow-sm">
                   <Hash className="h-3 w-3 opacity-70" />
                   INV-2026-XXX-######
                 </div>
               </div>
-              <div className="absolute bottom-3 left-3 flex items-center gap-3 rounded-lg bg-slate-900/80 px-3 py-1.5 text-white backdrop-blur-sm">
+              <div className="absolute bottom-3 left-3 flex items-center gap-3 rounded-lg bg-[#3D3530]/80 px-3 py-1.5 text-white backdrop-blur-sm">
                 <span className="flex items-center gap-1 text-xs font-medium">
                   <BedDouble className="h-3.5 w-3.5" /> {form.bedrooms || "—"}
                 </span>
@@ -1891,10 +1891,10 @@ function Step6Preview({
             <div className="space-y-3 p-4">
               <div className="flex items-start justify-between gap-2">
                 <div>
-                  <div className="text-xl font-bold tracking-tight text-slate-900">
+                  <div className="text-xl font-bold tracking-tight text-[#3D3530]">
                     {form.price ? formatPrice(Number(form.price), form.currency) : "$ —"}
                   </div>
-                  <div className="text-xs font-medium text-slate-500">
+                  <div className="text-xs font-medium text-[#8B7E78]">
                     {typeLabel}
                     {form.stratum ? ` · Estrato ${form.stratum}` : ""}
                     {form.furnished ? " · Amoblado" : ""}
@@ -1903,11 +1903,11 @@ function Step6Preview({
                 </div>
               </div>
 
-              <h3 className="text-[15px] font-semibold leading-snug text-slate-900">
+              <h3 className="text-[15px] font-semibold leading-snug text-[#3D3530]">
                 {form.title || "Sin título"}
               </h3>
 
-              <div className="flex items-center gap-1 text-xs text-slate-500">
+              <div className="flex items-center gap-1 text-xs text-[#8B7E78]">
                 <MapPin className="h-3.5 w-3.5 shrink-0" />
                 <span className="truncate">
                   {[
@@ -1920,7 +1920,7 @@ function Step6Preview({
               </div>
 
               {form.shortDesc && (
-                <p className="text-sm text-slate-600">{form.shortDesc}</p>
+                <p className="text-sm text-[#6B5D5A]">{form.shortDesc}</p>
               )}
 
               {form.amenities.length > 0 && (
@@ -1928,14 +1928,14 @@ function Step6Preview({
                   {form.amenities.slice(0, 6).map((slug) => (
                     <span
                       key={slug}
-                      className="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2 py-0.5 text-[11px] font-medium text-blue-700"
+                      className="inline-flex items-center gap-1 rounded-full bg-[#FAF3EC] px-2 py-0.5 text-[11px] font-medium text-[#9A7558]"
                     >
                       <AmenityIcon slug={slug} className="h-3 w-3" />
                       {amenityLabel(slug)}
                     </span>
                   ))}
                   {form.amenities.length > 6 && (
-                    <span className="rounded-full bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-500">
+                    <span className="rounded-full bg-[#F0EAE5] px-2 py-0.5 text-[11px] font-medium text-[#8B7E78]">
                       +{form.amenities.length - 6}
                     </span>
                   )}
@@ -1946,14 +1946,14 @@ function Step6Preview({
 
               {/* Agent info */}
               <div className="flex items-center gap-3">
-                <div className="grid size-10 place-items-center rounded-full bg-blue-600 text-sm font-bold text-white">
+                <div className="grid size-10 place-items-center rounded-full bg-[#B08968] text-sm font-bold text-white">
                   {form.agentName.slice(0, 1).toUpperCase()}
                 </div>
                 <div className="min-w-0 flex-1">
-                  <div className="truncate text-sm font-semibold text-slate-900">
+                  <div className="truncate text-sm font-semibold text-[#3D3530]">
                     {form.agentName || "Asesor"}
                   </div>
-                  <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-slate-500">
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-[#8B7E78]">
                     {form.agentPhone && (
                       <span className="flex items-center gap-1">
                         <Phone className="h-3 w-3" /> {form.agentPhone}
@@ -2031,10 +2031,10 @@ function Step7Publish({
   ];
 
   return (
-    <Card className="border-slate-200">
+    <Card className="border-[#E8DFD9]">
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-lg">
-          <Send className="size-5 text-emerald-600" /> Revisión final
+          <Send className="size-5 text-[#7A8B66]" /> Revisión final
         </CardTitle>
         <CardDescription>
           Confirma que toda la información es correcta antes de publicar.
@@ -2042,18 +2042,18 @@ function Step7Publish({
       </CardHeader>
       <CardContent className="space-y-5">
         {/* Summary checklist */}
-        <div className="overflow-hidden rounded-lg border border-slate-200">
-          <div className="grid grid-cols-1 divide-y divide-slate-100 sm:grid-cols-2 sm:divide-y-0">
+        <div className="overflow-hidden rounded-lg border border-[#E8DFD9]">
+          <div className="grid grid-cols-1 divide-y divide-[#F0EAE5] sm:grid-cols-2 sm:divide-y-0">
             {rows.map((r, i) => (
               <div
                 key={i}
                 className={cn(
                   "flex items-start justify-between gap-3 px-4 py-2.5 text-sm",
-                  i % 2 === 0 ? "sm:bg-slate-50/40" : ""
+                  i % 2 === 0 ? "sm:bg-[#FAF6F3]/40" : ""
                 )}
               >
-                <span className="text-slate-500">{r.label}</span>
-                <span className="text-right font-medium text-slate-900">{r.value}</span>
+                <span className="text-[#8B7E78]">{r.label}</span>
+                <span className="text-right font-medium text-[#3D3530]">{r.value}</span>
               </div>
             ))}
           </div>
@@ -2061,13 +2061,13 @@ function Step7Publish({
 
         {/* Preview main image */}
         {form.images.length > 0 && (
-          <div className="flex items-center gap-3 rounded-lg border border-slate-200 p-3">
+          <div className="flex items-center gap-3 rounded-lg border border-[#E8DFD9] p-3">
             <img
               src={(form.images.find((i) => i.isMain) || form.images[0]).url}
               alt="Principal"
               className="size-16 rounded-md object-cover"
             />
-            <div className="text-sm text-slate-600">
+            <div className="text-sm text-[#6B5D5A]">
               Foto principal lista. {form.images.length} imagen(es) en total.
             </div>
           </div>
@@ -2076,19 +2076,19 @@ function Step7Publish({
         <Separator />
 
         {/* Confirmation */}
-        <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-slate-200 p-4 transition-colors hover:bg-slate-50">
+        <label className="flex cursor-pointer items-start gap-3 rounded-lg border border-[#E8DFD9] p-4 transition-colors hover:bg-[#FAF6F3]">
           <Checkbox
             checked={confirmChecked}
             onCheckedChange={(v) => setConfirmChecked(v === true)}
             className="mt-0.5"
           />
-          <span className="text-sm text-slate-700">
+          <span className="text-sm text-[#5A4E4B]">
             Confirmo que la información es correcta y autorizo la publicación de este inmueble
-            en el portal InmoPro.
+            en el portal Innovar Showrooms.
           </span>
         </label>
 
-        <div className="flex items-start gap-2 rounded-lg border border-amber-100 bg-amber-50/60 p-3 text-xs text-amber-800">
+        <div className="flex items-start gap-2 rounded-lg border border-amber-100 bg-[#FAF0E0]/60 p-3 text-xs text-[#A8814E]">
           <Sparkles className="mt-0.5 size-3.5 shrink-0" />
           <span>
             Al publicar, el sistema generará automáticamente el código único

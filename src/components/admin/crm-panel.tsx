@@ -40,18 +40,18 @@ const SOURCE_LABELS: Record<string, string> = {
   PORTAL: "Portal",
 };
 const SOURCE_BADGES: Record<string, string> = {
-  WEB: "bg-blue-50 text-blue-700 border-blue-200",
-  WHATSAPP: "bg-emerald-50 text-emerald-700 border-emerald-200",
+  WEB: "bg-[#FAF3EC] text-[#9A7558] border-blue-200",
+  WHATSAPP: "bg-emerald-50 text-[#7A8B66] border-[#97A97C]/30",
   PHONE: "bg-cyan-50 text-cyan-700 border-cyan-200",
-  CRM: "bg-slate-100 text-slate-700 border-slate-200",
-  REFERIDO: "bg-amber-50 text-amber-700 border-amber-200",
-  PORTAL: "bg-violet-50 text-violet-700 border-violet-200",
+  CRM: "bg-[#F0EAE5] text-[#5A4E4B] border-[#E8DFD9]",
+  REFERIDO: "bg-[#FAF0E0] text-[#B89164] border-[#E0B589]/30",
+  PORTAL: "bg-violet-50 text-[#7A6E6A] border-[#A89B96]/30",
 };
 
 const STATUS_DOT: Record<string, string> = {
-  NUEVO: "bg-blue-500",
+  NUEVO: "bg-[#C9A07A]",
   CONTACTADO: "bg-violet-500",
-  INTERESADO: "bg-amber-500",
+  INTERESADO: "bg-[#FAF0E0]0",
   VISITA: "bg-cyan-500",
   NEGOCIACION: "bg-orange-500",
   CERRADO: "bg-emerald-500",
@@ -73,10 +73,10 @@ interface Lead {
 }
 
 const STATS_SUMMARY = [
-  { status: "NUEVO", label: "Nuevos", tint: "border-blue-200 bg-blue-50 text-blue-700" },
-  { status: "CONTACTADO", label: "Contactados", tint: "border-violet-200 bg-violet-50 text-violet-700" },
-  { status: "INTERESADO", label: "Interesados", tint: "border-amber-200 bg-amber-50 text-amber-700" },
-  { status: "CERRADO", label: "Cerrados", tint: "border-emerald-200 bg-emerald-50 text-emerald-700" },
+  { status: "NUEVO", label: "Nuevos", tint: "border-blue-200 bg-[#FAF3EC] text-[#9A7558]" },
+  { status: "CONTACTADO", label: "Contactados", tint: "border-[#A89B96]/30 bg-violet-50 text-[#7A6E6A]" },
+  { status: "INTERESADO", label: "Interesados", tint: "border-[#E0B589]/30 bg-[#FAF0E0] text-[#B89164]" },
+  { status: "CERRADO", label: "Cerrados", tint: "border-[#97A97C]/30 bg-emerald-50 text-[#7A8B66]" },
 ];
 
 export function CrmPanel() {
@@ -178,8 +178,8 @@ export function CrmPanel() {
       {/* Header */}
       <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">CRM · Gestión de leads</h1>
-          <p className="text-sm text-slate-500">Da seguimiento a tus contactos desde el primer mensaje hasta el cierre.</p>
+          <h1 className="text-2xl font-bold tracking-tight text-[#3D3530]">CRM · Gestión de leads</h1>
+          <p className="text-sm text-[#8B7E78]">Da seguimiento a tus contactos desde el primer mensaje hasta el cierre.</p>
         </div>
         <Button onClick={() => setNewOpen(true)}>
           <Plus /> Nuevo lead
@@ -195,8 +195,8 @@ export function CrmPanel() {
                 <span className={cn("size-2 rounded-full", STATUS_DOT[s.status])} />
               </div>
               <div>
-                <div className="text-xl font-bold leading-tight text-slate-900">{counts[s.status] || 0}</div>
-                <div className="text-xs text-slate-500">{s.label}</div>
+                <div className="text-xl font-bold leading-tight text-[#3D3530]">{counts[s.status] || 0}</div>
+                <div className="text-xs text-[#8B7E78]">{s.label}</div>
               </div>
             </CardContent>
           </Card>
@@ -207,17 +207,17 @@ export function CrmPanel() {
       <div className="mb-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex flex-wrap gap-1.5">
           <FilterPill active={statusFilter === "all"} onClick={() => setStatusFilter("all")}>
-            Todos <span className="ml-1 rounded-full bg-slate-200 px-1.5 text-[10px] font-semibold text-slate-600">{leads.length}</span>
+            Todos <span className="ml-1 rounded-full bg-slate-200 px-1.5 text-[10px] font-semibold text-[#6B5D5A]">{leads.length}</span>
           </FilterPill>
           {STATUSES.map((s) => (
             <FilterPill key={s} active={statusFilter === s} onClick={() => setStatusFilter(s)}>
               {LEAD_STATUS_LABELS[s]}
-              <span className="ml-1 rounded-full bg-slate-200 px-1.5 text-[10px] font-semibold text-slate-600">{counts[s] || 0}</span>
+              <span className="ml-1 rounded-full bg-slate-200 px-1.5 text-[10px] font-semibold text-[#6B5D5A]">{counts[s] || 0}</span>
             </FilterPill>
           ))}
         </div>
         <div className="relative lg:w-72">
-          <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
+          <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-[#A89B96]" />
           <Input
             placeholder="Buscar por nombre, teléfono o código…"
             value={search}
@@ -235,12 +235,12 @@ export function CrmPanel() {
       ) : leads.length === 0 ? (
         <Card>
           <CardContent className="flex flex-col items-center gap-3 py-16 text-center">
-            <div className="grid size-14 place-items-center rounded-full bg-slate-100">
-              <Inbox className="size-7 text-slate-400" />
+            <div className="grid size-14 place-items-center rounded-full bg-[#F0EAE5]">
+              <Inbox className="size-7 text-[#A89B96]" />
             </div>
             <div>
-              <div className="font-semibold text-slate-700">No hay leads todavía</div>
-              <div className="text-sm text-slate-500">Crea tu primer lead o espera que lleguen contactos desde la web.</div>
+              <div className="font-semibold text-[#5A4E4B]">No hay leads todavía</div>
+              <div className="text-sm text-[#8B7E78]">Crea tu primer lead o espera que lleguen contactos desde la web.</div>
             </div>
             <Button size="sm" onClick={() => setNewOpen(true)}><Plus /> Nuevo lead</Button>
           </CardContent>
@@ -253,11 +253,11 @@ export function CrmPanel() {
           {visibleStatuses.map((status) => {
             const col = filtered.filter((l) => l.status === status);
             return (
-              <div key={status} className="flex flex-col rounded-xl bg-slate-100/70 ring-1 ring-slate-200/70">
+              <div key={status} className="flex flex-col rounded-xl bg-[#F0EAE5]/70 ring-1 ring-[#E8DFD9]/70">
                 <div className="flex items-center justify-between gap-2 px-3 py-2.5">
                   <div className="flex items-center gap-2 min-w-0">
                     <span className={cn("size-2 shrink-0 rounded-full", STATUS_DOT[status])} />
-                    <span className="truncate text-sm font-semibold text-slate-800">{LEAD_STATUS_LABELS[status]}</span>
+                    <span className="truncate text-sm font-semibold text-[#4A3D38]">{LEAD_STATUS_LABELS[status]}</span>
                   </div>
                   <Badge variant="outline" className={cn("shrink-0", LEAD_STATUS_COLORS[status])}>
                     {col.length}
@@ -273,7 +273,7 @@ export function CrmPanel() {
                     />
                   ))}
                   {col.length === 0 && (
-                    <div className="rounded-lg border border-dashed border-slate-300 bg-white/40 px-3 py-6 text-center text-xs text-slate-400">
+                    <div className="rounded-lg border border-dashed border-[#D8CFC9] bg-white/40 px-3 py-6 text-center text-xs text-[#A89B96]">
                       Sin leads en este estado
                     </div>
                   )}
@@ -302,41 +302,41 @@ export function CrmPanel() {
                     {LEAD_STATUS_LABELS[selected.status] || selected.status}
                   </Badge>
                   {selected.source && (
-                    <Badge variant="outline" className={SOURCE_BADGES[selected.source] || "bg-slate-100 text-slate-700 border-slate-200"}>
+                    <Badge variant="outline" className={SOURCE_BADGES[selected.source] || "bg-[#F0EAE5] text-[#5A4E4B] border-[#E8DFD9]"}>
                       {SOURCE_LABELS[selected.source] || selected.source}
                     </Badge>
                   )}
                 </div>
 
                 {/* Contact */}
-                <div className="space-y-2 rounded-lg border border-slate-200 p-3">
+                <div className="space-y-2 rounded-lg border border-[#E8DFD9] p-3">
                   {selected.phone && (
-                    <a href={`tel:${selected.phone}`} className="flex items-center gap-2 text-sm text-slate-700 hover:text-blue-700">
-                      <Phone className="size-4 text-slate-400" /> {selected.phone}
+                    <a href={`tel:${selected.phone}`} className="flex items-center gap-2 text-sm text-[#5A4E4B] hover:text-[#9A7558]">
+                      <Phone className="size-4 text-[#A89B96]" /> {selected.phone}
                     </a>
                   )}
                   {selected.email && (
-                    <a href={`mailto:${selected.email}`} className="flex items-center gap-2 truncate text-sm text-slate-700 hover:text-blue-700">
-                      <Mail className="size-4 shrink-0 text-slate-400" /> <span className="truncate">{selected.email}</span>
+                    <a href={`mailto:${selected.email}`} className="flex items-center gap-2 truncate text-sm text-[#5A4E4B] hover:text-[#9A7558]">
+                      <Mail className="size-4 shrink-0 text-[#A89B96]" /> <span className="truncate">{selected.email}</span>
                     </a>
                   )}
                   {!selected.phone && !selected.email && (
-                    <div className="text-xs text-slate-400">Sin datos de contacto</div>
+                    <div className="text-xs text-[#A89B96]">Sin datos de contacto</div>
                   )}
                 </div>
 
                 {/* Property */}
                 {selected.propertyCode && (
-                  <div className="space-y-2 rounded-lg border border-slate-200 p-3">
-                    <div className="text-xs font-semibold uppercase tracking-wider text-slate-400">Inmueble</div>
+                  <div className="space-y-2 rounded-lg border border-[#E8DFD9] p-3">
+                    <div className="text-xs font-semibold uppercase tracking-wider text-[#A89B96]">Inmueble</div>
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0">
-                        <div className="font-mono text-xs text-blue-600">{selected.propertyCode}</div>
-                        <div className="truncate text-sm font-medium text-slate-800">
+                        <div className="font-mono text-xs text-[#B08968]">{selected.propertyCode}</div>
+                        <div className="truncate text-sm font-medium text-[#4A3D38]">
                           {selected.property?.title || "(sin título)"}
                         </div>
                         {selected.property && (
-                          <div className="text-xs text-slate-500">
+                          <div className="text-xs text-[#8B7E78]">
                             {formatPriceShort(selected.property.price)} · {selected.property.operation}
                           </div>
                         )}
@@ -350,17 +350,17 @@ export function CrmPanel() {
 
                 {/* Message */}
                 {selected.message && (
-                  <div className="space-y-1.5 rounded-lg border border-slate-200 p-3">
-                    <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-slate-400">
+                  <div className="space-y-1.5 rounded-lg border border-[#E8DFD9] p-3">
+                    <div className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[#A89B96]">
                       <MessageSquare className="size-3.5" /> Mensaje
                     </div>
-                    <p className="text-sm text-slate-700 whitespace-pre-wrap">{selected.message}</p>
+                    <p className="text-sm text-[#5A4E4B] whitespace-pre-wrap">{selected.message}</p>
                   </div>
                 )}
 
                 {/* Status change */}
                 <div className="space-y-1.5">
-                  <Label className="text-xs font-semibold uppercase tracking-wider text-slate-400">Cambiar estado</Label>
+                  <Label className="text-xs font-semibold uppercase tracking-wider text-[#A89B96]">Cambiar estado</Label>
                   <Select value={selected.status} onValueChange={(v) => changeStatus(selected, v)}>
                     <SelectTrigger className="w-full"><SelectValue /></SelectTrigger>
                     <SelectContent>
@@ -373,7 +373,7 @@ export function CrmPanel() {
 
                 {/* Notes */}
                 <div className="space-y-1.5">
-                  <Label className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-slate-400">
+                  <Label className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[#A89B96]">
                     <StickyNote className="size-3.5" /> Notas internas
                   </Label>
                   <Textarea
@@ -411,7 +411,7 @@ function FilterPill({ active, onClick, children }: { active: boolean; onClick: (
       onClick={onClick}
       className={cn(
         "inline-flex items-center rounded-full px-3 py-1.5 text-xs font-medium transition-colors",
-        active ? "bg-slate-900 text-white" : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+        active ? "bg-[#3D3530] text-white" : "bg-[#F0EAE5] text-[#5A4E4B] hover:bg-slate-200"
       )}
     >
       {children}
@@ -427,42 +427,42 @@ function LeadCard({
       initial={{ opacity: 0, y: 6 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2 }}
-      className="cursor-pointer rounded-lg border border-slate-200 bg-white p-2.5 shadow-sm transition-colors hover:border-blue-300 hover:bg-blue-50/30"
+      className="cursor-pointer rounded-lg border border-[#E8DFD9] bg-white p-2.5 shadow-sm transition-colors hover:border-blue-300 hover:bg-[#FAF3EC]/30"
       onClick={onClick}
     >
       <div className="flex items-start justify-between gap-2">
         <div className="min-w-0 flex-1">
-          <div className="truncate text-sm font-semibold text-slate-900">{lead.name}</div>
+          <div className="truncate text-sm font-semibold text-[#3D3530]">{lead.name}</div>
           {lead.phone && (
             <a
               href={`tel:${lead.phone}`}
               onClick={(e) => e.stopPropagation()}
-              className="flex items-center gap-1 truncate text-xs text-slate-500 hover:text-blue-700"
+              className="flex items-center gap-1 truncate text-xs text-[#8B7E78] hover:text-[#9A7558]"
             >
               <Phone className="size-3" /> {lead.phone}
             </a>
           )}
           {lead.email && (
-            <div className="flex items-center gap-1 truncate text-xs text-slate-400">
+            <div className="flex items-center gap-1 truncate text-xs text-[#A89B96]">
               <Mail className="size-3 shrink-0" /> <span className="truncate">{lead.email}</span>
             </div>
           )}
         </div>
-        <Badge variant="outline" className={cn("shrink-0", SOURCE_BADGES[lead.source] || "bg-slate-100 text-slate-700 border-slate-200")}>
+        <Badge variant="outline" className={cn("shrink-0", SOURCE_BADGES[lead.source] || "bg-[#F0EAE5] text-[#5A4E4B] border-[#E8DFD9]")}>
           {SOURCE_LABELS[lead.source] || lead.source}
         </Badge>
       </div>
 
       {lead.propertyCode && (
-        <div className="mt-1.5 font-mono text-[11px] text-blue-600">{lead.propertyCode}</div>
+        <div className="mt-1.5 font-mono text-[11px] text-[#B08968]">{lead.propertyCode}</div>
       )}
 
       {lead.message && (
-        <p className="mt-1.5 line-clamp-2 text-xs text-slate-500">{lead.message}</p>
+        <p className="mt-1.5 line-clamp-2 text-xs text-[#8B7E78]">{lead.message}</p>
       )}
 
       <div className="mt-2 flex items-center justify-between gap-2">
-        <span className="text-[10px] text-slate-400">{formatRelativeTime(lead.createdAt)}</span>
+        <span className="text-[10px] text-[#A89B96]">{formatRelativeTime(lead.createdAt)}</span>
         <Select
           value={lead.status}
           onValueChange={(v) => { onStatusChange(v); }}

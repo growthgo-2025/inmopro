@@ -40,11 +40,11 @@ interface AdminProperty {
 }
 
 const STATUS_BADGES: Record<string, string> = {
-  DISPONIBLE: "bg-emerald-100 text-emerald-700 border-emerald-200",
-  RESERVADO: "bg-amber-100 text-amber-700 border-amber-200",
-  VENDIDO: "bg-slate-200 text-slate-700 border-slate-300",
-  ARRENDADO: "bg-blue-100 text-blue-700 border-blue-200",
-  BORRADOR: "bg-slate-100 text-slate-500 border-slate-200",
+  DISPONIBLE: "bg-[#97A97C]/20 text-[#7A8B66] border-[#97A97C]/30",
+  RESERVADO: "bg-[#E0B589]/20 text-[#B89164] border-[#E0B589]/30",
+  VENDIDO: "bg-slate-200 text-[#5A4E4B] border-[#D8CFC9]",
+  ARRENDADO: "bg-[#F5EBE0] text-[#9A7558] border-blue-200",
+  BORRADOR: "bg-[#F0EAE5] text-[#8B7E78] border-[#E8DFD9]",
 };
 const STATUS_LABELS: Record<string, string> = {
   DISPONIBLE: "Disponible",
@@ -190,8 +190,8 @@ export function AdminProperties() {
       {/* Header */}
       <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-xl font-bold text-slate-900">Administrar inmuebles</h2>
-          <p className="text-sm text-slate-500">Gestiona el inventario, publicación y estado de cada inmueble.</p>
+          <h2 className="text-xl font-bold text-[#3D3530]">Administrar inmuebles</h2>
+          <p className="text-sm text-[#8B7E78]">Gestiona el inventario, publicación y estado de cada inmueble.</p>
         </div>
         <Button onClick={() => setView("upload")}>
           <Plus /> Publicar inmueble
@@ -202,7 +202,7 @@ export function AdminProperties() {
       <Card className="gap-3 py-3">
         <div className="flex flex-col gap-3 px-4 lg:flex-row lg:items-center">
           <div className="relative flex-1">
-            <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-slate-400" />
+            <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-[#A89B96]" />
             <Input
               placeholder="Buscar por código o título…"
               value={searchInput}
@@ -249,7 +249,7 @@ export function AdminProperties() {
       </Card>
 
       {/* Result count */}
-      <div className="flex items-center justify-between text-sm text-slate-500">
+      <div className="flex items-center justify-between text-sm text-[#8B7E78]">
         <span className="flex items-center gap-1.5"><Filter className="size-3.5" />
           {loading ? "Cargando…" : `Mostrando ${items.length} de ${items.length} inmueble(s)`}
         </span>
@@ -259,7 +259,7 @@ export function AdminProperties() {
       <Card className="hidden md:block py-0">
         <Table>
           <TableHeader>
-            <TableRow className="bg-slate-50/80">
+            <TableRow className="bg-[#FAF6F3]/80">
               <TableHead className="pl-4">Código</TableHead>
               <TableHead>Título</TableHead>
               <TableHead>Operación</TableHead>
@@ -280,27 +280,27 @@ export function AdminProperties() {
             {!loading && items.map((p) => (
               <TableRow
                 key={p.id}
-                className="cursor-pointer hover:bg-slate-50"
+                className="cursor-pointer hover:bg-[#FAF6F3]"
                 onClick={() => openProperty(p.code)}
               >
-                <TableCell className="pl-4 font-mono text-xs text-blue-600">{p.code}</TableCell>
+                <TableCell className="pl-4 font-mono text-xs text-[#B08968]">{p.code}</TableCell>
                 <TableCell className="max-w-[260px]">
                   <div className="flex items-center gap-1.5">
-                    <span className="truncate font-medium text-slate-800">{p.title}</span>
+                    <span className="truncate font-medium text-[#4A3D38]">{p.title}</span>
                     {p.featured && <Star className="size-3.5 shrink-0 fill-amber-400 text-amber-400" />}
                   </div>
-                  {p.neighborhoodName && <div className="truncate text-xs text-slate-400">{p.neighborhoodName}</div>}
+                  {p.neighborhoodName && <div className="truncate text-xs text-[#A89B96]">{p.neighborhoodName}</div>}
                 </TableCell>
                 <TableCell>
                   <Badge variant="outline" className={cn(OPERATION_COLORS[p.operation])}>
                     {OPERATION_LABELS[p.operation] || p.operation}
                   </Badge>
                 </TableCell>
-                <TableCell className="text-sm text-slate-600">{PROPERTY_TYPE_LABELS[p.propertyType] || p.propertyType}</TableCell>
+                <TableCell className="text-sm text-[#6B5D5A]">{PROPERTY_TYPE_LABELS[p.propertyType] || p.propertyType}</TableCell>
                 <TableCell className="whitespace-nowrap font-medium">{formatPriceShort(p.price, p.currency)}</TableCell>
-                <TableCell className="text-sm text-slate-600">{p.cityName || "—"}</TableCell>
+                <TableCell className="text-sm text-[#6B5D5A]">{p.cityName || "—"}</TableCell>
                 <TableCell>
-                  <Badge variant="outline" className={cn(STATUS_BADGES[p.status] || "bg-slate-100 text-slate-600 border-slate-200")}>
+                  <Badge variant="outline" className={cn(STATUS_BADGES[p.status] || "bg-[#F0EAE5] text-[#6B5D5A] border-[#E8DFD9]")}>
                     {STATUS_LABELS[p.status] || p.status}
                   </Badge>
                 </TableCell>
@@ -315,7 +315,7 @@ export function AdminProperties() {
                       </Button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end" className="w-48">
-                      <DropdownMenuLabel className="text-xs text-slate-400">Acciones</DropdownMenuLabel>
+                      <DropdownMenuLabel className="text-xs text-[#A89B96]">Acciones</DropdownMenuLabel>
                       <DropdownMenuItem onClick={() => openProperty(p.code)}>
                         <Eye className="size-4" /> Ver detalle
                       </DropdownMenuItem>
@@ -334,7 +334,7 @@ export function AdminProperties() {
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem
-                        className="text-red-600 focus:text-red-600"
+                        className="text-[#C97A7A] focus:text-[#C97A7A]"
                         onClick={() => setDeleteTarget(p)}
                       >
                         <Trash2 className="size-4" /> Eliminar
@@ -361,32 +361,32 @@ export function AdminProperties() {
         {!loading && items.map((p) => (
           <motion.div key={p.id} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }}>
             <Card
-              className="cursor-pointer gap-2 py-3 hover:bg-slate-50"
+              className="cursor-pointer gap-2 py-3 hover:bg-[#FAF6F3]"
               onClick={() => openProperty(p.code)}
             >
               <div className="flex items-start justify-between gap-2 px-4">
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-1.5">
-                    <span className="font-mono text-xs text-blue-600">{p.code}</span>
+                    <span className="font-mono text-xs text-[#B08968]">{p.code}</span>
                     {p.featured && <Star className="size-3 fill-amber-400 text-amber-400" />}
                   </div>
-                  <div className="mt-0.5 truncate font-medium text-slate-800">{p.title}</div>
+                  <div className="mt-0.5 truncate font-medium text-[#4A3D38]">{p.title}</div>
                   <div className="mt-1 flex flex-wrap items-center gap-1.5">
                     <Badge variant="outline" className={cn(OPERATION_COLORS[p.operation])}>
                       {OPERATION_LABELS[p.operation] || p.operation}
                     </Badge>
-                    <Badge variant="outline" className={cn(STATUS_BADGES[p.status] || "bg-slate-100 text-slate-600 border-slate-200")}>
+                    <Badge variant="outline" className={cn(STATUS_BADGES[p.status] || "bg-[#F0EAE5] text-[#6B5D5A] border-[#E8DFD9]")}>
                       {STATUS_LABELS[p.status] || p.status}
                     </Badge>
                     <span className={cn("inline-block size-2 rounded-full", p.published ? "bg-emerald-500" : "bg-slate-300")} />
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="font-semibold text-slate-900">{formatPriceShort(p.price, p.currency)}</div>
-                  <div className="text-xs text-slate-400">{p.cityName || "—"}</div>
+                  <div className="font-semibold text-[#3D3530]">{formatPriceShort(p.price, p.currency)}</div>
+                  <div className="text-xs text-[#A89B96]">{p.cityName || "—"}</div>
                 </div>
               </div>
-              <div className="flex items-center justify-between px-4 pt-1 text-xs text-slate-400" onClick={(e) => e.stopPropagation()}>
+              <div className="flex items-center justify-between px-4 pt-1 text-xs text-[#A89B96]" onClick={(e) => e.stopPropagation()}>
                 <span>{formatRelativeTime(p.createdAt)} · {p.views} vistas</span>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
@@ -402,7 +402,7 @@ export function AdminProperties() {
                       <Star className="size-4" /> {p.featured ? "Quitar destacado" : "Destacar"}
                     </DropdownMenuItem>
                     <DropdownMenuSeparator />
-                    <DropdownMenuItem className="text-red-600 focus:text-red-600" onClick={() => setDeleteTarget(p)}>
+                    <DropdownMenuItem className="text-[#C97A7A] focus:text-[#C97A7A]" onClick={() => setDeleteTarget(p)}>
                       <Trash2 className="size-4" /> Eliminar
                     </DropdownMenuItem>
                   </DropdownMenuContent>
@@ -422,7 +422,7 @@ export function AdminProperties() {
           <DialogHeader>
             <DialogTitle>¿Eliminar inmueble?</DialogTitle>
             <DialogDescription>
-              Estás a punto de eliminar <span className="font-mono text-slate-700">{deleteTarget?.code}</span> — {deleteTarget?.title}.
+              Estás a punto de eliminar <span className="font-mono text-[#5A4E4B]">{deleteTarget?.code}</span> — {deleteTarget?.title}.
               Esta acción no se puede deshacer.
             </DialogDescription>
           </DialogHeader>
@@ -441,12 +441,12 @@ export function AdminProperties() {
 function EmptyState({ hasFilters, onClear, onCreate }: { hasFilters: boolean; onClear: () => void; onCreate: () => void }) {
   return (
     <div className="flex flex-col items-center gap-3 py-6 text-center">
-      <div className="grid size-14 place-items-center rounded-full bg-slate-100">
-        <Building2 className="size-7 text-slate-400" />
+      <div className="grid size-14 place-items-center rounded-full bg-[#F0EAE5]">
+        <Building2 className="size-7 text-[#A89B96]" />
       </div>
       <div>
-        <div className="font-semibold text-slate-700">No hay inmuebles</div>
-        <div className="text-sm text-slate-500">
+        <div className="font-semibold text-[#5A4E4B]">No hay inmuebles</div>
+        <div className="text-sm text-[#8B7E78]">
           {hasFilters ? "Prueba con otros filtros de búsqueda." : "Empieza publicando tu primer inmueble."}
         </div>
       </div>

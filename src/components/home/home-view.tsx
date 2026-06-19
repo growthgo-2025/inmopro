@@ -92,10 +92,10 @@ const VALUE_PROPS = [
 const FAQS = [
   {
     q: "¿Cómo funciona el código único de cada inmueble?",
-    a: "Cada propiedad publicada en InmoPro recibe un código INV-2026-CITY-NNNNNN. Te permite verificar que el inmueble existe, consultar su historial y evitar avisos duplicados o fraudulentos. Cópialo del aviso y búscalo en el portal para confirmar.",
+    a: "Cada propiedad publicada en Innovar Showrooms recibe un código INV-2026-CITY-NNNNNN. Te permite verificar que el inmueble existe, consultar su historial y evitar avisos duplicados o fraudulentos. Cópialo del aviso y búscalo en el portal para confirmar.",
   },
   {
-    q: "¿Qué ciudades y barrios cubre InmoPro?",
+    q: "¿Qué ciudades y barrios cubre Innovar Showrooms?",
     a: "Operamos en Medellín (El Poblado, Laureles, Belén, Envigado), Bogotá (Chapinero, Usaquén, Suba, Engativá), Cali (Granada, Ciudad Jardín, Chipichape), Barranquilla (Alto Prado, Villa Country), Cartagena (Bocagrande, Castillogrande), Bucaramanga, Manizales, Pereira, Armenia y Santa Marta.",
   },
   {
@@ -330,7 +330,7 @@ function HeroSection({
           variants={fadeUp}
           className="mx-auto max-w-3xl text-center"
         >
-          <span className="inline-flex items-center gap-2 rounded-full border border-blue-400/30 bg-blue-500/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-blue-300 backdrop-blur-sm">
+          <span className="inline-flex items-center gap-2 rounded-full border border-[#E0B589]/30 bg-[#C9A07A]/10 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-blue-300 backdrop-blur-sm">
             <Sparkles className="h-3 w-3" />
             Portal inmobiliario profesional
           </span>
@@ -340,7 +340,7 @@ function HeroSection({
             <span className="text-gradient-brand">perfecto</span> en Colombia
           </h1>
 
-          <p className="text-body-lg mx-auto mt-4 max-w-2xl text-slate-200">
+          <p className="text-body-lg mx-auto mt-4 max-w-2xl text-[#E8DFD9]">
             Miles de propiedades verificadas con códigos únicos. Busca por
             ciudad, barrio, tipo o código de inmueble.
           </p>
@@ -365,8 +365,8 @@ function HeroSection({
                     className={cn(
                       "rounded-lg px-4 py-1.5 text-sm font-semibold transition-colors",
                       active
-                        ? "bg-blue-600 text-white shadow-sm"
-                        : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                        ? "bg-[#B08968] text-white shadow-sm"
+                        : "bg-[#F0EAE5] text-[#6B5D5A] hover:bg-slate-200"
                     )}
                   >
                     {o.label}
@@ -379,7 +379,7 @@ function HeroSection({
             <div className="grid grid-cols-1 gap-2 sm:grid-cols-3">
               {/* Free text */}
               <div className="relative">
-                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
+                <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-[#A89B96]" />
                 <Input
                   value={q}
                   onChange={(e) => setQ(e.target.value)}
@@ -419,7 +419,7 @@ function HeroSection({
                   ) : (
                     cities.map((c) => (
                       <SelectItem key={c.id} value={c.id}>
-                        <MapPin className="mr-1 h-3.5 w-3.5 text-slate-400" />
+                        <MapPin className="mr-1 h-3.5 w-3.5 text-[#A89B96]" />
                         {c.name}
                       </SelectItem>
                     ))
@@ -432,7 +432,7 @@ function HeroSection({
             <Button
               onClick={onSearch}
               size="lg"
-              className="mt-3 h-11 w-full bg-blue-600 text-sm font-bold hover:bg-blue-700"
+              className="mt-3 h-11 w-full bg-[#B08968] text-sm font-bold hover:bg-[#9A7558]"
             >
               <Search className="mr-2 h-4 w-4" />
               Buscar inmuebles
@@ -440,14 +440,14 @@ function HeroSection({
 
             {/* Quick chips */}
             <div className="mt-3 flex flex-wrap items-center gap-2">
-              <span className="text-xs font-medium text-slate-400">
+              <span className="text-xs font-medium text-[#A89B96]">
                 Populares:
               </span>
               {QUICK_CHIPS.map((chip) => (
                 <button
                   key={chip.value}
                   onClick={() => onChip(chip.value)}
-                  className="rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-xs font-medium text-slate-700 transition-colors hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700"
+                  className="rounded-full border border-[#E8DFD9] bg-[#FAF6F3] px-3 py-1 text-xs font-medium text-[#5A4E4B] transition-colors hover:border-blue-300 hover:bg-[#FAF3EC] hover:text-[#9A7558]"
                 >
                   {chip.label}
                 </button>
@@ -456,17 +456,17 @@ function HeroSection({
           </div>
 
           {/* Trust badges */}
-          <div className="mt-5 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs font-medium text-slate-200">
+          <div className="mt-5 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs font-medium text-[#E8DFD9]">
             <span className="inline-flex items-center gap-1.5">
-              <CheckCircle2 className="h-3.5 w-3.5 text-blue-400" />
+              <CheckCircle2 className="h-3.5 w-3.5 text-[#E0B589]" />
               Códigos verificados
             </span>
             <span className="inline-flex items-center gap-1.5">
-              <BadgeCheck className="h-3.5 w-3.5 text-blue-400" />
+              <BadgeCheck className="h-3.5 w-3.5 text-[#E0B589]" />
               Asesores certificados
             </span>
             <span className="inline-flex items-center gap-1.5">
-              <Clock className="h-3.5 w-3.5 text-blue-400" />
+              <Clock className="h-3.5 w-3.5 text-[#E0B589]" />
               Respuesta &lt; 24h
             </span>
           </div>
@@ -492,13 +492,13 @@ function QuickCategoriesSection({ onPick }: { onPick: (v: string) => void }) {
           variants={fadeUp}
           className="mb-8 text-center"
         >
-          <div className="text-[11px] font-bold uppercase tracking-wider text-blue-600">
+          <div className="text-[11px] font-bold uppercase tracking-wider text-[#B08968]">
             Explora por categoría
           </div>
-          <h2 className="h2-section mt-2 text-slate-900">
+          <h2 className="h2-section mt-2 text-[#3D3530]">
             Inmuebles para cada necesidad
           </h2>
-          <p className="text-body-lg mx-auto mt-3 max-w-2xl text-slate-500">
+          <p className="text-body-lg mx-auto mt-3 max-w-2xl text-[#8B7E78]">
             Encuentra el tipo de propiedad que buscas en un solo clic.
           </p>
         </motion.div>
@@ -513,15 +513,15 @@ function QuickCategoriesSection({ onPick }: { onPick: (v: string) => void }) {
               viewport={{ once: true }}
               variants={fadeUp}
               onClick={() => onPick(cat.value)}
-              className="card-lift group flex flex-col items-center gap-3 rounded-2xl border border-slate-200 bg-white p-5 text-center transition-colors hover:border-blue-400 hover:bg-blue-50/40"
+              className="card-lift group flex flex-col items-center gap-3 rounded-2xl border border-[#E8DFD9] bg-white p-5 text-center transition-colors hover:border-[#E0B589] hover:bg-[#FAF3EC]/40"
             >
-              <span className="flex h-14 w-14 items-center justify-center rounded-xl bg-blue-50 text-2xl transition-transform group-hover:scale-110">
+              <span className="flex h-14 w-14 items-center justify-center rounded-xl bg-[#FAF3EC] text-2xl transition-transform group-hover:scale-110">
                 {cat.icon}
               </span>
-              <span className="text-sm font-semibold text-slate-800">
+              <span className="text-sm font-semibold text-[#4A3D38]">
                 {cat.label}
               </span>
-              <span className="inline-flex items-center gap-0.5 text-[11px] font-medium text-blue-600 opacity-0 transition-opacity group-hover:opacity-100">
+              <span className="inline-flex items-center gap-0.5 text-[11px] font-medium text-[#B08968] opacity-0 transition-opacity group-hover:opacity-100">
                 Ver <ChevronRight className="h-3 w-3" />
               </span>
             </motion.button>
@@ -546,7 +546,7 @@ function FeaturedCitiesSection({
   onPick: (id: string) => void;
 }) {
   return (
-    <section id="ciudades" className="bg-slate-50 py-16">
+    <section id="ciudades" className="bg-[#FAF6F3] py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <motion.div
           initial="hidden"
@@ -555,13 +555,13 @@ function FeaturedCitiesSection({
           variants={fadeUp}
           className="mb-8 text-center"
         >
-          <div className="text-[11px] font-bold uppercase tracking-wider text-blue-600">
+          <div className="text-[11px] font-bold uppercase tracking-wider text-[#B08968]">
             Ubicaciones destacadas
           </div>
-          <h2 className="h2-section mt-2 text-slate-900">
+          <h2 className="h2-section mt-2 text-[#3D3530]">
             Ciudades con más inmuebles
           </h2>
-          <p className="text-body-lg mx-auto mt-3 max-w-2xl text-slate-500">
+          <p className="text-body-lg mx-auto mt-3 max-w-2xl text-[#8B7E78]">
             Explora propiedades en las principales ciudades de Colombia.
           </p>
         </motion.div>
@@ -616,7 +616,7 @@ function FeaturedCitiesSection({
           <Button
             variant="outline"
             onClick={() => onPick("")}
-            className="border-slate-300 text-slate-700 hover:bg-slate-100"
+            className="border-[#D8CFC9] text-[#5A4E4B] hover:bg-[#F0EAE5]"
           >
             Ver todas las ciudades
             <ArrowRight className="ml-1.5 h-4 w-4" />
@@ -659,13 +659,13 @@ function FeaturedPropertiesSection({
             viewport={{ once: true, margin: "-80px" }}
             variants={fadeUp}
           >
-            <div className="text-[11px] font-bold uppercase tracking-wider text-blue-600">
+            <div className="text-[11px] font-bold uppercase tracking-wider text-[#B08968]">
               Propiedades destacadas
             </div>
-            <h2 className="h2-section mt-2 text-slate-900">
+            <h2 className="h2-section mt-2 text-[#3D3530]">
               Inmuebles seleccionados para ti
             </h2>
-            <p className="mt-2 text-sm text-slate-500">
+            <p className="mt-2 text-sm text-[#8B7E78]">
               Curaduría editorial de los inmuebles más relevantes del portal.
             </p>
           </motion.div>
@@ -676,7 +676,7 @@ function FeaturedPropertiesSection({
         </div>
 
         <Tabs value={tab} onValueChange={(v) => setTab(v as "featured" | "recent")}>
-          <TabsList className="mb-6 bg-slate-100">
+          <TabsList className="mb-6 bg-[#F0EAE5]">
             <TabsTrigger value="featured">Destacados</TabsTrigger>
             <TabsTrigger value="recent">Recientes</TabsTrigger>
           </TabsList>
@@ -704,7 +704,7 @@ function PropertiesGrid({
     return (
       <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {Array.from({ length: 8 }).map((_, i) => (
-          <div key={i} className="overflow-hidden rounded-xl border border-slate-200">
+          <div key={i} className="overflow-hidden rounded-xl border border-[#E8DFD9]">
             <Skeleton className="aspect-[4/3] w-full rounded-none" />
             <div className="space-y-3 p-4">
               <Skeleton className="h-5 w-24" />
@@ -723,7 +723,7 @@ function PropertiesGrid({
 
   if (!items.length) {
     return (
-      <div className="rounded-xl border border-dashed border-slate-200 bg-slate-50 p-10 text-center text-sm text-slate-500">
+      <div className="rounded-xl border border-dashed border-[#E8DFD9] bg-[#FAF6F3] p-10 text-center text-sm text-[#8B7E78]">
         No hay inmuebles disponibles en este momento. Vuelve pronto.
       </div>
     );
@@ -744,7 +744,7 @@ function PropertiesGrid({
 
 function ValuePropsSection() {
   return (
-    <section id="por-que" className="bg-slate-900 py-20 text-white">
+    <section id="por-que" className="bg-[#3D3530] py-20 text-white">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <motion.div
           initial="hidden"
@@ -753,13 +753,13 @@ function ValuePropsSection() {
           variants={fadeUp}
           className="mx-auto mb-12 max-w-2xl text-center"
         >
-          <div className="text-[11px] font-bold uppercase tracking-wider text-blue-400">
-            ¿Por qué InmoPro?
+          <div className="text-[11px] font-bold uppercase tracking-wider text-[#E0B589]">
+            ¿Por qué Innovar Showrooms?
           </div>
           <h2 className="h2-section mt-2 text-white">
             La plataforma inmobiliaria más profesional de Colombia
           </h2>
-          <p className="text-body-lg mt-3 text-slate-400">
+          <p className="text-body-lg mt-3 text-[#A89B96]">
             Diseñada para compradores, arrendatarios y asesores que buscan
             transparencia, verificación y resultados.
           </p>
@@ -774,15 +774,15 @@ function ValuePropsSection() {
               whileInView="visible"
               viewport={{ once: true }}
               variants={fadeUp}
-              className="rounded-xl border border-slate-800 bg-slate-800/60 p-6"
+              className="rounded-xl border border-[#3D3530] bg-[#4A3D38]/60 p-6"
             >
-              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-blue-600/15 ring-1 ring-blue-500/30">
-                <vp.icon className="h-5 w-5 text-blue-400" />
+              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#B08968]/20 ring-1 ring-[#C9A07A]/30">
+                <vp.icon className="h-5 w-5 text-[#E0B589]" />
               </div>
               <h3 className="mt-4 text-base font-bold text-white">
                 {vp.title}
               </h3>
-              <p className="mt-2 text-sm leading-relaxed text-slate-400">
+              <p className="mt-2 text-sm leading-relaxed text-[#A89B96]">
                 {vp.desc}
               </p>
             </motion.div>
@@ -835,7 +835,7 @@ function CtaBannerSection({
               <Button
                 size="lg"
                 onClick={onPublish}
-                className="h-11 bg-white px-6 text-blue-700 hover:bg-blue-50"
+                className="h-11 bg-white px-6 text-[#9A7558] hover:bg-[#FAF3EC]"
               >
                 <Building2 className="mr-2 h-4 w-4" />
                 Publicar inmueble
@@ -873,14 +873,14 @@ function SeoSection({ onSearch }: { onSearch: (q: string) => void }) {
             viewport={{ once: true, margin: "-80px" }}
             variants={fadeUp}
           >
-            <div className="text-[11px] font-bold uppercase tracking-wider text-blue-600">
+            <div className="text-[11px] font-bold uppercase tracking-wider text-[#B08968]">
               Guía inmobiliaria
             </div>
-            <h2 className="h2-section mt-2 text-slate-900">
+            <h2 className="h2-section mt-2 text-[#3D3530]">
               Inmuebles en Colombia: la guía completa
             </h2>
 
-            <div className="mt-5 space-y-4 text-sm leading-relaxed text-slate-600">
+            <div className="mt-5 space-y-4 text-sm leading-relaxed text-[#6B5D5A]">
               <p>
                 Comprar o arrendar inmuebles en Colombia requiere entender el
                 mercado local, los trámites notariales y el sistema de estratos.
@@ -913,7 +913,7 @@ function SeoSection({ onSearch }: { onSearch: (q: string) => void }) {
 
               <p>
                 Una de las claves para evitar avisos fraudulentos es exigir el{" "}
-                <strong>código único de inmueble</strong>. En InmoPro cada
+                <strong>código único de inmueble</strong>. En Innovar Showrooms cada
                 propiedad recibe un identificador INV-2026-CITY-000001
                 verificable, lo que permite comprobar que el aviso corresponde a
                 un inmueble real y no duplicado. Antes de separar un apartamento
@@ -930,7 +930,7 @@ function SeoSection({ onSearch }: { onSearch: (q: string) => void }) {
                 <strong>apartamentos</strong>, <strong>fincas</strong> o{" "}
                 <strong>lotes</strong>, te recomendamos comparar al menos cinco
                 opciones similares, visitar el inmueble en horarios distintos y
-                solicitar el certificado de tradición y libertad. InmoPro reúne
+                solicitar el certificado de tradición y libertad. Innovar Showrooms reúne
                 miles de inmuebles verificados en Colombia con asesores
                 certificados que responden en menos de 24 horas.
               </p>
@@ -944,9 +944,9 @@ function SeoSection({ onSearch }: { onSearch: (q: string) => void }) {
             viewport={{ once: true, margin: "-80px" }}
             variants={fadeUp}
           >
-            <div className="rounded-2xl border border-slate-200 bg-slate-50/60 p-6 sm:p-8">
-              <h3 className="h3-card text-slate-900">Preguntas frecuentes</h3>
-              <p className="mt-1 text-sm text-slate-500">
+            <div className="rounded-2xl border border-[#E8DFD9] bg-[#FAF6F3]/60 p-6 sm:p-8">
+              <h3 className="h3-card text-[#3D3530]">Preguntas frecuentes</h3>
+              <p className="mt-1 text-sm text-[#8B7E78]">
                 Resolvemos las dudas más comunes de compradores y arrendatarios.
               </p>
 
@@ -955,28 +955,28 @@ function SeoSection({ onSearch }: { onSearch: (q: string) => void }) {
                   <AccordionItem
                     key={i}
                     value={`item-${i}`}
-                    className="border-slate-200"
+                    className="border-[#E8DFD9]"
                   >
-                    <AccordionTrigger className="text-left text-sm font-semibold text-slate-800 hover:text-blue-700 hover:no-underline">
+                    <AccordionTrigger className="text-left text-sm font-semibold text-[#4A3D38] hover:text-[#9A7558] hover:no-underline">
                       {f.q}
                     </AccordionTrigger>
-                    <AccordionContent className="text-sm leading-relaxed text-slate-600">
+                    <AccordionContent className="text-sm leading-relaxed text-[#6B5D5A]">
                       {f.a}
                     </AccordionContent>
                   </AccordionItem>
                 ))}
               </Accordion>
 
-              <div className="mt-6 rounded-xl bg-white p-4 ring-1 ring-slate-200">
+              <div className="mt-6 rounded-xl bg-white p-4 ring-1 ring-[#E8DFD9]">
                 <div className="flex items-center gap-3">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-blue-100">
-                    <Search className="h-4 w-4 text-blue-600" />
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-[#F5EBE0]">
+                    <Search className="h-4 w-4 text-[#B08968]" />
                   </div>
                   <div className="flex-1">
-                    <div className="text-sm font-semibold text-slate-900">
+                    <div className="text-sm font-semibold text-[#3D3530]">
                       ¿Buscas algo específico?
                     </div>
-                    <div className="text-xs text-slate-500">
+                    <div className="text-xs text-[#8B7E78]">
                       Prueba con un código, ciudad o tipo de inmueble.
                     </div>
                   </div>
@@ -991,7 +991,7 @@ function SeoSection({ onSearch }: { onSearch: (q: string) => void }) {
                     <button
                       key={s}
                       onClick={() => onSearch(s)}
-                      className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-medium text-slate-700 hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700"
+                      className="rounded-full border border-[#E8DFD9] bg-white px-3 py-1 text-xs font-medium text-[#5A4E4B] hover:border-blue-300 hover:bg-[#FAF3EC] hover:text-[#9A7558]"
                     >
                       {s}
                     </button>

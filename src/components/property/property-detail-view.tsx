@@ -106,21 +106,21 @@ function Breadcrumbs({ p }: { p: PropertyDetail }) {
   const { goHome, openResults } = useNav();
   const opLabel = OPERATION_LABELS[p.operation] || p.operation;
   return (
-    <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-1 text-xs text-slate-500">
-      <button onClick={goHome} className="inline-flex items-center gap-1 rounded hover:text-blue-600">
+    <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-1 text-xs text-[#8B7E78]">
+      <button onClick={goHome} className="inline-flex items-center gap-1 rounded hover:text-[#B08968]">
         <HomeIcon className="h-3.5 w-3.5" /> Inicio
       </button>
       <ChevronRight className="h-3 w-3 opacity-50" />
       <button
         onClick={() => openResults({})}
-        className="rounded hover:text-blue-600"
+        className="rounded hover:text-[#B08968]"
       >
         Inmuebles
       </button>
       <ChevronRight className="h-3 w-3 opacity-50" />
       <button
         onClick={() => openResults({ operation: p.operation })}
-        className="rounded hover:text-blue-600"
+        className="rounded hover:text-[#B08968]"
       >
         {opLabel}
       </button>
@@ -129,14 +129,14 @@ function Breadcrumbs({ p }: { p: PropertyDetail }) {
         <>
           <button
             onClick={() => p.cityId && openResults({ cityId: p.cityId })}
-            className="rounded hover:text-blue-600"
+            className="rounded hover:text-[#B08968]"
           >
             {p.cityName}
           </button>
           <ChevronRight className="h-3 w-3 opacity-50" />
         </>
       )}
-      <span className="truncate font-medium text-slate-700">
+      <span className="truncate font-medium text-[#5A4E4B]">
         {p.neighborhoodName || p.title}
       </span>
     </nav>
@@ -159,11 +159,11 @@ function TitleBar({
       <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
         {/* Left: title + location */}
         <div className="min-w-0 flex-1">
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">
+          <h1 className="text-2xl font-bold tracking-tight text-[#3D3530] sm:text-3xl">
             {p.title}
           </h1>
-          <div className="mt-2 flex items-center gap-1.5 text-sm text-slate-600">
-            <MapPin className="h-4 w-4 shrink-0 text-blue-600" />
+          <div className="mt-2 flex items-center gap-1.5 text-sm text-[#6B5D5A]">
+            <MapPin className="h-4 w-4 shrink-0 text-[#B08968]" />
             <span className="truncate">
               {[p.neighborhoodName, p.cityName, p.stateName].filter(Boolean).join(", ")}
             </span>
@@ -192,22 +192,22 @@ function TitleBar({
       <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
         <span
           className={`inline-flex items-center rounded-md border px-2 py-1 text-[11px] font-bold uppercase tracking-wide ${
-            OPERATION_COLORS[p.operation] || "bg-slate-100 text-slate-700 border-slate-200"
+            OPERATION_COLORS[p.operation] || "bg-[#F0EAE5] text-[#5A4E4B] border-[#E8DFD9]"
           }`}
         >
           <Tag className="mr-1 h-3 w-3" />
           {OPERATION_LABELS[p.operation] || p.operation}
         </span>
-        <span className="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2 py-1 text-[11px] font-semibold text-slate-700">
-          <Building2 className="h-3 w-3 text-slate-400" />
+        <span className="inline-flex items-center gap-1 rounded-md border border-[#E8DFD9] bg-white px-2 py-1 text-[11px] font-semibold text-[#5A4E4B]">
+          <Building2 className="h-3 w-3 text-[#A89B96]" />
           {PROPERTY_TYPE_LABELS[p.propertyType] || p.propertyType}
         </span>
         <PropertyCodeBadge code={p.code} variant="solid" />
-        <span className="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2 py-1 text-[11px] font-medium text-slate-500">
+        <span className="inline-flex items-center gap-1 rounded-md border border-[#E8DFD9] bg-white px-2 py-1 text-[11px] font-medium text-[#8B7E78]">
           <Eye className="h-3 w-3" />
           {formatNumber(p.views)} visitas
         </span>
-        <span className="inline-flex items-center gap-1 rounded-md border border-slate-200 bg-white px-2 py-1 text-[11px] font-medium text-slate-500">
+        <span className="inline-flex items-center gap-1 rounded-md border border-[#E8DFD9] bg-white px-2 py-1 text-[11px] font-medium text-[#8B7E78]">
           <Clock className="h-3 w-3" />
           Publicado {formatRelativeTime(p.createdAt)}
         </span>
@@ -260,7 +260,7 @@ function Gallery({
 
   if (total === 0) {
     return (
-      <div className="mt-5 flex aspect-[4/3] w-full items-center justify-center rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200 text-slate-400 lg:aspect-video">
+      <div className="mt-5 flex aspect-[4/3] w-full items-center justify-center rounded-2xl bg-gradient-to-br from-slate-100 to-slate-200 text-[#A89B96] lg:aspect-video">
         <div className="flex flex-col items-center gap-2">
           <Building2 className="h-12 w-12" />
           <span className="text-sm font-medium">Sin imágenes disponibles</span>
@@ -272,11 +272,11 @@ function Gallery({
   return (
     <div className="mt-5">
       {/* Main image */}
-      <div className="group relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-slate-100 lg:aspect-video">
+      <div className="group relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-[#F0EAE5] lg:aspect-video">
         <img
           src={current.url}
           alt={current.caption || title}
-          className={`h-full w-full bg-slate-100 object-cover transition-transform duration-300 ${
+          className={`h-full w-full bg-[#F0EAE5] object-cover transition-transform duration-300 ${
             zoomed ? "scale-150 cursor-zoom-out" : "cursor-zoom-in"
           }`}
           onClick={() => setZoomed((z) => !z)}
@@ -291,7 +291,7 @@ function Gallery({
 
         {/* Counter (top-left) */}
         {total > 1 && (
-          <div className="absolute left-3 top-3 rounded-md bg-slate-900/75 px-2 py-1 text-[11px] font-semibold text-white backdrop-blur-sm">
+          <div className="absolute left-3 top-3 rounded-md bg-[#3D3530]/75 px-2 py-1 text-[11px] font-semibold text-white backdrop-blur-sm">
             {index + 1} / {total}
           </div>
         )}
@@ -302,14 +302,14 @@ function Gallery({
             <button
               onClick={() => go(-1)}
               aria-label="Imagen anterior"
-              className="absolute left-3 top-1/2 hidden -translate-y-1/2 items-center justify-center rounded-full bg-white/90 p-2 text-slate-700 shadow-md transition hover:bg-white sm:flex"
+              className="absolute left-3 top-1/2 hidden -translate-y-1/2 items-center justify-center rounded-full bg-white/90 p-2 text-[#5A4E4B] shadow-md transition hover:bg-white sm:flex"
             >
               <ChevronLeft className="h-5 w-5" />
             </button>
             <button
               onClick={() => go(1)}
               aria-label="Imagen siguiente"
-              className="absolute right-3 top-1/2 hidden -translate-y-1/2 items-center justify-center rounded-full bg-white/90 p-2 text-slate-700 shadow-md transition hover:bg-white sm:flex"
+              className="absolute right-3 top-1/2 hidden -translate-y-1/2 items-center justify-center rounded-full bg-white/90 p-2 text-[#5A4E4B] shadow-md transition hover:bg-white sm:flex"
             >
               <ChevronRight className="h-5 w-5" />
             </button>
@@ -322,7 +322,7 @@ function Gallery({
             onClick={() => setZoomed((z) => !z)}
             aria-label="Ampliar imagen"
             title="Ampliar"
-            className="flex items-center justify-center rounded-md bg-slate-900/80 p-2 text-white backdrop-blur-sm transition hover:bg-slate-900"
+            className="flex items-center justify-center rounded-md bg-[#3D3530]/80 p-2 text-white backdrop-blur-sm transition hover:bg-[#3D3530]"
           >
             <ZoomIn className="h-4 w-4" />
           </button>
@@ -330,7 +330,7 @@ function Gallery({
             onClick={openFullscreen}
             aria-label="Ver en pantalla completa"
             title="Pantalla completa"
-            className="flex items-center justify-center rounded-md bg-slate-900/80 p-2 text-white backdrop-blur-sm transition hover:bg-slate-900"
+            className="flex items-center justify-center rounded-md bg-[#3D3530]/80 p-2 text-white backdrop-blur-sm transition hover:bg-[#3D3530]"
           >
             <Maximize2 className="h-4 w-4" />
           </button>
@@ -346,7 +346,7 @@ function Gallery({
               onClick={() => setIndex(i)}
               className={`relative h-16 w-24 shrink-0 overflow-hidden rounded-lg border-2 transition ${
                 i === index
-                  ? "border-blue-500 ring-2 ring-blue-200"
+                  ? "border-[#C9A07A] ring-2 ring-blue-200"
                   : "border-transparent opacity-70 hover:opacity-100"
               }`}
             >
@@ -364,7 +364,7 @@ function Gallery({
       <Dialog open={fullscreen} onOpenChange={setFullscreen}>
         <DialogContent
           showCloseButton
-          className="max-w-5xl border-slate-800 bg-slate-950/95 p-0 sm:max-w-6xl"
+          className="max-w-5xl border-[#3D3530] bg-slate-950/95 p-0 sm:max-w-6xl"
         >
           <DialogTitle className="sr-only">Galería del inmueble</DialogTitle>
           <div className="relative flex h-[80vh] w-full items-center justify-center">
@@ -396,14 +396,14 @@ function Gallery({
 
             {/* Counter */}
             {total > 1 && (
-              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 rounded-full bg-slate-900/80 px-4 py-1.5 text-sm font-semibold text-white backdrop-blur-sm">
+              <div className="absolute bottom-4 left-1/2 -translate-x-1/2 rounded-full bg-[#3D3530]/80 px-4 py-1.5 text-sm font-semibold text-white backdrop-blur-sm">
                 {index + 1} / {total}
               </div>
             )}
 
             {/* Caption */}
             {current.caption && (
-              <div className="absolute bottom-4 right-4 max-w-md rounded-md bg-slate-900/80 px-3 py-1.5 text-xs text-white/90 backdrop-blur-sm">
+              <div className="absolute bottom-4 right-4 max-w-md rounded-md bg-[#3D3530]/80 px-3 py-1.5 text-xs text-white/90 backdrop-blur-sm">
                 {current.caption}
               </div>
             )}
@@ -422,20 +422,20 @@ function PriceCard({
   onContact: () => void;
 }) {
   const opLabel = OPERATION_LABELS[p.operation] || p.operation;
-  const opColor = OPERATION_COLORS[p.operation] || "bg-slate-100 text-slate-700 border-slate-200";
+  const opColor = OPERATION_COLORS[p.operation] || "bg-[#F0EAE5] text-[#5A4E4B] border-[#E8DFD9]";
   const waMsg = `Hola, estoy interesado en el inmueble ${p.code} (${p.title}). ¿Me puedes dar más información?`;
   const waPhone = p.agencyPhone || p.agentPhone;
 
   return (
-    <Card className="gap-0 overflow-hidden border-slate-200 p-0 sm:p-0">
-      <div className="bg-gradient-to-br from-slate-50 to-white p-5 sm:p-6">
+    <Card className="gap-0 overflow-hidden border-[#E8DFD9] p-0 sm:p-0">
+      <div className="bg-gradient-to-br from-[#FAF6F3] to-white p-5 sm:p-6">
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
-            <div className="text-3xl font-extrabold tracking-tight text-slate-900">
+            <div className="text-3xl font-extrabold tracking-tight text-[#3D3530]">
               {formatPrice(p.price, p.currency)}
             </div>
             {(p.pricePerM2 || p.area) && (
-              <div className="mt-1 text-sm text-slate-500">
+              <div className="mt-1 text-sm text-[#8B7E78]">
                 {formatPriceShort(p.price, p.currency)}
                 {p.pricePerM2 ? ` · ${formatPrice(p.pricePerM2, p.currency)}/m²` : ` · ${formatArea(p.area)}`}
               </div>
@@ -449,15 +449,15 @@ function PriceCard({
         </div>
 
         {p.adminFee ? (
-          <div className="mt-3 inline-flex items-center gap-1.5 rounded-md bg-amber-50 px-2.5 py-1 text-xs font-medium text-amber-700">
+          <div className="mt-3 inline-flex items-center gap-1.5 rounded-md bg-[#FAF0E0] px-2.5 py-1 text-xs font-medium text-[#B89164]">
             <Building2 className="h-3 w-3" />
             Administración: {formatPrice(p.adminFee, p.currency)}
           </div>
         ) : null}
       </div>
 
-      <div className="grid grid-cols-1 gap-2 border-t border-slate-100 p-5 sm:grid-cols-2 sm:p-6">
-        <Button onClick={onContact} className="w-full bg-blue-600 hover:bg-blue-700">
+      <div className="grid grid-cols-1 gap-2 border-t border-[#F0EAE5] p-5 sm:grid-cols-2 sm:p-6">
+        <Button onClick={onContact} className="w-full bg-[#B08968] hover:bg-[#9A7558]">
           <Mail className="h-4 w-4" />
           Contactar
         </Button>
@@ -518,24 +518,24 @@ function KeyFeatures({ p }: { p: PropertyDetail }) {
   ];
 
   return (
-    <Card className="border-slate-200 p-5 sm:p-6">
-      <h2 className="mb-4 text-base font-semibold text-slate-900">
+    <Card className="border-[#E8DFD9] p-5 sm:p-6">
+      <h2 className="mb-4 text-base font-semibold text-[#3D3530]">
         Características principales
       </h2>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
         {tiles.map((t) => (
           <div
             key={t.label}
-            className="flex flex-col items-start gap-2 rounded-xl border border-slate-100 bg-slate-50/60 p-3"
+            className="flex flex-col items-start gap-2 rounded-xl border border-[#F0EAE5] bg-[#FAF6F3]/60 p-3"
           >
-            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-blue-100 text-blue-700">
+            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#F5EBE0] text-[#9A7558]">
               {t.icon}
             </span>
             <div>
-              <div className="text-[11px] font-medium uppercase tracking-wide text-slate-500">
+              <div className="text-[11px] font-medium uppercase tracking-wide text-[#8B7E78]">
                 {t.label}
               </div>
-              <div className="text-base font-bold text-slate-900">{t.value}</div>
+              <div className="text-base font-bold text-[#3D3530]">{t.value}</div>
             </div>
           </div>
         ))}
@@ -552,10 +552,10 @@ function DescriptionBlock({ text }: { text: string }) {
   if (paragraphs.length === 0) return null;
   return (
     <section>
-      <h3 className="mb-3 text-lg font-bold text-slate-900">
+      <h3 className="mb-3 text-lg font-bold text-[#3D3530]">
         Descripción del inmueble
       </h3>
-      <div className="space-y-4 text-[15px] leading-relaxed text-slate-700">
+      <div className="space-y-4 text-[15px] leading-relaxed text-[#5A4E4B]">
         {paragraphs.map((para, i) => (
           <p key={i}>{para}</p>
         ))}
@@ -581,23 +581,23 @@ function AdditionalFeatures({ p }: { p: PropertyDetail }) {
   if (rows.length === 0) return null;
 
   return (
-    <Card className="border-slate-200 p-5 sm:p-6">
-      <h3 className="mb-4 text-base font-semibold text-slate-900">
+    <Card className="border-[#E8DFD9] p-5 sm:p-6">
+      <h3 className="mb-4 text-base font-semibold text-[#3D3530]">
         Características adicionales
       </h3>
       <div className="grid grid-cols-1 gap-x-6 gap-y-2 sm:grid-cols-2">
         {rows.map((r) => (
           <div
             key={r.label}
-            className="flex items-center justify-between gap-2 border-b border-dashed border-slate-100 py-1.5 last:border-0"
+            className="flex items-center justify-between gap-2 border-b border-dashed border-[#F0EAE5] py-1.5 last:border-0"
           >
-            <span className="text-sm text-slate-500">{r.label}</span>
-            <span className="flex items-center gap-1.5 text-sm font-semibold text-slate-900">
+            <span className="text-sm text-[#8B7E78]">{r.label}</span>
+            <span className="flex items-center gap-1.5 text-sm font-semibold text-[#3D3530]">
               {r.positive === true && (
-                <Check className="h-3.5 w-3.5 text-emerald-500" />
+                <Check className="h-3.5 w-3.5 text-[#97A97C]" />
               )}
               {r.positive === false && (
-                <X className="h-3.5 w-3.5 text-slate-300" />
+                <X className="h-3.5 w-3.5 text-[#C9BFB9]" />
               )}
               {r.value}
             </span>
@@ -612,19 +612,19 @@ function AmenitiesGrid({ amenities }: { amenities: string[] }) {
   if (!amenities || amenities.length === 0) return null;
   return (
     <section>
-      <h3 className="mb-3 text-lg font-bold text-slate-900">
+      <h3 className="mb-3 text-lg font-bold text-[#3D3530]">
         Amenidades y características
       </h3>
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
         {amenities.map((slug) => (
           <div
             key={slug}
-            className="flex items-center gap-2.5 rounded-lg border border-slate-200 bg-slate-50/60 p-3"
+            className="flex items-center gap-2.5 rounded-lg border border-[#E8DFD9] bg-[#FAF6F3]/60 p-3"
           >
-            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-blue-100 text-blue-700">
+            <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-[#F5EBE0] text-[#9A7558]">
               <AmenityIcon slug={slug} className="h-4 w-4" />
             </span>
-            <span className="text-sm font-medium text-slate-700">
+            <span className="text-sm font-medium text-[#5A4E4B]">
               {amenityLabel(slug)}
             </span>
           </div>
@@ -647,8 +647,8 @@ function MapSection({ p }: { p: PropertyDetail }) {
 
   return (
     <section>
-      <h3 className="mb-3 text-lg font-bold text-slate-900">Ubicación</h3>
-      <Card className="overflow-hidden border-slate-200 p-0">
+      <h3 className="mb-3 text-lg font-bold text-[#3D3530]">Ubicación</h3>
+      <Card className="overflow-hidden border-[#E8DFD9] p-0">
         <div className="relative">
           {hasCoords && staticMapUrl ? (
             <img
@@ -657,7 +657,7 @@ function MapSection({ p }: { p: PropertyDetail }) {
               className="h-64 w-full object-cover sm:h-72"
             />
           ) : (
-            <div className="relative flex h-64 w-full items-center justify-center bg-gradient-to-br from-blue-50 to-slate-100 sm:h-72">
+            <div className="relative flex h-64 w-full items-center justify-center bg-gradient-to-br from-blue-50 to-[#F0EAE5] sm:h-72">
               <div
                 className="absolute inset-0 opacity-30"
                 style={{
@@ -666,8 +666,8 @@ function MapSection({ p }: { p: PropertyDetail }) {
                   backgroundSize: "32px 32px",
                 }}
               />
-              <div className="relative flex flex-col items-center gap-2 text-slate-500">
-                <MapPin className="h-10 w-10 text-blue-500" />
+              <div className="relative flex flex-col items-center gap-2 text-[#8B7E78]">
+                <MapPin className="h-10 w-10 text-[#C9A07A]" />
                 <p className="text-sm font-medium">
                   Ubicación aproximada en {p.cityName || "Colombia"}
                 </p>
@@ -677,20 +677,20 @@ function MapSection({ p }: { p: PropertyDetail }) {
 
           {/* Address overlay badge */}
           <div className="absolute left-3 top-3 max-w-[80%] rounded-lg bg-white/95 px-3 py-2 shadow-md backdrop-blur-sm">
-            <div className="flex items-center gap-1.5 text-xs font-semibold text-slate-900">
-              <MapPin className="h-3.5 w-3.5 text-blue-600" />
+            <div className="flex items-center gap-1.5 text-xs font-semibold text-[#3D3530]">
+              <MapPin className="h-3.5 w-3.5 text-[#B08968]" />
               <span className="truncate">
                 {[p.neighborhoodName, p.cityName].filter(Boolean).join(", ")}
               </span>
             </div>
-            <div className="mt-0.5 text-[11px] text-slate-500">
+            <div className="mt-0.5 text-[11px] text-[#8B7E78]">
               Dirección exacta al contactar al asesor
             </div>
           </div>
         </div>
 
         <div className="flex items-center justify-between gap-3 p-4">
-          <p className="text-xs text-slate-500">
+          <p className="text-xs text-[#8B7E78]">
             La ubicación exacta se comparte al agendar una visita.
           </p>
           {googleMapsUrl && (
@@ -698,7 +698,7 @@ function MapSection({ p }: { p: PropertyDetail }) {
               href={googleMapsUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex shrink-0 items-center gap-1.5 rounded-md border border-slate-200 bg-white px-3 py-1.5 text-xs font-semibold text-blue-600 transition hover:bg-blue-50"
+              className="inline-flex shrink-0 items-center gap-1.5 rounded-md border border-[#E8DFD9] bg-white px-3 py-1.5 text-xs font-semibold text-[#B08968] transition hover:bg-[#FAF3EC]"
             >
               <ExternalLink className="h-3.5 w-3.5" />
               Ver en Google Maps
@@ -715,7 +715,7 @@ function SimilarProperties({ items }: { items: PropertyListItem[] }) {
   return (
     <section>
       <div className="mb-4 flex items-end justify-between gap-3">
-        <h3 className="text-lg font-bold text-slate-900">Inmuebles similares</h3>
+        <h3 className="text-lg font-bold text-[#3D3530]">Inmuebles similares</h3>
       </div>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {items.map((p, i) => (
@@ -821,9 +821,9 @@ function ContactCard({
 
   return (
     <div ref={innerRef} className="scroll-mt-24">
-      <Card className="overflow-hidden border-slate-200 p-0">
+      <Card className="overflow-hidden border-[#E8DFD9] p-0">
         {/* Agency + agent header */}
-        <div className="border-b border-slate-100 bg-gradient-to-br from-slate-50 to-white p-5">
+        <div className="border-b border-[#F0EAE5] bg-gradient-to-br from-[#FAF6F3] to-white p-5">
           {(p.agencyName || p.agencyLogo) && (
             <div className="mb-3 flex items-center gap-2">
               {p.agencyLogo ? (
@@ -833,11 +833,11 @@ function ContactCard({
                   className="h-7 w-7 rounded-md object-contain"
                 />
               ) : (
-                <span className="flex h-7 w-7 items-center justify-center rounded-md bg-slate-900 text-white">
+                <span className="flex h-7 w-7 items-center justify-center rounded-md bg-[#3D3530] text-white">
                   <Building2 className="h-4 w-4" />
                 </span>
               )}
-              <span className="text-sm font-bold text-slate-900">
+              <span className="text-sm font-bold text-[#3D3530]">
                 {p.agencyName || "Inmobiliaria"}
               </span>
             </div>
@@ -848,15 +848,15 @@ function ContactCard({
               {p.agentAvatar ? (
                 <AvatarImage src={p.agentAvatar} alt={p.agentName || "Asesor"} />
               ) : null}
-              <AvatarFallback className="bg-blue-100 text-sm font-bold text-blue-700">
+              <AvatarFallback className="bg-[#F5EBE0] text-sm font-bold text-[#9A7558]">
                 {initials(p.agentName)}
               </AvatarFallback>
             </Avatar>
             <div className="min-w-0">
-              <div className="truncate text-sm font-bold text-slate-900">
+              <div className="truncate text-sm font-bold text-[#3D3530]">
                 {p.agentName || "Asesor inmobiliario"}
               </div>
-              <div className="truncate text-xs text-slate-500">
+              <div className="truncate text-xs text-[#8B7E78]">
                 Asesor inmobiliario{p.agencyName ? ` · ${p.agencyName}` : ""}
               </div>
             </div>
@@ -864,7 +864,7 @@ function ContactCard({
         </div>
 
         {/* Quick contact actions */}
-        <div className="grid grid-cols-3 gap-2 border-b border-slate-100 p-4">
+        <div className="grid grid-cols-3 gap-2 border-b border-[#F0EAE5] p-4">
           {displayPhone && (
             <Button
               variant="outline"
@@ -887,7 +887,7 @@ function ContactCard({
               asChild
               variant="outline"
               size="sm"
-              className="flex-col gap-1 h-auto py-2 border-emerald-200 text-emerald-700 hover:bg-emerald-50"
+              className="flex-col gap-1 h-auto py-2 border-[#97A97C]/30 text-[#7A8B66] hover:bg-emerald-50"
             >
               <a
                 href={buildWhatsappUrl(waPhone, waMsg)}
@@ -916,12 +916,12 @@ function ContactCard({
 
         {/* Contact form */}
         <form onSubmit={handleSubmit} className="space-y-3 p-5">
-          <div className="text-sm font-bold text-slate-900">
+          <div className="text-sm font-bold text-[#3D3530]">
             Solicita más información
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="cf-name" className="text-xs font-medium text-slate-600">
+            <Label htmlFor="cf-name" className="text-xs font-medium text-[#6B5D5A]">
               Nombre <span className="text-rose-500">*</span>
             </Label>
             <Input
@@ -935,7 +935,7 @@ function ContactCard({
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="cf-email" className="text-xs font-medium text-slate-600">
+            <Label htmlFor="cf-email" className="text-xs font-medium text-[#6B5D5A]">
               Email <span className="text-rose-500">*</span>
             </Label>
             <Input
@@ -950,7 +950,7 @@ function ContactCard({
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="cf-phone" className="text-xs font-medium text-slate-600">
+            <Label htmlFor="cf-phone" className="text-xs font-medium text-[#6B5D5A]">
               Teléfono <span className="text-rose-500">*</span>
             </Label>
             <Input
@@ -965,7 +965,7 @@ function ContactCard({
           </div>
 
           <div className="space-y-1.5">
-            <Label htmlFor="cf-msg" className="text-xs font-medium text-slate-600">
+            <Label htmlFor="cf-msg" className="text-xs font-medium text-[#6B5D5A]">
               Mensaje
             </Label>
             <Textarea
@@ -980,7 +980,7 @@ function ContactCard({
           <Button
             type="submit"
             disabled={submitting}
-            className="w-full bg-blue-600 hover:bg-blue-700"
+            className="w-full bg-[#B08968] hover:bg-[#9A7558]"
           >
             {submitting ? (
               <>
@@ -995,7 +995,7 @@ function ContactCard({
             )}
           </Button>
 
-          <p className="text-[11px] leading-relaxed text-slate-400">
+          <p className="text-[11px] leading-relaxed text-[#A89B96]">
             Al contactar aceptas nuestra política de privacidad. Tus datos se
             usan solo para gestionar tu interés en este inmueble.
           </p>
@@ -1013,7 +1013,7 @@ function ShareCard() {
     setUrl(window.location.href);
   }, []);
 
-  const shareText = "Mira este inmueble en InmoPro";
+  const shareText = "Mira este inmueble en Innovar Showrooms";
   const encodedUrl = encodeURIComponent(url);
   const encodedText = encodeURIComponent(shareText);
 
@@ -1022,13 +1022,13 @@ function ShareCard() {
       label: "Facebook",
       icon: <Facebook className="h-4 w-4" />,
       href: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
-      color: "hover:bg-blue-50 hover:text-blue-700 hover:border-blue-200",
+      color: "hover:bg-[#FAF3EC] hover:text-[#9A7558] hover:border-blue-200",
     },
     {
       label: "WhatsApp",
       icon: <MessageCircle className="h-4 w-4" />,
       href: `https://wa.me/?text=${encodeURIComponent(`${shareText} ${url}`)}`,
-      color: "hover:bg-emerald-50 hover:text-emerald-700 hover:border-emerald-200",
+      color: "hover:bg-emerald-50 hover:text-[#7A8B66] hover:border-[#97A97C]/30",
     },
     {
       label: "LinkedIn",
@@ -1040,7 +1040,7 @@ function ShareCard() {
       label: "Twitter / X",
       icon: <Twitter className="h-4 w-4" />,
       href: `https://twitter.com/intent/tweet?text=${encodedText}&url=${encodedUrl}`,
-      color: "hover:bg-slate-100 hover:text-slate-900",
+      color: "hover:bg-[#F0EAE5] hover:text-[#3D3530]",
     },
   ];
 
@@ -1054,10 +1054,10 @@ function ShareCard() {
   };
 
   return (
-    <Card className="border-slate-200 p-5">
+    <Card className="border-[#E8DFD9] p-5">
       <div className="mb-3 flex items-center gap-2">
-        <Share2 className="h-4 w-4 text-blue-600" />
-        <h4 className="text-sm font-bold text-slate-900">
+        <Share2 className="h-4 w-4 text-[#B08968]" />
+        <h4 className="text-sm font-bold text-[#3D3530]">
           Compartir este inmueble
         </h4>
       </div>
@@ -1094,14 +1094,14 @@ function ShareCard() {
 function NotFound({ onHome }: { onHome: () => void }) {
   return (
     <div className="mx-auto flex max-w-md flex-col items-center justify-center px-4 py-24 text-center">
-      <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-slate-100 text-slate-400">
+      <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#F0EAE5] text-[#A89B96]">
         <Building2 className="h-8 w-8" />
       </div>
-      <h2 className="text-xl font-bold text-slate-900">Inmueble no encontrado</h2>
-      <p className="mt-1 text-sm text-slate-500">
+      <h2 className="text-xl font-bold text-[#3D3530]">Inmueble no encontrado</h2>
+      <p className="mt-1 text-sm text-[#8B7E78]">
         El inmueble que buscas no existe o ya no está disponible.
       </p>
-      <Button onClick={onHome} className="mt-6 bg-blue-600 hover:bg-blue-700">
+      <Button onClick={onHome} className="mt-6 bg-[#B08968] hover:bg-[#9A7558]">
         <HomeIcon className="h-4 w-4" />
         Volver al inicio
       </Button>
@@ -1281,7 +1281,7 @@ export function PropertyDetailView() {
             variant="ghost"
             size="sm"
             onClick={goBack}
-            className="hidden shrink-0 text-slate-600 hover:text-blue-600 sm:inline-flex"
+            className="hidden shrink-0 text-[#6B5D5A] hover:text-[#B08968] sm:inline-flex"
           >
             <ArrowLeft className="h-4 w-4" />
             Volver a resultados
@@ -1292,7 +1292,7 @@ export function PropertyDetailView() {
           variant="ghost"
           size="sm"
           onClick={goBack}
-          className="mt-2 text-slate-600 hover:text-blue-600 sm:hidden"
+          className="mt-2 text-[#6B5D5A] hover:text-[#B08968] sm:hidden"
         >
           <ArrowLeft className="h-4 w-4" />
           Volver
@@ -1350,11 +1350,11 @@ export function PropertyDetailView() {
           </aside>
         </div>
 
-        <div className="mt-12 flex flex-wrap items-center justify-between gap-3 border-t border-slate-200 pt-6 text-sm text-slate-500">
+        <div className="mt-12 flex flex-wrap items-center justify-between gap-3 border-t border-[#E8DFD9] pt-6 text-sm text-[#8B7E78]">
           <div className="flex items-center gap-2">
-            <ShieldCheck className="h-4 w-4 text-emerald-500" />
+            <ShieldCheck className="h-4 w-4 text-[#97A97C]" />
             <span>
-              Código verificado <span className="font-mono font-semibold text-slate-700">{property.code}</span>
+              Código verificado <span className="font-mono font-semibold text-[#5A4E4B]">{property.code}</span>
             </span>
           </div>
           <Button variant="outline" size="sm" onClick={goBack}>
