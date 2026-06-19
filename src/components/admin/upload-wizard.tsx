@@ -117,9 +117,20 @@ interface AmenityOption { id: string; name: string; slug: string; icon: string; 
 
 interface WizardImage {
   id: string;
-  url: string;
+  url: string; // URL principal (variante "large" o Unsplash)
   caption: string;
   isMain: boolean;
+  // Variantes para srcset responsive (Supabase Storage)
+  variants?: {
+    thumb: string;
+    medium: string;
+    large: string;
+    original: string;
+  };
+  // Paths en Storage para poder borrar al eliminar
+  paths?: string[];
+  uploading?: boolean; // true mientras se sube al backend
+  uploadError?: string; // mensaje si falla la subida
 }
 
 interface WizardForm {
@@ -354,7 +365,11 @@ export function UploadWizard() {
       if (!form.area || Number(form.area) <= 0) errs.area = "Ingresa el área";
     }
     if (s === 2) {
+      const uploading = form.images.some((i) => i.uploading);
+      const validCount = form.images.filter((i) => !i.uploadError && !i.uploading).length;
       if (form.images.length < 1) errs.images = "Agrega al menos 1 imagen";
+      else if (uploading) errs.images = "Espera a que terminen de subir las imágenes";
+      else if (validCount === 0) errs.images = "Todas las imágenes fallaron. Sube al menos una válida.";
     }
     if (s === 4) {
       if (!form.title.trim()) errs.title = "El título es obligatorio";
@@ -463,11 +478,13 @@ export function UploadWizard() {
         furnished: form.furnished,
         petFriendly: form.petFriendly,
         amenities: form.amenities,
-        images: form.images.map((i) => ({
-          url: i.url,
-          caption: i.caption || "",
-          isMain: i.isMain,
-        })),
+        images: form.images
+          .filter((i) => !i.uploadError && !i.uploading && !i.url.startsWith("blob:"))
+          .map((i) => ({
+            url: i.url,
+            caption: i.caption || "",
+            isMain: i.isMain,
+          })),
         agentName: form.agentName.trim(),
         agentPhone: form.agentPhone.trim(),
         agentEmail: form.agentEmail.trim(),
@@ -1041,27 +1058,91 @@ function Step2Images({
     useSensor(KeyboardSensor, { coordinateGetter: sortableKeyboardCoordinates })
   );
 
-  const addFiles = (files: FileList | null) => {
+  const addFiles = async (files: FileList | null) => {
     if (!files || files.length === 0) return;
     const arr = Array.from(files).filter((f) => f.type.startsWith("image/"));
     if (arr.length === 0) {
       toast.error("Solo se permiten imágenes");
       return;
     }
-    const remaining = 20 - form.images.length;
+    // Verificar límite contra estado actual
+    const currentImages = form.images;
+    const remaining = 20 - currentImages.length;
     if (remaining <= 0) {
       toast.error("Límite alcanzado", { description: "Máximo 20 imágenes." });
       return;
     }
     const toAdd = arr.slice(0, remaining);
-    const newImages: WizardImage[] = toAdd.map((file, i) => ({
+
+    // Generar IDs y URLs blob temporales para preview inmediato
+    const placeholders: WizardImage[] = toAdd.map((file, i) => ({
       id: genId(),
       url: URL.createObjectURL(file),
       caption: "",
-      isMain: form.images.length === 0 && i === 0,
+      isMain: currentImages.length === 0 && i === 0,
+      uploading: true,
     }));
-    update("images", [...form.images, ...newImages]);
-    toast.success(`${toAdd.length} imagen${toAdd.length > 1 ? "es" : ""} añadida${toAdd.length > 1 ? "s" : ""}`);
+    update("images", [...currentImages, ...placeholders]);
+    toast.info(`Subiendo ${toAdd.length} imagen${toAdd.length > 1 ? "es" : ""}...`);
+
+    // Subir cada imagen al backend (que la procesa con sharp + sube a Supabase)
+    let successCount = 0;
+    await Promise.all(
+      placeholders.map(async (placeholder, idx) => {
+        const file = toAdd[idx];
+        try {
+          const formData = new FormData();
+          formData.append("file", file);
+          const res = await fetch("/api/upload", {
+            method: "POST",
+            body: formData,
+          });
+          if (!res.ok) {
+            const errData = await res.json().catch(() => ({}));
+            throw new Error(errData.error || `HTTP ${res.status}`);
+          }
+          const data = await res.json();
+
+          // Revocar blob URL temporal y reemplazar con URL real de Supabase
+          URL.revokeObjectURL(placeholder.url);
+
+          setForm((f) => ({
+            ...f,
+            images: f.images.map((img) =>
+              img.id === placeholder.id
+                ? {
+                    ...img,
+                    url: data.url,
+                    variants: data.variants,
+                    paths: data.paths,
+                    uploading: false,
+                    uploadError: undefined,
+                  }
+                : img
+            ),
+          }));
+          successCount++;
+        } catch (err) {
+          const msg = err instanceof Error ? err.message : "Error subiendo imagen";
+          console.error("Upload error:", msg);
+          setForm((f) => ({
+            ...f,
+            images: f.images.map((img) =>
+              img.id === placeholder.id
+                ? { ...img, uploading: false, uploadError: msg }
+                : img
+            ),
+          }));
+          toast.error(`Falló una imagen: ${msg}`);
+        }
+      })
+    );
+
+    if (successCount > 0) {
+      toast.success(
+        `${successCount} imagen${successCount > 1 ? "es" : ""} subida${successCount > 1 ? "s" : ""} a Supabase`
+      );
+    }
   };
 
   const handleDrop = (e: DragEvent<HTMLDivElement>) => {
@@ -1070,9 +1151,20 @@ function Step2Images({
     addFiles(e.dataTransfer.files);
   };
 
-  const removeImage = (id: string) => {
+  const removeImage = async (id: string) => {
     const img = form.images.find((i) => i.id === id);
     if (img && img.url.startsWith("blob:")) URL.revokeObjectURL(img.url);
+    // Si la imagen ya está subida a Supabase, borrarla del Storage también
+    if (img?.paths && img.paths.length > 0) {
+      try {
+        await fetch(
+          `/api/upload?paths=${encodeURIComponent(img.paths.join(","))}`,
+          { method: "DELETE" }
+        );
+      } catch (err) {
+        console.warn("No se pudo borrar del Storage:", err);
+      }
+    }
     const next = form.images.filter((i) => i.id !== id);
     // Ensure one image is main
     if (next.length > 0 && !next.some((i) => i.isMain)) {
@@ -1250,16 +1342,39 @@ function SortableImage({
         <img
           src={image.url}
           alt={image.caption || `Imagen ${index + 1}`}
-          className="h-full w-full object-cover"
+          className={cn(
+            "h-full w-full object-cover transition-opacity",
+            image.uploading && "opacity-40",
+            image.uploadError && "opacity-30 grayscale"
+          )}
         />
+        {/* Overlay: subiendo a Supabase */}
+        {image.uploading && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 bg-slate-900/30">
+            <Loader2 className="size-6 animate-spin text-white" />
+            <span className="rounded-full bg-slate-900/80 px-2 py-0.5 text-[10px] font-medium text-white">
+              Subiendo a Supabase...
+            </span>
+          </div>
+        )}
+        {/* Overlay: error de subida */}
+        {image.uploadError && (
+          <div className="absolute inset-0 flex flex-col items-center justify-center gap-1 bg-red-900/50 p-2 text-center">
+            <span className="text-xs font-semibold text-white">Falló</span>
+            <span className="line-clamp-2 text-[10px] text-white/80">
+              {image.uploadError}
+            </span>
+          </div>
+        )}
         {/* Top overlay: drag handle + main badge + remove */}
         <div className="absolute inset-x-0 top-0 flex items-start justify-between bg-gradient-to-b from-black/60 to-transparent p-1.5">
           <button
             {...attributes}
             {...listeners}
-            className="cursor-grab rounded bg-white/80 p-1 text-slate-700 active:cursor-grabbing"
+            className="cursor-grab rounded bg-white/80 p-1 text-slate-700 active:cursor-grabbing disabled:opacity-50"
             title="Arrastrar para reordenar"
             onClick={(e) => e.stopPropagation()}
+            disabled={image.uploading}
           >
             <GripVertical className="size-3.5" />
           </button>
@@ -1267,8 +1382,9 @@ function SortableImage({
             <button
               onClick={() => onSetMain(image.id)}
               title={image.isMain ? "Foto principal" : "Marcar como principal"}
+              disabled={image.uploading || !!image.uploadError}
               className={cn(
-                "rounded p-1 transition-colors",
+                "rounded p-1 transition-colors disabled:opacity-50 disabled:cursor-not-allowed",
                 image.isMain
                   ? "bg-amber-400 text-amber-950"
                   : "bg-white/80 text-slate-600 hover:bg-amber-100 hover:text-amber-700"

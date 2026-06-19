@@ -1,6 +1,6 @@
 // =====================================================================
 // InmoPro - Professional Real Estate Platform
-// Prisma Schema (SQLite-compatible for dev; production-ready design)
+// Prisma Schema (PostgreSQL on Supabase)
 // =====================================================================
 
 generator client {
@@ -8,7 +8,7 @@ generator client {
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
