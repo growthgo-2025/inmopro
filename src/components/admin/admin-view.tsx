@@ -1,7 +1,7 @@
 "use client";
 import { motion } from "framer-motion";
 import {
-  LayoutDashboard, Building2, Plus, Users, FileSpreadsheet, ArrowLeft,
+  LayoutDashboard, Building2, Plus, Users, FileSpreadsheet, ArrowLeft, FileEdit,
 } from "lucide-react";
 import { useNav } from "@/lib/store";
 import { cn } from "@/lib/utils";
@@ -13,12 +13,14 @@ import {
 import { AdminDashboard } from "./admin-dashboard";
 import { AdminProperties } from "./admin-properties";
 import { AdminImport } from "./admin-import";
+import { AdminDrafts } from "./admin-drafts";
 
-type Section = "dashboard" | "properties" | "import";
+type Section = "dashboard" | "properties" | "import" | "drafts";
 
 const NAV_ITEMS: { section: string; label: string; icon: any; nav: "admin" | "view" }[] = [
   { section: "dashboard", label: "Dashboard", icon: LayoutDashboard, nav: "admin" },
   { section: "properties", label: "Inmuebles", icon: Building2, nav: "admin" },
+  { section: "drafts", label: "Borradores", icon: FileEdit, nav: "admin" },
   { section: "upload", label: "Publicar inmueble", icon: Plus, nav: "view" },
   { section: "crm", label: "CRM y leads", icon: Users, nav: "view" },
   { section: "import", label: "Importar masivo", icon: FileSpreadsheet, nav: "admin" },
@@ -27,6 +29,7 @@ const NAV_ITEMS: { section: string; label: string; icon: any; nav: "admin" | "vi
 const SECTION_LABELS: Record<string, string> = {
   dashboard: "Dashboard",
   properties: "Inmuebles",
+  drafts: "Borradores",
   upload: "Publicar inmueble",
   crm: "CRM y leads",
   import: "Importar masivo",
@@ -143,6 +146,7 @@ export function AdminView() {
           >
             {section === "dashboard" && <AdminDashboard />}
             {section === "properties" && <AdminProperties />}
+            {section === "drafts" && <AdminDrafts />}
             {section === "import" && <AdminImport />}
           </motion.div>
         </main>

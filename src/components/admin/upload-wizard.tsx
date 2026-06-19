@@ -139,6 +139,9 @@ interface WizardForm {
   propertyType: string;
   cityId: string;
   neighborhoodId: string;
+  // Nombres manuales cuando se elige "Otro" (ciudad/barrio no listados)
+  customCityName: string;
+  customNeighborhoodName: string;
   address: string;
   price: string;
   currency: string;
@@ -175,6 +178,8 @@ const DEFAULT_FORM: WizardForm = {
   propertyType: "",
   cityId: "",
   neighborhoodId: "",
+  customCityName: "",
+  customNeighborhoodName: "",
   address: "",
   price: "",
   currency: "COP",
@@ -354,6 +359,8 @@ export function UploadWizard() {
           propertyType: p.propertyType || "",
           cityId: p.cityId || "",
           neighborhoodId: p.neighborhoodId || "",
+          customCityName: p.customCityName || "",
+          customNeighborhoodName: p.customNeighborhoodName || "",
           address: p.address || "",
           price: p.price != null ? String(p.price) : "",
           currency: p.currency || "COP",
@@ -451,7 +458,13 @@ export function UploadWizard() {
       if (!form.operation) errs.operation = "Selecciona una operación";
       if (!form.propertyType) errs.propertyType = "Selecciona un tipo";
       if (!form.cityId) errs.cityId = "Selecciona una ciudad";
+      // Si la ciudad es "Otro", exigir nombre manual
+      if (form.cityId === "__other__" && !form.customCityName.trim())
+        errs.customCityName = "Escribe el nombre de la ciudad";
       if (!form.neighborhoodId) errs.neighborhoodId = "Selecciona un barrio";
+      // Si el barrio es "Otro", exigir nombre manual
+      if (form.neighborhoodId === "__other__" && !form.customNeighborhoodName.trim())
+        errs.customNeighborhoodName = "Escribe el nombre del barrio";
       if (!form.address.trim()) errs.address = "La dirección es obligatoria";
       if (!form.price || Number(form.price) <= 0) errs.price = "Ingresa un precio válido";
       if (!form.area || Number(form.area) <= 0) errs.area = "Ingresa el área";
@@ -512,18 +525,114 @@ export function UploadWizard() {
     }
   };
 
-  const saveDraft = () => {
+  const [savingDraft, setSavingDraft] = useState(false);
+  const saveDraft = async () => {
+    // Persistir borrador en la BD (published:false) para poder recuperarlo
+    // desde cualquier dispositivo en la sección "Borradores" del panel admin.
+    // Antes solo se guardaba en localStorage (no era recuperable en otro browser).
+    setSavingDraft(true);
     try {
+      // Mínimo para crear el borrador: título y operación. Si no hay, usamos placeholders.
+      const draftTitle = form.title.trim() || `Borrador ${form.operation || "inmueble"} ${new Date().toLocaleString("es-CO")}`;
+      // Para borradores, si no hay ciudad/barrio seleccionado, usamos "Otro" con
+      // un nombre placeholder ("Por definir") para que el backend no rechace.
+      const hasCity = form.cityId && form.cityId !== "__other__";
+      const hasCustomCity = form.cityId === "__other__" && form.customCityName.trim();
+      const cityId = hasCity ? form.cityId : null;
+      const customCityName = hasCustomCity
+        ? form.customCityName.trim()
+        : !hasCity
+        ? "Por definir"
+        : null;
+      const hasNeighborhood = form.neighborhoodId && form.neighborhoodId !== "__other__";
+      const hasCustomNeighborhood =
+        form.neighborhoodId === "__other__" && form.customNeighborhoodName.trim();
+      const neighborhoodId = hasNeighborhood ? form.neighborhoodId : null;
+      const customNeighborhoodName = hasCustomNeighborhood
+        ? form.customNeighborhoodName.trim()
+        : !hasNeighborhood
+        ? "Por definir"
+        : null;
+
+      const body: Record<string, unknown> = {
+        title: draftTitle,
+        shortDesc: form.shortDesc.trim() || draftTitle,
+        description: form.description.trim() || draftTitle,
+        operation: form.operation || "VENTA",
+        propertyType: form.propertyType || "APARTAMENTO",
+        status: "BORRADOR",
+        published: false,
+        featured: false,
+        price: Number(form.price) || 0,
+        currency: form.currency || "COP",
+        adminFee: parseNumeric(form.adminFee),
+        cityId: cityId,
+        neighborhoodId: neighborhoodId,
+        customCityName: customCityName,
+        customNeighborhoodName: customNeighborhoodName,
+        address: form.address.trim() || "Por definir",
+        area: Number(form.area) || 0,
+        builtArea: parseNumeric(form.builtArea),
+        bedrooms: parseNumeric(form.bedrooms),
+        bathrooms: parseNumeric(form.bathrooms),
+        parking: parseNumeric(form.parking),
+        stratum: parseNumeric(form.stratum),
+        ageYears: parseNumeric(form.ageYears),
+        floor: parseNumeric(form.floor),
+        floorsTotal: parseNumeric(form.floorsTotal),
+        furnished: form.furnished,
+        petFriendly: form.petFriendly,
+        amenities: form.amenities,
+        images: form.images
+          .filter((i) => !i.uploadError && !i.uploading && !i.url.startsWith("blob:"))
+          .map((i) => ({
+            url: i.url,
+            caption: i.caption || "",
+            isMain: i.isMain,
+          })),
+        agentName: form.agentName.trim(),
+        agentPhone: form.agentPhone.trim(),
+        agentEmail: form.agentEmail.trim(),
+      };
+
+      let savedCode: string | null = null;
+      if (isEditMode && editCode) {
+        // Actualizar borrador existente
+        const res = await fetch(`/api/properties/${editCode}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body),
+        });
+        const json = await res.json();
+        if (!res.ok || !json.ok) throw new Error(json.error || "No se pudo guardar");
+        savedCode = editCode;
+      } else {
+        // Crear nuevo borrador
+        const res = await fetch("/api/properties", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ...body, published: false }),
+        });
+        const json = await res.json();
+        if (!res.ok || !json.ok) throw new Error(json.error || "No se pudo guardar");
+        savedCode = json.code;
+      }
+
+      // También persistir en localStorage como respaldo rápido
       const persistable: WizardForm = {
         ...form,
         images: form.images.filter((i) => !i.url.startsWith("blob:")),
       };
       localStorage.setItem(DRAFT_KEY, JSON.stringify(persistable));
+
       toast.success("Borrador guardado", {
-        description: "Puedes continuar más tarde desde este navegador.",
+        description: savedCode ? `Código: ${savedCode} — recupéralo en Borradores del panel.` : "Disponible en Borradores del panel.",
       });
-    } catch {
-      toast.error("No se pudo guardar el borrador");
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Error desconocido";
+      toast.error("No se pudo guardar el borrador", { description: msg });
+    } finally {
+      setSavingDraft(false);
     }
   };
 
@@ -555,8 +664,16 @@ export function UploadWizard() {
         price: Number(form.price),
         currency: form.currency,
         adminFee: parseNumeric(form.adminFee),
-        cityId: form.cityId,
-        neighborhoodId: form.neighborhoodId || null,
+        // "Otro" → enviamos null en cityId/neighborhoodId y el nombre manual
+        cityId: form.cityId === "__other__" ? null : form.cityId,
+        neighborhoodId:
+          form.neighborhoodId === "__other__" ? null : form.neighborhoodId || null,
+        customCityName:
+          form.cityId === "__other__" ? form.customCityName.trim() : null,
+        customNeighborhoodName:
+          form.neighborhoodId === "__other__"
+            ? form.customNeighborhoodName.trim()
+            : null,
         address: form.address.trim(),
         area: Number(form.area),
         builtArea: parseNumeric(form.builtArea),
@@ -629,6 +746,13 @@ export function UploadWizard() {
     () => neighborhoods.find((n) => n.id === form.neighborhoodId) || null,
     [neighborhoods, form.neighborhoodId]
   );
+  // Etiquetas para el resumen final: si es "Otro", usamos el nombre manual
+  const cityLabel = form.cityId === "__other__"
+    ? (form.customCityName.trim() || "—")
+    : (selectedCity?.name || "—");
+  const neighborhoodLabel = form.neighborhoodId === "__other__"
+    ? (form.customNeighborhoodName.trim() || "—")
+    : (selectedNeighborhood?.name || "—");
 
   /* -------- Success screen -------- */
   if (published) {
@@ -790,6 +914,8 @@ export function UploadWizard() {
               form={form}
               selectedCity={selectedCity}
               selectedNeighborhood={selectedNeighborhood}
+              cityLabel={cityLabel}
+              neighborhoodLabel={neighborhoodLabel}
               onEdit={() => setStep(1)}
               onPublish={() => setStep(7)}
             />
@@ -799,6 +925,8 @@ export function UploadWizard() {
               form={form}
               selectedCity={selectedCity}
               selectedNeighborhood={selectedNeighborhood}
+              cityLabel={cityLabel}
+              neighborhoodLabel={neighborhoodLabel}
               confirmChecked={confirmChecked}
               setConfirmChecked={setConfirmChecked}
               publishing={publishing}
@@ -821,8 +949,12 @@ export function UploadWizard() {
               <ChevronLeft className="size-4" /> Anterior
             </Button>
             {!isEditMode && (
-              <Button variant="ghost" onClick={saveDraft}>
-                <Save className="size-4" /> Guardar borrador
+              <Button variant="ghost" onClick={saveDraft} disabled={savingDraft}>
+                {savingDraft ? (
+                  <><Loader2 className="size-4 animate-spin" /> Guardando…</>
+                ) : (
+                  <><Save className="size-4" /> Guardar borrador</>
+                )}
               </Button>
             )}
           </div>
@@ -993,6 +1125,7 @@ function Step1Basic({
               onValueChange={(v) => {
                 update("cityId", v);
                 update("neighborhoodId", "");
+                if (v !== "__other__") update("customCityName", "");
               }}
             >
               <SelectTrigger className="w-full">
@@ -1006,9 +1139,19 @@ function Step1Basic({
                     {c.name} · {c.stateName}
                   </SelectItem>
                 ))}
+                <SelectItem value="__other__">+ Otro (escribir manualmente)</SelectItem>
               </SelectContent>
             </Select>
+            {form.cityId === "__other__" && (
+              <Input
+                className="mt-2"
+                placeholder="Escribe el nombre de la ciudad"
+                value={form.customCityName}
+                onChange={(e) => update("customCityName", e.target.value)}
+              />
+            )}
             <FieldError message={errors.cityId} />
+            <FieldError message={errors.customCityName} />
           </div>
 
           <div data-field="neighborhoodId">
@@ -1017,14 +1160,19 @@ function Step1Basic({
             </Label>
             <Select
               value={form.neighborhoodId}
-              onValueChange={(v) => update("neighborhoodId", v)}
-              disabled={!form.cityId}
+              onValueChange={(v) => {
+                update("neighborhoodId", v);
+                if (v !== "__other__") update("customNeighborhoodName", "");
+              }}
+              disabled={!form.cityId || form.cityId === "__other__"}
             >
               <SelectTrigger className="w-full">
                 <SelectValue
                   placeholder={
                     !form.cityId
                       ? "Primero selecciona ciudad"
+                      : form.cityId === "__other__"
+                      ? "Ciudad manual — escribe el barrio abajo"
                       : neighborhoods.length === 0
                       ? "Sin barrios"
                       : "Selecciona barrio"
@@ -1037,9 +1185,19 @@ function Step1Basic({
                     {n.name} {n.zone ? `· ${n.zone}` : ""}
                   </SelectItem>
                 ))}
+                <SelectItem value="__other__">+ Otro (escribir manualmente)</SelectItem>
               </SelectContent>
             </Select>
+            {(form.neighborhoodId === "__other__" || form.cityId === "__other__") && (
+              <Input
+                className="mt-2"
+                placeholder="Escribe el nombre del barrio"
+                value={form.customNeighborhoodName}
+                onChange={(e) => update("customNeighborhoodName", e.target.value)}
+              />
+            )}
             <FieldError message={errors.neighborhoodId} />
+            <FieldError message={errors.customNeighborhoodName} />
           </div>
         </div>
 
@@ -1958,12 +2116,16 @@ function Step6Preview({
   form,
   selectedCity,
   selectedNeighborhood,
+  cityLabel,
+  neighborhoodLabel,
   onEdit,
   onPublish,
 }: {
   form: WizardForm;
   selectedCity: CityOption | null;
   selectedNeighborhood: NeighborhoodOption | null;
+  cityLabel: string;
+  neighborhoodLabel: string;
   onEdit: () => void;
   onPublish: () => void;
 }) {
@@ -2052,10 +2214,10 @@ function Step6Preview({
                 <MapPin className="h-3.5 w-3.5 shrink-0" />
                 <span className="truncate">
                   {[
-                    selectedNeighborhood?.name,
-                    selectedCity?.name,
+                    neighborhoodLabel,
+                    cityLabel,
                   ]
-                    .filter(Boolean)
+                    .filter((x) => x && x !== "—")
                     .join(", ") || "Sin ubicación"}
                 </span>
               </div>
@@ -2133,6 +2295,8 @@ function Step7Publish({
   form,
   selectedCity,
   selectedNeighborhood,
+  cityLabel,
+  neighborhoodLabel,
   confirmChecked,
   setConfirmChecked,
   publishing,
@@ -2142,6 +2306,8 @@ function Step7Publish({
   form: WizardForm;
   selectedCity: CityOption | null;
   selectedNeighborhood: NeighborhoodOption | null;
+  cityLabel: string;
+  neighborhoodLabel: string;
   confirmChecked: boolean;
   setConfirmChecked: (v: boolean) => void;
   publishing: boolean;
@@ -2151,8 +2317,8 @@ function Step7Publish({
   const rows: { label: string; value: string }[] = [
     { label: "Operación", value: OPERATION_LABELS[form.operation] || form.operation || "—" },
     { label: "Tipo", value: PROPERTY_TYPE_LABELS[form.propertyType] || form.propertyType || "—" },
-    { label: "Ciudad", value: selectedCity?.name || "—" },
-    { label: "Barrio", value: selectedNeighborhood?.name || "—" },
+    { label: "Ciudad", value: cityLabel },
+    { label: "Barrio", value: neighborhoodLabel },
     { label: "Dirección", value: form.address || "—" },
     {
       label: "Precio",

@@ -57,50 +57,48 @@ export async function POST(req: NextRequest) {
     const buffer = Buffer.from(await file.arrayBuffer());
     const supabase = getAdminClient();
 
-    // Procesar con sharp: generar 4 variantes WebP
+    // Procesar con sharp: generar 4 variantes WebP en PARALELO (antes eran
+    // secuenciales, lo que hacía el upload sentirse lento/congelado).
     const metadata = await sharp(buffer).metadata();
     const originalWidth = metadata.width || 0;
     const originalHeight = metadata.height || 0;
 
-    const uploadResults: { variant: string; path: string; size: number }[] = [];
+    // Generar las 4 variantes en paralelo (CPU-bound, pero sharp es async)
+    const processedVariants = await Promise.all(
+      IMAGE_VARIANTS.map(async (variant) => {
+        let pipeline = sharp(buffer, { failOn: "none" });
+        if (variant.width) {
+          pipeline = pipeline.resize({
+            width: variant.width,
+            withoutEnlargement: true,
+            fit: "inside",
+          });
+        }
+        const processed = await pipeline
+          .webp({ quality: variant.quality, effort: 2 }) // effort 2 = más rápido
+          .toBuffer();
+        const path = generateImagePath(propertyCode, variant.name, "webp");
+        return { variant: variant.name, path, buffer: processed, size: processed.length };
+      })
+    );
 
-    for (const variant of IMAGE_VARIANTS) {
-      let pipeline = sharp(buffer, { failOn: "none" });
-      if (variant.width) {
-        pipeline = pipeline.resize({
-          width: variant.width,
-          withoutEnlargement: true,
-          fit: "inside",
-        });
-      }
-      const processed = await pipeline
-        .webp({ quality: variant.quality, effort: 4 })
-        .toBuffer();
-
-      const path = generateImagePath(propertyCode, variant.name, "webp");
-
-      const { error } = await supabase.storage
-        .from(STORAGE_BUCKET)
-        .upload(path, processed, {
-          contentType: "image/webp",
-          upsert: false,
-          cacheControl: "31536000, immutable", // 1 año, inmutable
-        });
-
-      if (error) {
-        console.error(`Error subiendo variante ${variant.name}:`, error);
-        return NextResponse.json(
-          { error: `Error subiendo ${variant.name}: ${error.message}` },
-          { status: 500 }
-        );
-      }
-
-      uploadResults.push({
-        variant: variant.name,
-        path,
-        size: processed.length,
-      });
-    }
+    // Subir las 4 variantes a Supabase en PARALELO (antes eran 4 uploads
+    // secuenciales — cada uno con su propia latencia de red a US-East).
+    const uploadResults = await Promise.all(
+      processedVariants.map(async (pv) => {
+        const { error } = await supabase.storage
+          .from(STORAGE_BUCKET)
+          .upload(pv.path, pv.buffer, {
+            contentType: "image/webp",
+            upsert: false,
+            cacheControl: "31536000, immutable", // 1 año, inmutable
+          });
+        if (error) {
+          throw new Error(`Error subiendo ${pv.variant}: ${error.message}`);
+        }
+        return { variant: pv.variant, path: pv.path, size: pv.size };
+      })
+    );
 
     // Construir URLs públicas
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;

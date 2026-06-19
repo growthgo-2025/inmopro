@@ -50,11 +50,27 @@ export async function POST(req: NextRequest) {
     const { generatePropertyCode, slugify } = await import("@/lib/queries");
 
     const city = body.cityId ? await db.city.findUnique({ where: { id: body.cityId } }) : null;
-    if (!city) {
+    // cityCode para generar el INV-YYYY-{CITY}-NNNNNN:
+    //  - si la ciudad está en el catálogo → usamos su code (ej "MED")
+    //  - si es "Otro" → derivamos un code del nombre manual (ej "Soledad" → "SOL")
+    let cityCode: string;
+    if (city) {
+      cityCode = city.code;
+    } else if (body.customCityName && typeof body.customCityName === "string") {
+      // Tomar primeras 3 letras en mayúsculas, sin acentos
+      cityCode = body.customCityName
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .toUpperCase()
+        .replace(/[^A-Z]/g, "")
+        .slice(0, 3)
+        .padEnd(3, "X");
+      if (cityCode.length < 3) cityCode = "OTR";
+    } else {
       return NextResponse.json({ error: "Ciudad requerida" }, { status: 400 });
     }
 
-    const code = await generatePropertyCode(city.code);
+    const code = await generatePropertyCode(cityCode);
     const baseSlug = slugify(body.title || "inmueble");
     const slug = `${baseSlug}-${code.split("-").slice(-1)[0]}`;
 
@@ -75,6 +91,9 @@ export async function POST(req: NextRequest) {
         adminFee: body.adminFee ? Number(body.adminFee) : null,
         cityId: body.cityId,
         neighborhoodId: body.neighborhoodId,
+        // Nombres manuales cuando la ciudad/barrio es "Otro"
+        customCityName: body.customCityName || null,
+        customNeighborhoodName: body.customNeighborhoodName || null,
         address: body.address || "",
         latitude: body.latitude ? Number(body.latitude) : null,
         longitude: body.longitude ? Number(body.longitude) : null,

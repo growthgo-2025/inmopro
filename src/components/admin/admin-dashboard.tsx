@@ -97,7 +97,7 @@ export function AdminDashboard() {
   ];
   const secondaryKpis = [
     { label: "Destacados", value: t.featured, icon: Star, tint: "bg-[#E0B589]/20 text-[#B89164]" },
-    { label: "Borradores", value: drafts, icon: FileEdit, tint: "bg-[#F0EAE5] text-[#5A4E4B]" },
+    { label: "Borradores", value: drafts, icon: FileEdit, tint: "bg-[#F0EAE5] text-[#5A4E4B]", onClick: () => openAdmin("drafts"), clickable: drafts > 0 },
     { label: "Leads cerrados", value: t.closedLeads, icon: CheckCircle, tint: "bg-[#97A97C]/20 text-[#7A8B66]" },
     { label: "Ciudades activas", value: t.citiesActive, icon: MapPin, tint: "bg-cyan-100 text-cyan-700" },
   ];
@@ -112,6 +112,34 @@ export function AdminDashboard() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {secondaryKpis.map((k, i) => <KpiCard key={k.label} {...k} delay={i * 0.05} />)}
       </div>
+
+      {/* Quick-access drafts banner (only if there are drafts) */}
+      {drafts > 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 8 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+        >
+          <Card className="gap-2 py-3 border-[#E0B589]/40 bg-[#FAF3EC]/60">
+            <CardContent className="flex items-center gap-3">
+              <div className="grid size-10 shrink-0 place-items-center rounded-lg bg-[#E0B589]/20 text-[#B89164]">
+                <FileEdit className="size-5" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <div className="text-sm font-semibold text-[#5A4E4B]">
+                  Tenés {drafts} borrador{drafts !== 1 ? "es" : ""} sin terminar
+                </div>
+                <div className="text-xs text-[#8B7E78]">
+                  Continúa la publicación de tus inmuebles guardados como borrador.
+                </div>
+              </div>
+              <Button size="sm" onClick={() => openAdmin("drafts")} className="bg-[#B08968] text-white hover:bg-[#9A7558]">
+                Ver borradores <ArrowRight className="size-3.5" />
+              </Button>
+            </CardContent>
+          </Card>
+        </motion.div>
+      )}
 
       {/* Charts row 1 */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -305,13 +333,20 @@ export function AdminDashboard() {
 }
 
 function KpiCard({
-  label, value, icon: Icon, tint, trend, delay = 0,
+  label, value, icon: Icon, tint, trend, delay = 0, onClick, clickable,
 }: {
   label: string; value: number; icon: any; tint: string; trend?: string; delay?: number;
+  onClick?: () => void; clickable?: boolean;
 }) {
   return (
     <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay }}>
-      <Card className="gap-3 py-4">
+      <Card
+        className={cn(
+          "gap-3 py-4 transition-colors",
+          clickable && "cursor-pointer hover:border-[#B08968]/40 hover:bg-[#FAF6F3]"
+        )}
+        onClick={clickable ? onClick : undefined}
+      >
         <CardContent className="flex items-start gap-3">
           <div className={cn("grid size-10 shrink-0 place-items-center rounded-lg", tint)}>
             <Icon className="size-5" />
@@ -320,6 +355,7 @@ function KpiCard({
             <div className="text-xs font-medium text-[#8B7E78]">{label}</div>
             <div className="text-2xl font-bold leading-tight text-[#3D3530]">{formatNumber(value)}</div>
             {trend && <div className="text-xs text-[#A89B96]">{trend}</div>}
+            {clickable && <div className="text-xs font-medium text-[#B08968]">Ver →</div>}
           </div>
         </CardContent>
       </Card>

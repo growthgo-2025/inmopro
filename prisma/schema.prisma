@@ -147,6 +147,9 @@ model Property {
   city            City?    @relation(fields: [cityId], references: [id])
   neighborhoodId  String?
   neighborhood    Neighborhood? @relation(fields: [neighborhoodId], references: [id])
+  // Nombres manuales cuando la ciudad/barrio no está en el catálogo (opción "Otro")
+  customCityName          String?
+  customNeighborhoodName  String?
   address         String
   latitude        Float?
   longitude       Float?

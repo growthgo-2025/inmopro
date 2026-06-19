@@ -110,7 +110,7 @@ export async function GET() {
       status: p.status,
       published: p.published,
       featured: p.featured,
-      cityName: p.city?.name,
+      cityName: p.customCityName || p.city?.name,
       createdAt: p.createdAt,
     })),
     recentLeads: recentLeads.map((l) => ({
