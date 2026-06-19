@@ -15,14 +15,14 @@ import { useNav } from "@/lib/store";
 import { cn } from "@/lib/utils";
 
 const PROPERTY_TYPES = [
-  { label: "Casas", type: "CASA", icon: "🏠" },
-  { label: "Apartamentos", type: "APARTAMENTO", icon: "🏢" },
-  { label: "Apartaestudios", type: "APARTAESTUDIO", icon: "🛏️" },
-  { label: "Fincas", type: "FINCA", icon: "🌳" },
-  { label: "Lotes y terrenos", type: "LOTE", icon: "📐" },
-  { label: "Locales", type: "LOCAL", icon: "🏪" },
-  { label: "Oficinas", type: "OFICINA", icon: "💼" },
-  { label: "Bodegas", type: "BODEGA", icon: "🏭" },
+  { label: "Casas", type: "CASA" },
+  { label: "Apartamentos", type: "APARTAMENTO" },
+  { label: "Apartaestudios", type: "APARTAESTUDIO" },
+  { label: "Fincas", type: "FINCA" },
+  { label: "Lotes y terrenos", type: "LOTE" },
+  { label: "Locales", type: "LOCAL" },
+  { label: "Oficinas", type: "OFICINA" },
+  { label: "Bodegas", type: "BODEGA" },
 ];
 
 export function Header() {
@@ -70,7 +70,7 @@ export function Header() {
                 Inmuebles
               </NavigationMenuTrigger>
               <NavigationMenuContent>
-                <div className="grid w-[560px] grid-cols-2 gap-1 p-4">
+                <div className="grid w-[560px] grid-cols-2 gap-1 p-4 pt-5">
                   <div className="col-span-2 mb-2 flex items-center gap-2 border-b border-[#F0EAE5] pb-3">
                     <span className="text-sm font-bold text-[#3D3530]">Buscar por operación</span>
                   </div>
@@ -128,7 +128,6 @@ export function Header() {
                         onClick={() => openResults({ propertyType: t.type })}
                         className="flex items-center gap-2 rounded-md p-2 text-left text-sm text-[#6B5D5A] hover:bg-[#F0EAE5] hover:text-[#3D3530]"
                       >
-                        <span>{t.icon}</span>
                         <span>{t.label}</span>
                       </button>
                     </NavigationMenuLink>
@@ -152,7 +151,7 @@ export function Header() {
                 Gestión
               </NavigationMenuTrigger>
               <NavigationMenuContent>
-                <div className="grid w-[400px] gap-1 p-3">
+                <div className="grid w-[400px] gap-1 p-3 pt-4">
                   <NavigationMenuLink asChild>
                     <button onClick={() => openAdmin("dashboard")} className="flex items-center gap-3 rounded-lg p-3 text-left hover:bg-[#FAF3EC]">
                       <div className="rounded-md bg-[#F5EBE0] p-2 text-[#9A7558]"><LayoutDashboard className="h-4 w-4" /></div>

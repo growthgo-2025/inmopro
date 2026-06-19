@@ -271,8 +271,6 @@ export function HomeView() {
         onViewAll={() => openResults()}
       />
 
-      <ValuePropsSection />
-
       <CtaBannerSection
         onPublish={() => setView("upload")}
         onContact={() => openAdmin("dashboard")}
@@ -513,12 +511,11 @@ function QuickCategoriesSection({ onPick }: { onPick: (v: string) => void }) {
               viewport={{ once: true }}
               variants={fadeUp}
               onClick={() => onPick(cat.value)}
-              className="card-lift group flex flex-col items-center gap-3 rounded-2xl border border-[#E8DFD9] bg-white p-5 text-center transition-colors hover:border-[#E0B589] hover:bg-[#FAF3EC]/40"
+              className="card-lift group relative flex flex-col items-center justify-center gap-2 overflow-hidden rounded-2xl border border-[#E8DFD9] bg-white px-4 py-7 text-center transition-colors hover:border-[#E0B589] hover:bg-[#FAF3EC]/40"
             >
-              <span className="flex h-14 w-14 items-center justify-center rounded-xl bg-[#FAF3EC] text-2xl transition-transform group-hover:scale-110">
-                {cat.icon}
-              </span>
-              <span className="text-sm font-semibold text-[#4A3D38]">
+              {/* Subtle accent line at top */}
+              <span className="absolute top-0 left-1/2 h-[3px] w-10 -translate-x-1/2 rounded-b-full bg-[#B08968]/30 transition-all duration-300 group-hover:w-16 group-hover:bg-[#B08968]" />
+              <span className="text-sm font-semibold tracking-tight text-[#4A3D38] transition-colors group-hover:text-[#9A7558]">
                 {cat.label}
               </span>
               <span className="inline-flex items-center gap-0.5 text-[11px] font-medium text-[#B08968] opacity-0 transition-opacity group-hover:opacity-100">
@@ -739,61 +736,6 @@ function PropertiesGrid({
 }
 
 /* ================================================================== */
-/*  5. Value proposition                                               */
-/* ================================================================== */
-
-function ValuePropsSection() {
-  return (
-    <section id="por-que" className="bg-[#3D3530] py-20 text-white">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <motion.div
-          initial="hidden"
-          whileInView="visible"
-          viewport={{ once: true, margin: "-80px" }}
-          variants={fadeUp}
-          className="mx-auto mb-12 max-w-2xl text-center"
-        >
-          <div className="text-[11px] font-bold uppercase tracking-wider text-[#E0B589]">
-            ¿Por qué Innovar Showrooms?
-          </div>
-          <h2 className="h2-section mt-2 text-white">
-            La plataforma inmobiliaria más profesional de Colombia
-          </h2>
-          <p className="text-body-lg mt-3 text-[#A89B96]">
-            Diseñada para compradores, arrendatarios y asesores que buscan
-            transparencia, verificación y resultados.
-          </p>
-        </motion.div>
-
-        <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {VALUE_PROPS.map((vp, i) => (
-            <motion.div
-              key={vp.title}
-              custom={i}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true }}
-              variants={fadeUp}
-              className="rounded-xl border border-[#3D3530] bg-[#4A3D38]/60 p-6"
-            >
-              <div className="flex h-11 w-11 items-center justify-center rounded-full bg-[#B08968]/20 ring-1 ring-[#C9A07A]/30">
-                <vp.icon className="h-5 w-5 text-[#E0B589]" />
-              </div>
-              <h3 className="mt-4 text-base font-bold text-white">
-                {vp.title}
-              </h3>
-              <p className="mt-2 text-sm leading-relaxed text-[#A89B96]">
-                {vp.desc}
-              </p>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-/* ================================================================== */
 /*  6. CTA banner                                                      */
 /* ================================================================== */
 
@@ -812,21 +754,21 @@ function CtaBannerSection({
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
           transition={{ duration: 0.5 }}
-          className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-700 to-blue-500 px-6 py-12 text-center shadow-xl sm:px-12 sm:py-16"
+          className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-[#6B5D5A] to-[#8A6F4F] px-6 py-12 text-center shadow-xl sm:px-12 sm:py-16"
         >
           {/* decorative blobs */}
-          <div className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-white/10 blur-2xl" />
-          <div className="pointer-events-none absolute -bottom-20 -left-10 h-56 w-56 rounded-full bg-blue-900/30 blur-2xl" />
+          <div className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-[#E0B589]/15 blur-2xl" />
+          <div className="pointer-events-none absolute -bottom-20 -left-10 h-56 w-56 rounded-full bg-[#B08968]/20 blur-2xl" />
 
           <div className="relative mx-auto max-w-3xl">
-            <div className="inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-white backdrop-blur-sm">
+            <div className="inline-flex items-center gap-2 rounded-full bg-[#F5EBE0]/20 px-3 py-1 text-[11px] font-bold uppercase tracking-wider text-[#F5EBE0] backdrop-blur-sm">
               <Building2 className="h-3.5 w-3.5" />
               Para asesores e inmobiliarias
             </div>
             <h2 className="h2-section mt-4 text-white">
               ¿Eres asesor o inmobiliaria? Publica tus inmuebles
             </h2>
-            <p className="text-body-lg mt-3 text-white/90">
+            <p className="text-body-lg mt-3 text-[#F5EBE0]/90">
               Usa nuestro asistente guiado paso a paso. Genera códigos únicos
               automáticos y llega a miles de clientes.
             </p>
@@ -844,7 +786,7 @@ function CtaBannerSection({
                 size="lg"
                 variant="outline"
                 onClick={onContact}
-                className="h-11 border-white/60 bg-transparent px-6 text-white hover:bg-white/10 hover:text-white"
+                className="h-11 border-[#F5EBE0]/60 bg-transparent px-6 text-white hover:bg-[#F5EBE0]/10 hover:text-white"
               >
                 <Phone className="mr-2 h-4 w-4" />
                 Hablar con asesor
@@ -865,79 +807,8 @@ function SeoSection({ onSearch }: { onSearch: (q: string) => void }) {
   return (
     <section id="seo" className="bg-white py-16">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 gap-10 lg:grid-cols-2">
-          {/* Left column: copy */}
-          <motion.div
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true, margin: "-80px" }}
-            variants={fadeUp}
-          >
-            <div className="text-[11px] font-bold uppercase tracking-wider text-[#B08968]">
-              Guía inmobiliaria
-            </div>
-            <h2 className="h2-section mt-2 text-[#3D3530]">
-              Inmuebles en Colombia: la guía completa
-            </h2>
-
-            <div className="mt-5 space-y-4 text-sm leading-relaxed text-[#6B5D5A]">
-              <p>
-                Comprar o arrendar inmuebles en Colombia requiere entender el
-                mercado local, los trámites notariales y el sistema de estratos.
-                En ciudades como <strong>Medellín</strong>, barrios como{" "}
-                <strong>El Poblado</strong> y <strong>Laureles</strong>{" "}
-                concentran la mayor oferta de apartamentos de alto estándar,
-                mientras que <strong>Belén</strong> y <strong>Envigado</strong>{" "}
-                ofrecen opciones más accesibles para familias. En{" "}
-                <strong>Bogotá</strong>, <strong>Chapinero</strong>,{" "}
-                <strong>Usaquén</strong> y <strong>Suba</strong> lideran la
-                oferta de apartamentos en venta, con rangos de precio que varían
-                según el estrato y la cercanía al sistema Integrado de
-                Transporte.
-              </p>
-
-              <p>
-                En <strong>Barranquilla</strong>, sectores como{" "}
-                <strong>Alto Prado</strong> y <strong>Villa Country</strong> son
-                los más demandados para vivienda familiar; en{" "}
-                <strong>Cali</strong>, <strong>Granada</strong>,{" "}
-                <strong>Ciudad Jardín</strong> y <strong>Chipichape</strong>{" "}
-                combinan apartamentos modernos con zonas comerciales; y en{" "}
-                <strong>Cartagena</strong>, <strong>Bocagrande</strong> y{" "}
-                <strong>Castillogrande</strong> dominan el arriendo temporal
-                para turistas y expatriados. Los <strong>lotes</strong> y{" "}
-                <strong>fincas</strong> en la periferia urbana crecen año tras
-                año como alternativa de inversión, especialmente en el Eje
-                Cafetero (Pereira, Armenia, Manizales) y la región caribe.
-              </p>
-
-              <p>
-                Una de las claves para evitar avisos fraudulentos es exigir el{" "}
-                <strong>código único de inmueble</strong>. En Innovar Showrooms cada
-                propiedad recibe un identificador INV-2026-CITY-000001
-                verificable, lo que permite comprobar que el aviso corresponde a
-                un inmueble real y no duplicado. Antes de separar un apartamento
-                en arriendo, revisa el estrato (del 1 al 6) ya que impacta el
-                valor de los servicios públicos, y verifica que el contrato
-                incluya la administración y el depósito. Para compradores de
-                primera vivienda, los créditos del Icetex y los subsidios del
-                Fondo Nacional del Ahorro pueden financiar hasta el 70% del
-                valor del inmueble.
-              </p>
-
-              <p>
-                Finalmente, ya sean <strong>casas</strong>,{" "}
-                <strong>apartamentos</strong>, <strong>fincas</strong> o{" "}
-                <strong>lotes</strong>, te recomendamos comparar al menos cinco
-                opciones similares, visitar el inmueble en horarios distintos y
-                solicitar el certificado de tradición y libertad. Innovar Showrooms reúne
-                miles de inmuebles verificados en Colombia con asesores
-                certificados que responden en menos de 24 horas.
-              </p>
-            </div>
-          </motion.div>
-
-          {/* Right column: FAQ */}
+        <div className="mx-auto max-w-3xl">
+          {/* FAQ */}
           <motion.div
             initial="hidden"
             whileInView="visible"
@@ -945,10 +816,17 @@ function SeoSection({ onSearch }: { onSearch: (q: string) => void }) {
             variants={fadeUp}
           >
             <div className="rounded-2xl border border-[#E8DFD9] bg-[#FAF6F3]/60 p-6 sm:p-8">
-              <h3 className="h3-card text-[#3D3530]">Preguntas frecuentes</h3>
-              <p className="mt-1 text-sm text-[#8B7E78]">
-                Resolvemos las dudas más comunes de compradores y arrendatarios.
-              </p>
+              <div className="text-center mb-6">
+                <div className="text-[11px] font-bold uppercase tracking-wider text-[#B08968]">
+                  Centro de ayuda
+                </div>
+                <h2 className="h2-section mt-2 text-[#3D3530]">
+                  Preguntas frecuentes
+                </h2>
+                <p className="mt-2 text-sm text-[#8B7E78]">
+                  Resolvemos las dudas más comunes de compradores y arrendatarios.
+                </p>
+              </div>
 
               <Accordion type="single" collapsible className="mt-5 w-full">
                 {FAQS.map((f, i) => (
@@ -991,7 +869,7 @@ function SeoSection({ onSearch }: { onSearch: (q: string) => void }) {
                     <button
                       key={s}
                       onClick={() => onSearch(s)}
-                      className="rounded-full border border-[#E8DFD9] bg-white px-3 py-1 text-xs font-medium text-[#5A4E4B] hover:border-blue-300 hover:bg-[#FAF3EC] hover:text-[#9A7558]"
+                      className="rounded-full border border-[#E8DFD9] bg-white px-3 py-1 text-xs font-medium text-[#5A4E4B] hover:border-[#C9A07A] hover:bg-[#FAF3EC] hover:text-[#9A7558]"
                     >
                       {s}
                     </button>

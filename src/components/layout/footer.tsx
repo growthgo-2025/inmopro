@@ -78,7 +78,6 @@ export function Footer() {
             <FooterLink onClick={goHome}>Inicio</FooterLink>
             <FooterLink onClick={() => setView("results")}>Explorar</FooterLink>
             <FooterLink onClick={() => window.open("/sitemap.xml", "_blank")}>Sitemap</FooterLink>
-            <FooterLink onClick={() => window.open("/robots.txt", "_blank")}>Robots.txt</FooterLink>
           </FooterCol>
         </div>
       </div>

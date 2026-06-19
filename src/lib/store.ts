@@ -174,6 +174,11 @@ export const useNav = create<NavState>((set, get) => ({
 
     const qs = params.toString();
     const newUrl = qs ? `/?${qs}` : "/";
-    window.history.replaceState(null, "", newUrl);
+    // Use pushState so browser back/forward buttons work.
+    // Avoid pushing duplicate entries when only filters change on the same view
+    // by comparing with current URL.
+    const currentUrl = window.location.pathname + window.location.search;
+    if (currentUrl === newUrl) return;
+    window.history.pushState(null, "", newUrl);
   },
 }));
