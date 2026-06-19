@@ -5,7 +5,9 @@ import {
   useRef,
   useState,
   type ChangeEvent,
+  type Dispatch,
   type DragEvent,
+  type SetStateAction,
 } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -898,7 +900,7 @@ export function UploadWizard() {
               loadingLookups={loadingLookups}
             />
           )}
-          {step === 2 && <Step2Images form={form} update={update} />}
+          {step === 2 && <Step2Images form={form} update={update} setForm={setForm} />}
           {step === 3 && (
             <Step3Features
               form={form}
@@ -1345,9 +1347,11 @@ function Step1Basic({
 function Step2Images({
   form,
   update,
+  setForm,
 }: {
   form: WizardForm;
   update: <K extends keyof WizardForm>(key: K, value: WizardForm[K]) => void;
+  setForm: Dispatch<SetStateAction<WizardForm>>;
 }) {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [dragOver, setDragOver] = useState(false);
@@ -1385,16 +1389,25 @@ function Step2Images({
     toast.info(`Subiendo ${toAdd.length} imagen${toAdd.length > 1 ? "es" : ""}...`);
 
     // Subir cada imagen al backend (que la procesa con sharp + sube a Supabase)
+    // Safety net: AbortController con timeout de 90s. Si la subida se cuelga
+    // (p.ej. Vercel Hobby mata la función a los 10s, o un problema de red),
+    // el usuario ve un error claro en lugar de un spinner infinito.
     let successCount = 0;
     await Promise.all(
       placeholders.map(async (placeholder, idx) => {
         const file = toAdd[idx];
+        const controller = new AbortController();
+        const timeoutId = setTimeout(
+          () => controller.abort(),
+          90_000 // 90s — tope amplio, normalmente tarda < 5s
+        );
         try {
           const formData = new FormData();
           formData.append("file", file);
           const res = await fetch("/api/upload", {
             method: "POST",
             body: formData,
+            signal: controller.signal,
           });
           if (!res.ok) {
             const errData = await res.json().catch(() => ({}));
@@ -1422,8 +1435,13 @@ function Step2Images({
           }));
           successCount++;
         } catch (err) {
-          const msg = err instanceof Error ? err.message : "Error subiendo imagen";
-          console.error("Upload error:", msg);
+          let msg: string;
+          if (err instanceof DOMException && err.name === "AbortError") {
+            msg = "La subida tardó demasiado (>90s) y se canceló. Inténtalo de nuevo.";
+          } else {
+            msg = err instanceof Error ? err.message : "Error subiendo imagen";
+          }
+          console.error("Upload error:", msg, err);
           setForm((f) => ({
             ...f,
             images: f.images.map((img) =>
@@ -1433,6 +1451,8 @@ function Step2Images({
             ),
           }));
           toast.error(`Falló una imagen: ${msg}`);
+        } finally {
+          clearTimeout(timeoutId);
         }
       })
     );

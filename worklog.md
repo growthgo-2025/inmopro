@@ -605,3 +605,48 @@ Stage Summary:
 - Los 3 ajustes quedaron implementados, verificados y desplegados a producción.
 - Importante para próximo deploy a Vercel: las variables de entorno deben incluir DATABASE_URL (PostgreSQL de Supabase), no SQLite. En Vercel esto ya está configurado correctamente.
 - El cliente Prisma debe regenerarse tras cambios de schema (`prisma generate` corre automáticamente en `postinstall` durante el build de Vercel).
+
+---
+Task ID: SANDBOX-IMPORT-008
+Agent: main (Z.ai Code)
+Task: Fix "Subiendo a Supabase..." spinner stuck forever when uploading images in publish wizard (user-reported regression after deploy).
+
+Work Log:
+
+Diagnosis:
+- User reported: image upload in "Publicar inmueble" → Step 2 (Imágenes) shows "Subiendo a Supabase..." spinner for 2+ minutes and never completes.
+- Read /home/z/my-project/src/components/admin/upload-wizard.tsx → found Step2Images component (line ~1345) which receives only `{ form, update }` as props (NOT setForm).
+- Found at lines 1408 and 1427 inside Step2Images.addFiles(): `setForm((f) => ({...}))` — but `setForm` is NOT in scope! It's only defined in the parent UploadWizard component (line 241).
+- This is a runtime ReferenceError. TypeScript didn't catch it because next.config.ts has `typescript.ignoreBuildErrors: true`.
+- The flow was:
+  1. User drops image → placeholder with `uploading: true` added via `update()` ✓
+  2. fetch("/api/upload") POST → succeeds, returns Supabase URL ✓ (server-side upload was never broken)
+  3. `setForm(...)` called to update placeholder with real URL + `uploading: false` → **ReferenceError: setForm is not defined** thrown inside async function
+  4. catch block tries `setForm(...)` again to mark `uploadError` → **another ReferenceError**
+  5. Promise rejects silently (unhandled promise rejection), placeholder NEVER updated
+  6. User sees spinner forever even though the upload actually succeeded on the server
+- This perfectly explains the user's symptom: "se queda en subiendo a supabase" for 2+ minutes — the upload completed in <2s on the server, but the client UI never updated.
+
+Fix:
+1. Pass `setForm` from parent `UploadWizard` to `Step2Images` as a new prop.
+2. Update `Step2Images` signature to destructure `setForm` and accept it with proper TS type `Dispatch<SetStateAction<WizardForm>>`.
+3. Added `type Dispatch, type SetStateAction` imports from "react" (React namespace not imported as default).
+4. Added a client-side AbortController with 90s timeout as a safety net: if upload genuinely hangs (e.g., Vercel Hobby 10s cap on serverless functions, or network failure), the user now sees a clear error message ("La subida tardó demasiado (>90s) y se canceló...") instead of an infinite spinner. The timeout abort throws AbortError which is detected and converted to a friendly Spanish message.
+5. Added `clearTimeout(timeoutId)` in a `finally` block to prevent memory leaks.
+6. Improved error logging: `console.error("Upload error:", msg, err)` now includes the full error object for better debugging.
+
+Verification (agent-browser):
+- Started Next.js dev server (had to unset stale DATABASE_URL shell env var that was overriding .env).
+- Logged in as admin (already had session cookie).
+- Navigated to "Publicar" → Step 1 (Info básica).
+- Filled required Step 1 fields: Comprar + Apartamento + Barranquilla + Alto Prado + address + price + area. Clicked "Siguiente".
+- On Step 2 (Imágenes), uploaded `/home/z/my-project/public/cities/barranquilla.png` (~1.2MB PNG) via the hidden file input.
+- Result: POST /api/upload returned HTTP 200 in 1933ms. The placeholder was correctly updated — image src is now `https://ytdjjlpbnevwolofkdff.supabase.co/storage/v1/object/public/inmopro-properties/properties/drafts/large/...` (real Supabase URL), `complete: true`, `naturalWidth: 1200` (image actually rendered), NO "Subiendo a Supabase" overlay, "PRINCIPAL" badge visible.
+- Uploaded a 2nd image (`medellin.png`) to confirm multiple parallel uploads work: POST /api/upload 200 in 1781ms. Both images now have real Supabase URLs, both `complete: true`, count shows "2/20", no spinners.
+- bun run lint: 0 errors, 0 warnings.
+
+Stage Summary:
+- Root cause was a missing prop: `setForm` was used inside `Step2Images` but never passed to it. The previous "parallelize uploads" fix (SANDBOX-IMPORT-007) was a red herring — server-side upload was already fast, but the client UI silently crashed trying to update the placeholder.
+- The fix is minimal (3 lines for the prop, ~10 lines for the timeout safety net) and surgical.
+- Both single and multiple image uploads now work end-to-end in <2s per image.
+- Ready to push to GitHub → Vercel auto-deploys to https://inmopro.vercel.app/.
